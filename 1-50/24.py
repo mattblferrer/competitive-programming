@@ -1,4 +1,4 @@
-'''
+"""
 PLAN:
 Generate the 1,000,000th lexicographic permutation without calculating all the permutations
 
@@ -6,7 +6,7 @@ Generate the 1,000,000th lexicographic permutation without calculating all the p
 2. Figure out which "group" the number 1,000,000 falls in
 3. Generate the permutation left to right
 4. If digit is used
-'''
+"""
 
 
 def factorial(n):

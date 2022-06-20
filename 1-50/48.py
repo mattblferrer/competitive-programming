@@ -1,4 +1,4 @@
-limit = 1000 # given parameter
+limit = 1000  # given parameter
 output = 0
 
 for i in range(1, limit+1):

@@ -4,9 +4,9 @@ Therefore, the number of ways is (m+n)Cn
 """
 
 
-def factorial(n):
+def factorial(num):
     fac = 1  # factorial
-    for i in range(1,n+1):
+    for i in range(1, num + 1):
         fac *= i
     return fac
 
@@ -14,5 +14,5 @@ def factorial(n):
 # for m * n grid
 m = 20
 n = 20
-numberOfWays = factorial(m+n)//(factorial(m)*factorial(n))  # from (m+n)Cn
+numberOfWays = factorial(m + n) // (factorial(m) * factorial(n))  # from (m+n)Cn
 print(numberOfWays)
