@@ -38,7 +38,7 @@ limit = 1000000
 while n < limit:
     if n not in nonCircularList:
         isCircular = True
-        perms = rotation_list(n)
+        perms = rotation_list(n)  # set of permutations (rotations) of n
         nonCircularPerms = set()  # assume that prime is not circular until proven otherwise
 
         # iterate through all rotations
@@ -48,7 +48,7 @@ while n < limit:
                 nonCircularList = nonCircularList | nonCircularPerms  # add prime rotations to non-circular prime set
                 break
             else:
-                nonCircularPerms.add(perm)
+                nonCircularPerms.add(perm)  # add prime to possible non-circular prime set
 
         # if n is circular, increment count
         if isCircular:
