@@ -11,6 +11,9 @@ def prime_factorize(num):
             factors.add(i)
             num //= i
 
+    if num != 1:
+        factors.add(num)
+
     return factors
 
 
