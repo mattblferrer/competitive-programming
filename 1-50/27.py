@@ -1,14 +1,15 @@
-# function that finds if a number is prime or not
-def isprime(n):
-    if n < 2:  # function can have negative inputs
+# determines if num is prime
+def isprime(num):
+    if num < 2:  # inputs can be negative
         return False
-    else:
-        if n % 2 == 0:  # for number 2
+
+    if num % 2 == 0:  # for even numbers
+        return False
+
+    for i in range(3, int(num**0.5+1), 2):  # for odd numbers
+        if num % i == 0:
             return False
-        for i in range(2, int(n**0.5+1)):  # for odd numbers
-            if n % i == 0:
-                return False
-        return True
+    return True
 
 
 # given parameters

@@ -12,7 +12,10 @@ The bottom right diagonal always yields squares, and will not be useful for the 
 
 # determines if num is prime
 def isprime(num):
-    for i in range(2, int(num**0.5+1)):
+    if num % 2 == 0:  # for even numbers
+        return False
+
+    for i in range(3, int(num**0.5+1), 2):  # for odd numbers
         if num % i == 0:
             return False
     return True
