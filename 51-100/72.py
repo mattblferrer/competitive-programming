@@ -15,4 +15,4 @@ numerators = []
 denominators = []
 
 # main loop
-# TODO
+# TODO main function

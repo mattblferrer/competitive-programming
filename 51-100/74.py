@@ -12,14 +12,4 @@ def fac_digit_sum(num):
     return factorial_sum
 
 
-# output variable
-totalSum = 0
-
-# iterate through numbers
-for i in range(10, 362880 * 7):  # only have to check until 7*9!
-    if fac_digit_sum(i) == i:
-        totalSum += i
-        print(i)
-
-# final output
-print("The sum of all numbers which are equal to the factorial of their digits is", totalSum)
+# TODO main function
