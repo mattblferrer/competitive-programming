@@ -231,3 +231,4 @@ fabric.properties
 .idea/vcs.xml
 *.xml
 *.iml
+.idea/.name
