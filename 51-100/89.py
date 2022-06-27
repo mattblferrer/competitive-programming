@@ -24,7 +24,7 @@ def roman_to_num_arr(roman_num):
 # from array of numbers, return the roman numeral equivalent
 def num_arr_to_number(num_arr):
     # final output
-    number = 0
+    num = 0
 
     # analyze difference between two consecutive numbers
     for i in range(len(num_arr)-1):
@@ -33,24 +33,48 @@ def num_arr_to_number(num_arr):
 
         # subtractive
         if current_num < next_num:
-            number -= current_num
+            num -= current_num
         # additive
         else:
-            number += current_num
+            num += current_num
 
     # add last digit in roman numeral
-    number += num_arr[-1]
+    num += num_arr[-1]
 
-    return number
+    return num
 
 
 # returns most efficient roman numeral for a given number
 def num_to_roman(num):
     roman = ""  # final output
 
-    # iterate through list of letters decreasing
-    for i in range(6, -1, -1):
-        # TODO
+    # add M's
+    thousands = num // 1000
+    roman += "M"*thousands
+    num %= 1000
+
+    # iterate through list of letters decreasing (starting from D)
+    for i in range(5, -1, -1):
+        if i % 2 == 1:  # D, L, V
+            if num // letter_equivalent[i] == 1:
+                roman += roman_letters[i]
+                num %= letter_equivalent[i]
+
+        else:  # C, X, I
+            run_length = num // letter_equivalent[i]
+
+            if run_length < 4:  # additive
+                roman += roman_letters[i]*run_length
+
+            else:  # subtractive
+                roman += roman_letters[i] + roman_letters[i+1]
+
+            num %= letter_equivalent[i]
+
+    # replace sequences of letters with more efficient version
+    roman = roman.replace("DCD", "CM").replace("LXL", "XC").replace("VIV", "IX")
+
+    return roman
 
 
 # read file
@@ -63,8 +87,15 @@ newLength = 0
 
 # interpret file
 for line in lines:
+    line = line.rstrip()
+
     oldLength += len(line)
 
+    # convert to efficient roman num
+    arr = roman_to_num_arr(line)
+    number = num_arr_to_number(arr)
+    romanConverted = num_to_roman(number)
+    newLength += len(romanConverted)
+
 # print result
-arr = roman_to_num_arr("XCIX")
-print(num_arr_to_number(arr))
+print("Number of characters saved:", oldLength - newLength)
