@@ -7,7 +7,7 @@ maximumIndex = 0  # index where the number of solutions is maximized
 for a in range(1, sumABC//2):
     for b in range(1, sumABC//2):
         c = (a**2 + b**2)**0.5
-        if c.is_integer() and a+b+c <= sumABC and a+b+c == 840:  # check for pythagorean triple
+        if c.is_integer() and a+b+c <= sumABC:  # check for pythagorean triple
             solutions[a+b+int(c)] += 1
 
 # finding maximum value p
