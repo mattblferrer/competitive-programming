@@ -21,7 +21,7 @@ def subdivide_pair(xy, z):
         return z - (xy-1) // 2
 
 
-# returns the number of cuboids from side length M-1 to side length M with the shortest path as integer TODO
+# returns the number of cuboids from side length M-1 to side length M with the shortest path as integer
 def shortest_path_num(M):
     counter = 0
 
