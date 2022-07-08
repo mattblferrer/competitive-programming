@@ -1,13 +1,3 @@
-"""
-The shortest path on the surface of a cuboid x * y * z has length sqrt((x+y)^2 + z^2) where x <= y <= z
-
-For any given integer m and n, m > n > 0: and integer k
-a = k*(m^2 - n^2)
-b = k*(2mn)
-c = k*(m^2 + n^2),
-
-generates all Pythagorean triples if m and n are coprime and are not both odd
-"""
 import math
 
 

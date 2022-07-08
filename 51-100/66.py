@@ -1,3 +1,6 @@
+"""
+This uses the Chakravala method to calculate the value x in the Diophantine equation x^2 - Dy^2 = 1 for given D
+"""
 import math
 
 

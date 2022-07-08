@@ -32,7 +32,7 @@ for key in possible_keys:
 
     # check message for number of words
     dec_message = dec_message.split(" ")
-    if len(dec_message) > maximumWords:
+    if len(dec_message) > maximumWords:  # assumes that the message has the most words, or the least entropy
         maximumWords = len(dec_message)
         maximumMsg = dec_message
 
