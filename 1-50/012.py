@@ -1,13 +1,19 @@
 def number_factors(num):  # returns the number of factors of num
-    factorlist = []
+    total_factors = 1
 
-    for i in range(2, int(num**0.5)+1):  # only have to check for factors up to sqrt(n)
-        if num % i == 0:
-            factorlist.append(i)
-            factorlist.append(num // i)
+    while num % 2 == 0:  # check for even factors
+        total_factors += 1
+        num //= 2
 
-    # length of factor list
-    return len(factorlist)
+    for i in range(3, int(num**0.5)+1, 2):  # only have to check for odd factors up to sqrt(n)
+        power = 1
+        while num % i == 0:
+            power += 1
+            num //= i
+
+        total_factors *= power
+
+    return total_factors
 
 
 tri = 1  # triangular number
