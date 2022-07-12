@@ -1,12 +1,17 @@
-import math
+# returns if a number n is divisible by 3 or 5 
+def divisible(n):
+    if n % 3 == 0:
+        return True
+    if n % 5 == 0:
+        return True
+    return False
 
-n = 999
 
-numbers = set()
-for i in range(0, math.ceil(n // 3) + 1):
-    numbers.add(3 * i)
-for i in range(0, math.ceil(n // 5) + 1):
-    numbers.add(5 * i)
-output = sum(numbers)
+# main loop
+output = 0
+
+for i in range(1, 1000):
+    if divisible(i):
+        output += i
 
 print(output)
