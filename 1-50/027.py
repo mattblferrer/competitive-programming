@@ -1,3 +1,6 @@
+from math import sqrt
+
+
 # determines if num is prime
 def isprime(num):
     if num < 2:  # inputs can be negative
@@ -6,7 +9,7 @@ def isprime(num):
     if num % 2 == 0:  # for even numbers
         return False
 
-    for i in range(3, int(num**0.5+1), 2):  # for odd numbers
+    for i in range(3, int(sqrt(num))+1, 2):  # for odd numbers
         if num % i == 0:
             return False
     return True

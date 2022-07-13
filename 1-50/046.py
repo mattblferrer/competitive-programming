@@ -1,9 +1,12 @@
+from math import sqrt
+
+
 # determines if num is prime
 def isprime(num):
     if num % 2 == 0:  # for even numbers
         return False
 
-    for i in range(3, int(num**0.5+1), 2):  # for odd numbers
+    for i in range(3, int(sqrt(num))+1, 2):  # for odd numbers
         if num % i == 0:
             return False
     return True
@@ -19,7 +22,7 @@ def next_odd_composite(num):
 
 # loops through all the squares and checks for prime difference
 def square_check(num):
-    limit = int((0.5*num)**0.5)+1  # upper bound of squares to be checked
+    limit = int(sqrt(num*0.5))+1  # upper bound of squares to be checked
 
     for i in range(1, limit):
         prime_cand = num - 2*(i**2)  # candidate for being prime
