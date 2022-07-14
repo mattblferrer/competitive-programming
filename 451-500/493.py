@@ -16,9 +16,6 @@ being:
 
 
 # calculates the factorial of n
-from math import comb
-
-
 def factorial(n):
     fac = 1  # factorial
     for i in range(1, n+1):
