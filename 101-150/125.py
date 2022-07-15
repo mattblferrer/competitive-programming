@@ -26,7 +26,7 @@ n = 1  # starting num
 for i in range(squareLimit):
     squareList.append(i**2)
 
-# main loop TODO
+# main loop
 while n < squareLimit:
     pSum = squareList[n]  # partial sum of squares
     
