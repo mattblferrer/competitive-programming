@@ -27,4 +27,4 @@ for solns in solutionNum:
         answer += 1
 
 # print result
-print("Number of values of n with 10 distinct solutions:", answer)
+print("Number of values of n with 1 distinct solution:", answer)
