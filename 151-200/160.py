@@ -1,6 +1,8 @@
 """
 Algorithm source:
 https://stackoverflow.com/questions/45224037/last-non-zero-digits-of-a-very-large-factorial
+
+This is slightly modified to lower the iteration limit 10^8 to 5*10^7. 
 """
 from math import log
 
@@ -11,11 +13,11 @@ def hamming(n):
     mult = [2, 5]  # multipliers
     exps = [0, 0]  # prime exponents
     
-    # loop through all combinations of i, j such that 2^i*5^k < n
+    # loop through all combinations of i, j such that 2^i*5^j < n
     while mult[0]**exps[0] < n:  # i
         exps[1] = 0
 
-        while mult[1]**exps[1] < n:  # k
+        while mult[1]**exps[1] < n:  # j
             x = 1
             for i in range(2):
                 x *= (mult[i]**exps[i])
@@ -33,9 +35,9 @@ def hamming(n):
 # 1 to n, including repeats
 def count_range_sum(f, n):
     highest_power = int(log(n, f))
-    count = 0
+    count = n // f
 
-    for power in range(1, highest_power+1):
+    for power in range(2, highest_power+1):
         count += n // (f ** power)
 
     return count
@@ -71,13 +73,14 @@ coprimeList = coprime_25(iterlimit + 1)
 factors10 = count_range_sum(2, n) - count_range_sum(5, n)
 multiplier2 = pow(2, factors10, mod)
 
-# calculate product of coprime numbers up to n // hamming numbers (memoize)
+# calculate product of coprime numbers up to (including) n // hamming numbers
 hammingList = list(reversed(sorted(hamming(n))))
 hammingIndex = 0
 coprimeIndex = 1
 productDict = {}
 product = 1
 
+# memoization of product of coprime numbers up to and including n
 for i in range(1, iterlimit+1):
     if coprimeList[coprimeIndex] == i:
         product = (product * i) % (iterlimit)
