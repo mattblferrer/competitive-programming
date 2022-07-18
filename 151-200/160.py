@@ -2,7 +2,7 @@
 Algorithm source:
 https://stackoverflow.com/questions/45224037/last-non-zero-digits-of-a-very-large-factorial
 
-This is slightly modified to lower the iteration limit 10^8 to 5*10^7. 
+This is slightly modified to lower the iteration limit 10^8 to 1.5625*10^6.
 """
 from math import log
 
@@ -63,7 +63,7 @@ def coprime_25(n):
 n = 10**12
 digits = 5
 mod = 10**digits
-iterlimit = 5*10**7  # cycle repeats every 5*10^7
+iterlimit = 15625*10**2 # cycle repeats every 1.5625*10^6
 
 # get numbers below 10^8 coprime to 2 and 5, since 2*5 = 10 and does not count
 # towards the non-zero digits
