@@ -1,6 +1,9 @@
 # determines if num is prime
 def isprime(num):
-    for i in range(2, int(num**0.5+1)):  # for odd numbers
+    if num % 2 == 0:  # for even numbers
+        return False
+
+    for i in range(3, int(num**0.5+1), 2):  # for odd numbers
         if num % i == 0:
             return False
     return True

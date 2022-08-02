@@ -44,3 +44,4 @@ while isPossible:
 
     if not square_check(composite):
         print(composite)
+        isPossible = False
