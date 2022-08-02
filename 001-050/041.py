@@ -9,11 +9,16 @@ from math import sqrt
 
 # determines if num is prime
 def isprime(num):
-    if num % 2 == 0:  # for even numbers
+    if num == 2 or num == 3:  # for 2 and 3
+        return True
+
+    if num % 2 == 0 or num % 3 == 0:  # for 2 and 3
         return False
 
-    for i in range(3, int(sqrt(num))+1, 2):  # for odd numbers
-        if num % i == 0:
+    for i in range(6, int(sqrt(num))+3, 6):  # for 6k +- 1
+        if num % (i-1) == 0:
+            return False
+        if num % (i+1) == 0:
             return False
     return True
 
@@ -22,9 +27,10 @@ def isprime(num):
 allDigits = "7654321"
 pandigitalList = [int(''.join(digits)) for digits in list(permutations(allDigits))]
 
-print("The 7 digit pandigital primes are: ")
+print("The largest n-digit pandigital prime that exists is: ")
 
 # iterate through all pandigital numbers in list
 for n in pandigitalList:
     if isprime(n):
         print(n)
+        break
