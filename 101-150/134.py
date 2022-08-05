@@ -5,7 +5,7 @@ This program is a bit slow, and could be optimized further.
 from math import sqrt
 
 
-# creates a Sieve of Eratosthenes array of size n
+# creates a Sieve of Eratosthenes array of size n (offset)
 def soe(n):
     # for even numbers
     multiple = 4
@@ -15,14 +15,29 @@ def soe(n):
             isPrimeList[multiple - 2] = False  
             multiple += 2
 
-    # for odd numbers
-    for i in range(3, iterlimit, 2):  
-        multiple = i ** 2  # initialize to i^2 for optimization
+    # for 3
+    multiple = 9
+    
+    while multiple < n:
+        # assign multiples of 3 as not being prime
+            isPrimeList[multiple - 2] = False  
+            multiple += 3
+
+    # for 6k +- 1
+    for i in range(5, iterlimit+2, 6):  
+        multiple = i*i  # initialize to i^2 for optimization
 
         while multiple < n:
             # assign multiples of i as not being prime
             isPrimeList[multiple - 2] = False  
             multiple += i
+
+        multiple = (i+2)*(i+2)  # initialize to i^2 for optimization
+
+        while multiple < n:
+            # assign multiples of i as not being prime
+            isPrimeList[multiple - 2] = False  
+            multiple += (i+2)
 
 
 # declare variables
