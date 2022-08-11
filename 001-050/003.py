@@ -1,4 +1,4 @@
-# returns the prime factors of num
+# returns the prime factors of num (repeating)
 def prime_factorize(num):
     factors = []
 
@@ -6,10 +6,21 @@ def prime_factorize(num):
         factors.append(2)
         num //= 2
 
-    for i in range(3, int(num ** 0.5) + 1, 2):  # only have to check for odd factors up to sqrt(n)
-        while num % i == 0:
-            factors.append(i)
-            num //= i
+    while num % 3 == 0:  # for 3
+        factors.append(3)
+        num //= 3
+
+    for i in range(6, int(num ** 0.5) + 3, 6):  # for 6k +- 1
+        while num % (i-1) == 0:
+            factors.append(i-1)
+            num //= (i-1)
+            
+        while num % (i+1) == 0:
+            factors.append(i+1)
+            num //= (i+1)
+
+    if num != 1:
+        factors.append(num)
 
     return factors
 

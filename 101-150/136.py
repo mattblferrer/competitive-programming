@@ -19,7 +19,7 @@ for x in range(1, int((5/4)*limit)):
 
         solutionNum[soln] += 1
 
-# find values of n with 10 distinct solutions
+# find values of n with 1 distinct solution
 answer = 0
 
 for solns in solutionNum:

@@ -2,7 +2,7 @@ from math import sqrt
 
 
 # returns the radical of num + whether it is prime
-def radical(num):
+def radical_pr(num):
     radical = 1
     limit = sqrt(num)
     originalNum = num  # for prime check
@@ -35,7 +35,7 @@ radDict = {
 limit = 100000
 
 for i in range(2, limit+1):
-    raw_rad = radical(i)
+    raw_rad = radical_pr(i)
     rad = raw_rad[0]
     isPrime = raw_rad[1]
 
