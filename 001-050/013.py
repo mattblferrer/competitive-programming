@@ -99,9 +99,6 @@ numberList = [
     72107838435069186155435662884062257473692284509516,
     20849603980134001723930671666823555245252804609722,
     53503534226472524250874054075591789781264330331690]  # given number list
-largeSum = 0  # sum of 100 numbers
-
-for number in numberList:
-    largeSum += int(str(number)[0:11])  # only add the first 12 digits of each number
-
+    
+largeSum = sum(numberList) // (10**42) # sum of 100 numbers
 print(largeSum)

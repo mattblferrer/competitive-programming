@@ -11,20 +11,27 @@ def mobius(n):
     else:
         factors = 0
 
-        if n % 2 == 0:  # for only even prime
-            factors += 1
-            n //= 2
+        for i in [2, 3]:
+            if n % i == 0:  # for 2 and 3
+                factors += 1
+                n //= i
 
-            if n % 2 == 0:  # if divisible again
-                return 0
+                if n % i == 0:  # if divisible again
+                    return 0
 
         # only have to check for odd factors up to sqrt(n)
-        for i in range(3, int(n ** 0.5) + 1, 2):  
-            if n % i == 0:
+        for i in range(5, int(n ** 0.5) + 1, 6):  
+            if n % i == 0:  # 6k-1
                 factors += 1
                 n //= i
 
                 if n % i == 0:
+                    return 0
+            if n % (i+2) == 0:  # 6k+1
+                factors += 1
+                n //= (i+2)
+
+                if n % (i+2) == 0:
                     return 0
 
         # check if prime

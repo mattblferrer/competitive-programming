@@ -43,11 +43,11 @@ def sum_pent(pent_list, ind):
 difference = 0  # difference between Pj and Pk
 index = 3  # starting index for pentagonal()
 pentagonalList = [1, 5]  # list of pentagonal numbers calculated
+currentPentagonal = pentagonal(index)  # starting pentagonal
 
 # loop until Pj and Pk are found
 while difference == 0:
     # compute current pentagonal number
-    currentPentagonal = pentagonal(index)
     pentagonalList.append(currentPentagonal)
 
     # loop
@@ -63,3 +63,4 @@ while difference == 0:
 
             print("Pk: {}, Pj: {}, Difference: {}".format(Pk, Pj, difference))
     index += 1
+    currentPentagonal += 3*index - 2

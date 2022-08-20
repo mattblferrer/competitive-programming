@@ -1,13 +1,48 @@
-# returns the sum of the factors of num
-def factors(num):
-    factor_sum = 1  # all numbers have a factor of 1
+from math import prod
 
-    for i in range(2, int(num ** 0.5) + 1):  # only have to check for factors up to sqrt(n)
-        if num % i == 0:
-            factor_sum += i
-            factor_sum += (num//i)
+def sum_factors(num):  # returns the sum of the factors of num
+    check = num
+    factors = []
 
-    return factor_sum
+    for i in [2, 3]:  # for 2 and 3
+        power = 1
+        cFactor = 1
+
+        while num % i == 0:
+            cFactor += i**power
+            num //= i
+            power += 1
+
+        factors.append(cFactor)
+
+    for i in range(6, int(num ** 0.5) + 3, 6):  # for 6k +- 1
+        # 6k - 1
+        power = 1
+        cFactor = 1
+        while num % (i-1) == 0:
+            cFactor += (i-1) ** power
+            num //= (i-1)
+            power += 1
+
+        factors.append(cFactor)
+            
+        # 6k + 1
+        power = 1
+        cFactor = 1
+        while num % (i+1) == 0:
+            cFactor += (i+1) ** power
+            num //= (i+1)
+            power += 1
+
+        factors.append(cFactor)
+
+        if num == 1:
+            break
+
+    if num != 1:
+        factors.append(num+1)
+
+    return prod(factors) - check
 
 
 # declare variables
@@ -19,7 +54,7 @@ output = 0  # smallest element of the longest amicable chain
 
 # main loop
 while n < limit:
-    test_n = factors(n)  # this will be the chain variable
+    test_n = sum_factors(n)  # this will be the chain variable
     current_chain = [n]  # the current n will be initialized in the chain
     isChain = False
 
@@ -34,7 +69,7 @@ while n < limit:
 
             if test_n not in current_chain:
                 current_chain.append(test_n)
-                test_n = factors(test_n)
+                test_n = sum_factors(test_n)
             else:
                 break
         else:

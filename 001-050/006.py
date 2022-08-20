@@ -1,13 +1,9 @@
 n = 100
-sumOfSquares = 0
 
-# sum of squares
-for i in range(1, n+1):
-    sumOfSquares += i**2
+# calculate sums
+sumOfSquares = (n*(n+1)*(2*n+1)) // 6  # sum of squares
+squareOfSum = n*n*(n+1)*(n+1) // 4  # square of sum
 
-# square of sum
-sumOfNums = n*(n+1)//2
-squareOfSum = sumOfNums**2
-
+# print result
 diff = squareOfSum - sumOfSquares
 print(diff)

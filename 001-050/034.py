@@ -3,11 +3,11 @@ def fac_digit_sum(num):
     factorial_list = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]  # pre-computed list of all factorials 0-9
     factorial_sum = 0
 
-    digits = [int(digit) for digit in str(i)]
-
     # take factorials of digits
-    for digit in digits:
+    while num > 0:
+        digit = num % 10
         factorial_sum += factorial_list[digit]
+        num //= 10
 
     return factorial_sum
 

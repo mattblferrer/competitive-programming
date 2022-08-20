@@ -20,14 +20,15 @@ def is_hexagonal(num):
 
 
 # given variables
-index = 286
+index = 286 
+triangle_num = triangular(index)  # starting triangle number
 
 # loop until triangle, pentagonal, hexagonal number found
 while True:
-    triangle_num = triangular(index)  # triangular number to test
     if is_pentagonal(triangle_num) and is_hexagonal(triangle_num):
         break
     index += 1
+    triangle_num += index  # calculate next triangle number
 
 # print final result
 print("The next triangle number that is also pentagonal and hexagonal is", triangle_num)

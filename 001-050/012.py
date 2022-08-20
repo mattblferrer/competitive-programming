@@ -5,12 +5,26 @@ def number_factors(num):  # returns the number of factors of num
         total_factors += 1
         num //= 2
 
-    for i in range(3, int(num**0.5)+1, 2):  # only have to check for odd factors up to sqrt(n)
+    while num % 3 == 0:  # for multiples of 3
+        power = 1
+        while num % 3 == 0:
+            power += 1
+            num //= 3
+        total_factors *= power
+
+    for i in range(5, int(num**0.5)+3, 6):  # for 6k +- 1
+        # 6k - 1
         power = 1
         while num % i == 0:
             power += 1
             num //= i
+        total_factors *= power
 
+        # 6k + 1
+        power = 1
+        while num % (i+2) == 0:
+            power += 1
+            num //= (i+2)
         total_factors *= power
 
     return total_factors

@@ -39,13 +39,12 @@ def recurring_cycle(n):
 
 # given parameters
 d = 1000
-longestCycle = 0
 
-# iterate from 2 to d
-for i in range(2, d):
+# iterate from d downwards
+for i in range(d, 0, -1):
     currentCycle = recurring_cycle(i)
-    if currentCycle > longestCycle:
-        longestCycle = i
+    if currentCycle == i-1:
+        break
 
 # final output
-print("The number with the longest recurring cycle for d <", d, "is", longestCycle)
+print("The number with the longest recurring cycle for d <", d, "is", i)

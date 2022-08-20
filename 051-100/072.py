@@ -3,41 +3,45 @@ Length of Farey sequence n = 1 + sum of totient functions from 1 to n
 """
 
 
-# returns the prime factors of num (non-repeating)
-def prime_factorize(num):
-    factors = set()
+# returns the Mobius function of n
+def mobius(n):
+    if n == 1:
+        return 1
+    else:
+        factors = 0
 
-    while num % 2 == 0:  # for only even prime
-        factors.add(2)
-        num //= 2
+        for i in [2, 3]:
+            if n % i == 0:  # for 2 and 3
+                factors += 1
+                n //= i
 
-    while num % 3 == 0:  # for 3
-        factors.add(3)
-        num //= 3
+                if n % i == 0:  # if divisible again
+                    return 0
 
-    for i in range(6, int(num ** 0.5) + 3, 6):  # for 6k +- 1
-        while num % (i-1) == 0:
-            factors.add(i-1)
-            num //= (i-1)
-            
-        while num % (i+1) == 0:
-            factors.add(i+1)
-            num //= (i+1)
+        # only have to check for odd factors up to sqrt(n)
+        for i in range(5, int(n ** 0.5) + 1, 6):  
+            if n % i == 0:  # 6k-1
+                factors += 1
+                n //= i
 
-    if num != 1:
-        factors.add(num)
+                if n % i == 0:
+                    return 0
+            if n % (i+2) == 0:  # 6k+1
+                factors += 1
+                n //= (i+2)
 
-    return factors
+                if n % (i+2) == 0:
+                    return 0
 
+        # check if prime
+        if n != 1:
+            factors += 1
 
-# returns the Euler's totient of the number num using Euler's product formula
-def totient(num):
-    p_factors = prime_factorize(num)
-    phi = num  # totient
-    for factor in p_factors:
-        phi = phi * (factor-1)//factor
-
-    return phi
+        # check for sign of function result
+        if factors % 2 == 0:
+            return 1
+        else:
+            return -1
 
 
 # declare variables
@@ -46,7 +50,8 @@ totientSum = 1
 
 # main loop
 for i in range(1, d+1):
-    totientSum += totient(i)
+    div = d // i
+    totientSum += mobius(i)*div*(1+div)
 
 # print result
-print(totientSum - 2)  # not counting 0/1, 1/1
+print((totientSum - 2)// 2)  # not counting 0/1, 1/1
