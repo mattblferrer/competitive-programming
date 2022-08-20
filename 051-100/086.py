@@ -16,7 +16,7 @@ def shortest_path_num(M):
     counter = 0
 
     for i in range(1, 2*M):
-        if math.sqrt(i**2 + M**2).is_integer():
+        if math.sqrt(i*i + M*M).is_integer():
             counter += subdivide_pair(i, M)
 
     return counter
@@ -28,7 +28,7 @@ M = 1
 
 while True:
     totalSolutions += shortest_path_num(M)
-
+    
     if totalSolutions > 1000000:
         break
     M += 1

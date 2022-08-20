@@ -6,12 +6,13 @@ b = 100
 maximumSum = 0
 
 # iterating through all a, b below limit
-for i in range(a):
-    for j in range(b):
-        num = i**j
+for i in range(2, a):
+    for j in range(b-i, b):
+        num = pow(i, j)
         digitSum = sum([int(digit) for digit in str(num)])
 
         if digitSum > maximumSum:
             maximumSum = digitSum
 
+# print result
 print("The maximum digital sum is", maximumSum)

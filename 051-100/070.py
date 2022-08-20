@@ -43,7 +43,7 @@ minimumRatio = 100
 minimumN = 0
 
 # main loop
-for i in range(2, limit):
+for i in range(1, limit, 2):  # number with min ratio cannot have factor of 2
     prime_factors = prime_factorize(i)
 
     # if i is prime, there is no need to calculate it

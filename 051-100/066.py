@@ -12,7 +12,7 @@ def diophantine_solve(d):
 
     while True:
         # substitute into equation to get x^2 - Dy^2 = k to get k
-        k = x**2 - d*y**2
+        k = x*x - d*y*y
 
         # check if equation is solved
         if k == 1:
@@ -23,8 +23,8 @@ def diophantine_solve(d):
             minimal_sqr_diff = float('inf')
             for i in range(int(math.sqrt(d))+2):
                 if (x+y*i) % k == 0:
-                    if abs(i**2 - d) < minimal_sqr_diff:
-                        minimal_sqr_diff = abs(i**2 - d)
+                    if abs(i*i - d) < minimal_sqr_diff:
+                        minimal_sqr_diff = abs(i*i - d)
                         m = i
 
             # new triple composition

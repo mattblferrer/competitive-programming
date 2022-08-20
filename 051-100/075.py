@@ -29,9 +29,9 @@ for m in range(1, limit+1):
 
         while a+b+c <= sumABC:
             if is_coprime(m, n):  # only compute when m and n are coprime
-                a = k*(m**2 - n**2)
+                a = k*(m*m - n*n)
                 b = k*2*m*n
-                c = k*(m**2 + n**2)
+                c = k*(m*m + n*n)
 
                 if a+b+c <= sumABC:
                     if a % 2 == 0:  # pythagorean triple will have duplicate for even a

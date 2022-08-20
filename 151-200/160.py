@@ -50,10 +50,8 @@ def coprime_25(n):
 
     while multiple < n:
         # 10x + 1, 3, 7, 9 are coprime to 2 and 5
-        coprime_list.append(multiple + 1)
-        coprime_list.append(multiple + 3)
-        coprime_list.append(multiple + 7)  
-        coprime_list.append(multiple + 9)
+        for i in [1, 3, 7, 9]:
+            coprime_list.append(multiple + i)
         multiple += 10
 
     return coprime_list
