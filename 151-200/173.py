@@ -4,14 +4,12 @@ limit = 1000000  # maximum number of tiles
 # count hollow laminae
 laminae = 0
 
-for s in range(1, int(limit**0.5)+1):  # s = m-n (subtract)
-    for p in range(s+1, int(limit//s)+1):  # p = m+n (plus)
-        if (p+s) % 2 == 0:  # check if m is an integer
-            m = (p+s) // 2
-            n = p-m
+for m in range(3, int(limit**0.5)+1, 2):
+    tiles = m*m - 1
+    increment = (m-1)*2  # increment by this much every size increase
 
-            if (m-n) % 2 == 0:  # valid square lamina
-                laminae += 1
+    # calculate number of laminae for each size of m
+    laminae += (limit - tiles) // increment + 1
 
 # print result
 print(laminae)
