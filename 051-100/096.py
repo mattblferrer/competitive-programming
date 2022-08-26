@@ -81,7 +81,7 @@ def one_poss_fill(grid, poss):
 # returns True if a digit can be put in the grid cell with coords (x, y), False 
 # otherwise
 def is_possible(grid, digit, x, y):
-    if grid[x][y] != 0:  # cell already occupied
+    if grid[y][x] != 0:  # cell already occupied
         return False
 
     for i in range(9):  # check row and column
@@ -101,8 +101,32 @@ def is_possible(grid, digit, x, y):
 
 # solves a Sudoku using backtracking
 def solve_bt(grid):
-    # TODO
-    pass
+    # position in the grid to be checked
+    ptr = 0
+
+    # check if grid is solved
+    isSolved = True
+    for i in range(81):
+        if grid[i // 9][i % 9] == 0:
+            ptr = i
+            isSolved = False
+            break
+
+    if isSolved:
+        return True
+
+    # backtrack
+    row = ptr // 9
+    col = ptr % 9   
+    for i in range(1, 10):  # try all from 1 to 9
+        if is_possible(grid, i, col, row):
+            grid[row][col] = i
+            if solve_bt(grid):
+                return True
+
+            grid[row][col] = 0
+
+    return False
 
 
 # read file
@@ -137,11 +161,14 @@ for grid in grids:
         if grid == prevGrid:  # if nothing changed
             break
 
-    for row in grid:
+    # solve grid
+    solve_bt(grid)
+    for row in grid:  # print solved grid
         print(row)
     print("")
-    # backtracking
-    # TODO
+
+    # get first 3 digits of each grid
+    sum3digits += 100*grid[0][0] + 10*grid[0][1] + grid[0][2]
 
 # print result
 print(sum3digits)
