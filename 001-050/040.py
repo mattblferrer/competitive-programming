@@ -5,11 +5,12 @@ PLAN:
 3-digit numbers have 3*900 = 2700 digits
 and so on.
 """
+from math import prod
 
 
 # given parameters
 highestIndexExponent = 6
-highestIndex = 10**highestIndexExponent
+n = 10**highestIndexExponent
 
 # declaring variables
 integers = []  # list of integer indices
@@ -18,39 +19,36 @@ digitProduct = 1
 
 # calculating points where n-digit numbers end and (n+1)-digit numbers begin
 nDigitTransitions = []
-n = highestIndex
 transitionPoint = 0
 ctr = 1
-while n > 0:
+
+while n > transitionPoint:
     transitionPoint += ctr*(9*10**(ctr-1))
     nDigitTransitions.append(transitionPoint)
-    n -= ctr*(9*10**(ctr-1))
     ctr += 1
 
-# generating d n
+# generating d_n
 for i in range(highestIndexExponent+1):  # iterating through exponents 10^i
     currentIndex = 10**i
-    numberOfDigits = 1
-
-    # get number of digits of integers needed to calculate constant to index
-    while nDigitTransitions[numberOfDigits-1] < currentIndex:
-        numberOfDigits += 1
+    numberOfDigits = next(i for i, v in enumerate(nDigitTransitions, start=1) if v > currentIndex)
 
     # calculate which integer the index lands on
-    if currentIndex > nDigitTransitions[0]:
+    if currentIndex > nDigitTransitions[0]:  # if more than 1 digit
         indexAdjusted = currentIndex - nDigitTransitions[numberOfDigits-2] - 1
         integer = indexAdjusted // numberOfDigits + 10 ** (numberOfDigits - 1)  # which integer?
         digit = indexAdjusted % numberOfDigits  # which digit?
-    else:
+
+    else:  # if 1 digit
         indexAdjusted = currentIndex
         integer = indexAdjusted // numberOfDigits  # which integer?
         digit = indexAdjusted % numberOfDigits  # which digit?
+
+    # append int, digit of int pairs of powers of 10
     integers.append(integer)
     digits.append(digit)
 
-for i in range(len(integers)):
-    intDigits = [int(a) for a in str(integers[i])]
-    digitProduct *= intDigits[digits[i]]
+# multiply i'th digits of n together
+digitProduct = prod(int(str(n)[digits[i]]) for i, n in enumerate(integers)) 
 
 # final output
 print(digitProduct)

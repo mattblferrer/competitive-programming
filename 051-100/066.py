@@ -1,14 +1,14 @@
 """
 This uses the Chakravala method to calculate the value x in the Diophantine equation x^2 - Dy^2 = 1 for given D
 """
-import math
+from math import sqrt
 
 
 # returns x in the equation x^2 - Dy^2 = 1 for a given D
 def diophantine_solve(d):
     # starting values of x and y
     y = 1
-    x = int(math.sqrt(d)) + 1
+    x = int(sqrt(d)) + 1
 
     while True:
         # substitute into equation to get x^2 - Dy^2 = k to get k
@@ -21,7 +21,7 @@ def diophantine_solve(d):
         else:
             # finding next value of m for triple composition
             minimal_sqr_diff = float('inf')
-            for i in range(int(math.sqrt(d))+2):
+            for i in range(int(sqrt(d))+2):
                 if (x+y*i) % k == 0:
                     if abs(i*i - d) < minimal_sqr_diff:
                         minimal_sqr_diff = abs(i*i - d)
@@ -38,7 +38,7 @@ maximumX = 0
 
 # main loop
 for i in range(1, limit+1):
-    if not math.sqrt(i).is_integer():  # perfect square check
+    if not sqrt(i).is_integer():  # perfect square check
         ans = diophantine_solve(i)
         if maximumX < ans:
             maximumX = ans

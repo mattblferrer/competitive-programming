@@ -197,7 +197,7 @@ triangle = [list(map(int, input().split())) for i in range(rows)]  # accept 2d a
 # algorithm
 currentRow = triangle[rows - 1]
 for i in range(rows - 2, -1, -1):  # going up the triangle
-    nextRow = [0 for j in range(i+1)]  # generate blank next row of length (row number + 1)
+    nextRow = [0]*(i+1) # generate blank next row of length (row number + 1)
     for j in range(i+1):
         if currentRow[j] > currentRow[j+1]:  # compare two terms directly adjacent and below
             nextRow[j] = triangle[i][j] + currentRow[j]  # if term down and to the left is greater

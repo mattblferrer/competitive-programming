@@ -25,12 +25,11 @@ def isprime(num):
 
 # generate list of 1 to 7 pandigital numbers in descending order
 allDigits = "7654321"
-pandigitalList = [int(''.join(digits)) for digits in list(permutations(allDigits))]
-
-print("The largest n-digit pandigital prime that exists is: ")
+pandigitalList = [int(''.join(digits)) for digits in permutations(allDigits)]
 
 # iterate through all pandigital numbers in list
-for n in pandigitalList:
-    if isprime(n):
-        print(n)
-        break
+prime = next(i for i in pandigitalList if isprime(i))
+
+# print result
+print(f"The largest n-digit pandigital prime that exists is: {prime}")
+

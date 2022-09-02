@@ -6,22 +6,17 @@ def sum_factors_sqr(num):  # returns the sums of the squares of the factors of n
     # factorize the number
     factors = []
 
-    while num % 2 == 0:  # for only even prime
-        factors.append(2)
-        num //= 2
+    for i in [2, 3]:  # for 2 and 3
+        while num % i == 0: 
+            factors.append(i)
+            num //= i
 
-    while num % 3 == 0:  # for 3
-        factors.append(3)
-        num //= 3
 
     for i in range(6, int(num ** 0.5) + 3, 6):  # for 6k +- 1
-        while num % (i-1) == 0:
-            factors.append(i-1)
-            num //= (i-1)
-            
-        while num % (i+1) == 0:
-            factors.append(i+1)
-            num //= (i+1)
+        for j in [-1, 1]:
+            while num % (i + j) == 0:
+                factors.append(i + j)
+                num //= (i + j)
 
     if num != 1:
         factors.append(num)

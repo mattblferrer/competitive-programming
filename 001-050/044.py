@@ -15,8 +15,7 @@ def is_pentagonal(num):
 def diff_pent(positions):
     # calculate Pj - Pk
     for item in positions:
-        j = item[0]
-        k = item[1]
+        (j, k) = item
         p_j = pentagonal(j)
         p_k = pentagonal(k)
         diff = p_j - p_k
@@ -61,6 +60,6 @@ while difference == 0:
             Pj = pentagonalDiff[1]
             difference = pentagonalDiff[2]
 
-            print("Pk: {}, Pj: {}, Difference: {}".format(Pk, Pj, difference))
+            print(f"Pk: {Pk}, Pj: {Pj}, Difference: {difference}")
     index += 1
     currentPentagonal += 3*index - 2

@@ -48,11 +48,7 @@ def sum_factors(num):  # returns the sum of the factors of num
 nonAbundantSum = 0  # sum of all the positive integers that can't be expressed as the sum of two abundant numbers
 limit = 28123  # given parameter
 canBeSum = [False]*limit
-abundantList = []
-
-for i in range(2, limit):  # calculate all abundant numbers below limit
-    if sum_factors(i) > i:  # if i is abundant
-        abundantList.append(i)
+abundantList = [i for i in range(2, limit) if sum_factors(i) > i]  # calculate all abundant numbers below limit
 
 for i in abundantList:  # calculate all numbers that can be sum of two abundant numbers
     for j in abundantList:

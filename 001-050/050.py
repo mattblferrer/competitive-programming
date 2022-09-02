@@ -56,5 +56,5 @@ while currentPrime < limit:
     currentPrime = next_prime(currentPrime)
 
 # print result
-print("The prime below 1 million that can be written as the sum of the most consecutive"
-      "primes is", maximumPrime, ", length: ", maximumLength)
+print(f"The prime below 1 million that can be written as the sum of the most consecutive"
+      "primes is {maximumPrime}, length: {maximumLength}")

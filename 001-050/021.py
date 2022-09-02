@@ -16,25 +16,15 @@ def sum_factors(num):  # returns the sum of the factors of num
         factors.append(cFactor)
 
     for i in range(6, int(num ** 0.5) + 3, 6):  # for 6k +- 1
-        # 6k - 1
-        power = 1
-        cFactor = 1
-        while num % (i-1) == 0:
-            cFactor += (i-1) ** power
-            num //= (i-1)
-            power += 1
+        for j in [-1, 1]:  # 6k +- 1
+            power = 1
+            cFactor = 1
+            while num % (i + j) == 0:
+                cFactor += (i + j) ** power
+                num //= (i + j)
+                power += 1
 
-        factors.append(cFactor)
-            
-        # 6k + 1
-        power = 1
-        cFactor = 1
-        while num % (i+1) == 0:
-            cFactor += (i+1) ** power
-            num //= (i+1)
-            power += 1
-
-        factors.append(cFactor)
+            factors.append(cFactor)
 
         if num == 1:
             break
@@ -53,4 +43,5 @@ for b in range(2, limit):
     if sum_factors(a) == b and a != b:
         amicSum += b
 
-print("The sum of all amicable numbers below", limit, "is", amicSum)
+# print result
+print(f"The sum of all amicable numbers below {limit} is {amicSum}")

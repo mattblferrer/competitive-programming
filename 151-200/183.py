@@ -12,12 +12,10 @@ def reduce(numerator, denominator):
 
 
 # returns True if fraction's decimal expansion terminates, and False otherwise
-def is_terminating(numerator, denominator):
-    while denominator % 2 == 0:
-        denominator //= 2
-
-    while denominator % 5 == 0:
-        denominator //= 5
+def is_terminating(denominator):
+    for i in [2, 5]:
+        while denominator % i == 0:
+            denominator //= i
 
     if denominator == 1:
         return True
@@ -41,7 +39,7 @@ while i <= limit:
         Dn -= i
 
     # check if decimal expansion is terminating
-    elif is_terminating(n, d):
+    elif is_terminating(d):
         Dn -= i
     else:
         Dn += i

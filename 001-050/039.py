@@ -1,20 +1,20 @@
+from math import isqrt
+
+
 sumABC = 1000  # given a+b+c = 1000
-solutions = [0 for i in range(sumABC+1)]
-maximumSolutions = 0
+solutions = [0]*(sumABC+1)
 maximumIndex = 0  # index where the number of solutions is maximized
 
 # generating a, b, c
 for a in range(1, sumABC//2):
     for b in range(1, sumABC//2):
-        c = (a**2 + b**2)**0.5
-        if c.is_integer() and a+b+c <= sumABC:  # check for pythagorean triple
-            solutions[a+b+int(c)] += 1
+        c2 = a*a + b*b
+        c = isqrt(c2)
+        if c*c == c2 and a+b+c <= sumABC:  # check for pythagorean triple
+            solutions[a+b+c] += 1
 
 # finding maximum value p
-for i in range(1, sumABC):
-    if solutions[i] > maximumSolutions:
-        maximumSolutions = solutions[i]
-        maximumIndex = i
+maximumIndex = solutions.index(max(solutions))
 
 # final output
-print("The value of p where the number of solutions is maximized is", maximumIndex)
+print(f"The value of p where the number of solutions is maximized is {maximumIndex}")

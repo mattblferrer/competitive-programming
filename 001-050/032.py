@@ -5,9 +5,9 @@ We only have to check for numbers from 1000 to 10000
 
 # checks if a number num is pandigital
 def pandigital_check(num):
-    digits_used = [int(digit) for digit in str(num)]
+    digits_used = {int(digit) for digit in str(num)}
 
-    if sorted(list(digits_used)) == list(range(1, 10)):
+    if digits_used == set(range(1, 10)):
         return True
     return False
 

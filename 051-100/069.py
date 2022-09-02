@@ -6,10 +6,9 @@ def isprime(num):
         return False
 
     for i in range(6, int(num**0.5)+3, 6):  # for 6k +- 1
-        if num % (i-1) == 0:
-            return False
-        if num % (i+1) == 0:
-            return False
+        for j in [-1, 1]:
+            if num % (i + j) == 0:
+                return False
     return True
 
 

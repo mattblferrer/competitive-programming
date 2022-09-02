@@ -22,8 +22,7 @@ sumL = 0
 
 # main loop
 for i in range(1, triangles+1):
-    L = fibonacci(6*i + 3) // 2
-    sumL += L
+    sumL += fibonacci(6*i + 3) // 2
 
 # print result
 print("The sum of L is", sumL)

@@ -19,19 +19,14 @@ def mobius(n):
                     return 0
 
         # only have to check for odd factors up to sqrt(n)
-        for i in range(5, int(n ** 0.5) + 1, 6):  
-            if n % i == 0:  # 6k-1
-                factors += 1
-                n //= i
+        for i in range(5, int(n ** 0.5) + 1, 6):
+            for j in [0, 2]:  # 6k+-1
+                if n % (i + j) == 0:  # 
+                    factors += 1
+                    n //= (i + j)
 
-                if n % i == 0:
-                    return 0
-            if n % (i+2) == 0:  # 6k+1
-                factors += 1
-                n //= (i+2)
-
-                if n % (i+2) == 0:
-                    return 0
+                    if n % (i + j) == 0:
+                        return 0
 
         # check if prime
         if n != 1:

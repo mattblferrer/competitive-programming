@@ -9,4 +9,4 @@ for i in range(2, a+1):
         powerList.add(i**j)
 
 # final output
-print("The number of distinct powers a^b with a =", a, "and b =", b, "is", len(powerList))
+print(f"The number of distinct powers a^b with a = {a} and b = {b} is {len(powerList)}")

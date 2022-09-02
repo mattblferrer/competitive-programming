@@ -52,28 +52,21 @@ def soe(n):
 
 # declare variables
 limit = 1000000
+numPrimes = 0
 iterlimit = int(sqrt(limit)) + 1
 isPrimeList = [True]*(limit + 1)
 soe(limit)  # create a sieve of Eratosthenes
 
-numPrimes = 0
-
 # create set of primes
-primeSet = set()
-
-for index, isPrime in enumerate(isPrimeList):
-    if isPrime:
-        primeSet.add(index)
+primeSet = {i for i, isPrime in enumerate(isPrimeList) if isPrime}
 
 # calculate n for value of p
-k = 1
+k, p = 1, 1
 
-while True:
+while p < limit:
     p = 3*k*k + 3*k + 1
 
-    if p > limit:
-        break
-    elif p in primeSet:
+    if p in primeSet:
         numPrimes += 1
 
     k += 1

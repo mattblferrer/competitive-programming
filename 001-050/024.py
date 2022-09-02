@@ -20,7 +20,7 @@ permIndexIn = 1000000
 permIndex = permIndexIn - 1  # will be used for calculation (-1 because of zero index)
 digits = 10  # number of digits used (0-9)
 possiblePerms = factorial(digits)  # number of possible permutations of all the digits
-usedDigits = [False for digit in range(digits)]  # digits used so far
+usedDigits = [False]*digits  # digits used so far
 permDigits = []  # digits in the permutation
 
 for i in range(digits, 0, -1):  # iterate through all digits
@@ -43,7 +43,5 @@ for i in range(digits, 0, -1):  # iterate through all digits
     usedDigits[loopOut] = True
 
 # final output
-output = ""
-for i in permDigits:
-    output = output + str(i)
-print("Lexicographical permutation", permIndexIn, "is", output)
+output = "".join(str(i) for i in permDigits)
+print(f"Lexicographical permutation {permIndexIn} is {output}")

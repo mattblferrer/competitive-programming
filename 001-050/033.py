@@ -1,12 +1,12 @@
-import math
+from math import gcd
 
 
 # reduces fraction to its lowest terms
 def reduce(numerator, denominator):
     # divide numerator, denominator by their GCD
-    gcd = math.gcd(numerator, denominator)
-    numerator //= gcd
-    denominator //= gcd
+    frac_gcd = gcd(numerator, denominator)
+    numerator //= frac_gcd
+    denominator //= frac_gcd
 
     return numerator, denominator
 
@@ -56,4 +56,4 @@ for d in range(10, 99):
 finalFraction = reduce(numeratorProduct, denominatorProduct)
 numeratorProduct = finalFraction[0]
 denominatorProduct = finalFraction[1]
-print("The product of the four fractions is {}/{}".format(numeratorProduct, denominatorProduct))
+print(f"The product of the four fractions is {numeratorProduct}/{denominatorProduct}")

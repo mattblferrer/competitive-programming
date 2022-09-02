@@ -8,9 +8,8 @@ words = words.replace('"', '').split(",")
 # word score
 triangleWords = 0
 for word in words:
-    wordScore = 0
-    for char in word:
-        wordScore += ord(char) - 64  # uppercase ascii
+    wordScore = sum(ord(char) - 64 for char in word)  # uppercase ascii
+    
     if ((wordScore*8+1)**0.5).is_integer():  # triangular number test
         triangleWords += 1
 

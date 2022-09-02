@@ -7,6 +7,7 @@ Probability for n discs:
 ... - floor(n/2) red discs
 """
 from itertools import combinations
+from math import prod
 
 
 # returns the factorial of a number num
@@ -30,13 +31,7 @@ winCombs = 1 + triangular(discs)  # for 0 and 1 red discs
 # main loop, for even discs, you need n/2 + 1 blue discs to win; for odd: n//2+1
 for redDiscs in range(2, int(discs / 2 + 0.5)):
     for comb in combinations(discList, redDiscs):
-        # compute product of numbers in combination
-        product = 1
-
-        for num in comb:
-            product *= num
-
-        winCombs += product
+        winCombs += prod(comb)  # compute product of numbers in combination
 
 # print result
 prizeFund = factorial(discs+1) // winCombs

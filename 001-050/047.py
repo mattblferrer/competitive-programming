@@ -1,16 +1,21 @@
 def num_prime_factors(num):  # returns the number of distinct prime factors of num
-    factorlist = set()
-    sqrtn = int(num**0.5)
+    factors = set()
 
-    for i in range(2, sqrtn+1):  # only have to check for factors below sqrt(n)
+    for i in [2, 3]:
         while num % i == 0:
-            factorlist.add(i)
+            factors.add(i)
             num //= i
-    if num > sqrtn:
-        factorlist.add(num)
 
-    # length of factor list
-    return len(factorlist)
+    for i in range(6, int(num ** 0.5) + 3, 6):  # for 6k +- 1
+        for j in [-1, 1]:
+            while num % (i+j) == 0:
+                factors.add(i+j)
+                num //= (i+j)
+
+    if num != 1:
+        factors.add(num)
+
+    return len(factors)  # return number of factors
 
 
 # declaring variables
@@ -26,4 +31,4 @@ while consecutiveRun < 4:
         consecutiveRun = 0
 
 # final output
-print("The first of these numbers is", i-3)  # print the first of these numbers (i-3, i-2, i-1, i)
+print(f"The first of these numbers is {i-3}")  # print the first of these numbers (i-3, i-2, i-1, i)

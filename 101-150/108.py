@@ -13,6 +13,7 @@ x-n and y-n are factors of n^2
 Therefore, the number of solutions increases as the number of factors increases.
 n has to be a highly composite number for it to have the most factors. 
 """
+from math import prod
 
 
 # returns the number of solutions to Diophantine eqn 1/x + 1/y = 1/num for num 
@@ -61,11 +62,7 @@ while True:
         break
 
     # increment n by product of prime factors
-    product = 1
-
-    for factor in prime_fac:
-        product *= factor
-
+    product = prod(prime_fac)
     n += product
 
 # backtrack to find real solution

@@ -5,9 +5,8 @@ def factorial(n):
     return fac
 
 
-number = factorial(100)
-digitSum = 0
-for digit in str(number):  # add each digit to sum digitSum
-    digitSum += int(digit)
+# add each digit to sum digitSum
+digitSum = sum(int(digit) for digit in str(factorial(100)))  
 
+# print result
 print(digitSum)

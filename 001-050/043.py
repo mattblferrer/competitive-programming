@@ -16,14 +16,10 @@ def subs_divisibility(num):
 
 # generate list of pandigital numbers
 allDigits = "0123456789"
-pandigitalList = [int(''.join(digits)) for digits in list(permutations(allDigits)) if digits[0] != '0']
-
-# declare variables
-pandigitalSum = 0
+pandigitalList = [int(''.join(digits)) for digits in permutations(allDigits) if digits[0] != '0']
 
 # iterate through all pandigital numbers in list
-for n in pandigitalList:
-    if subs_divisibility(n):
-        pandigitalSum += n
+pandigitalSum = sum(n for n in pandigitalList if subs_divisibility(n))
 
-print("The sum of all 0 to 9 pandigital numbers with this property is {}".format(pandigitalSum))
+# print result
+print(f"The sum of all 0 to 9 pandigital numbers with this property is {pandigitalSum}")
