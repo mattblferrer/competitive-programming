@@ -1,7 +1,3 @@
-from time import time
-ctime = time()
-
-
 # creates a Sieve of Eratosthenes array of size n
 def soe(n):
     # for 0 and 1
@@ -94,6 +90,3 @@ for i in range(4, limit):
 
 # print result
 print("The sum of all progressive perfect squares is:", progressiveSum)
-
-ntime = time()
-print(ctime - ntime)

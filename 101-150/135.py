@@ -20,11 +20,7 @@ for x in range(1, int((5/4)*limit)):
         solutionNum[soln] += 1
 
 # find values of n with 10 distinct solutions
-answer = 0
-
-for solns in solutionNum:
-    if solns == 10:
-        answer += 1
+answer = sum((solns == 10) for solns in solutionNum)
 
 # print result
 print("Number of values of n with 10 distinct solutions:", answer)

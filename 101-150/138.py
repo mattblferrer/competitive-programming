@@ -18,11 +18,9 @@ def fibonacci(n):
 
 # declare variables
 triangles = 12
-sumL = 0
 
-# main loop
-for i in range(1, triangles+1):
-    sumL += fibonacci(6*i + 3) // 2
+# calculate sum of L's of triangles
+sumL = sum(fibonacci(6*i + 3) // 2 for i in range(1, triangles+1))
 
 # print result
 print("The sum of L is", sumL)
