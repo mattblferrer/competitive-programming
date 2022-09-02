@@ -1,4 +1,4 @@
-from math import sqrt
+from math import isqrt
 
 
 # determines if num is prime
@@ -74,16 +74,12 @@ while True:
     length = len(str(n))
     p10 = 10**length  # lowest power of 10 above n
     lp10 = 10**(length-1)  # highest power of 10 below n
-    iterlimit = int(sqrt(p10)) + 1
+    iterlimit = isqrt(p10) + 1
     isPrimeList = [True]*(p10 + 1)
     soe(p10)
 
-    # generate a list of primes
-    primes = set()
-
-    for i, prime in enumerate(isPrimeList):
-        if prime:
-            primes.add(i)
+    # generate a set of primes
+    primes = {i for i, prime in enumerate(isPrimeList) if prime}
 
     # generate all possible ways to replace digits in num
     perms = [format(n, '0'+str(length-1)+'b') for n in range(1, 2**(length-1))]
@@ -94,7 +90,7 @@ while True:
         # try all combinations and check whether it is part of an 8-prime family
         for perm in perms:
             pos = [i for i, d in enumerate(perm) if d == '1']
-            ctr = 0  # counter of primes in family
+            validSubs = []  # array of valid digit substitutions in family
             for i in range(10):
                 temp = strN  # temporary variable for digit replacement
                 for j in pos:  # positions of digits to be replaced
@@ -102,12 +98,10 @@ while True:
 
                 # check if prime and has no leading zeroes
                 if int(temp) in primes and temp[0] != '0':
-                    ctr += 1
+                    validSubs.append(temp)
 
-            if ctr == 8:
-                for j in pos:  # get first entry in family
-                    strN = strN[:j] + str(1) + strN[j+1:]
-                
+            if len(validSubs) == 8:
+                strN = validSubs[0]
                 isFound = True
 
         if isFound:  # if prime is found 

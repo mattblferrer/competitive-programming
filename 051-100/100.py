@@ -16,7 +16,7 @@ while mult*b < limit:
     ctr += 1
 
 # print result
-if ctr % 2 == 1:  # check for even parity, then approximation is smaller of pair
-        print(mult*a + 1, mult*b + 1)
-else:
-    print(mult*a, mult*b)  # approximation is bigger of pair for odd parity
+# check for even parity, then approximation is smaller of pair, 
+# approximation is bigger of pair for odd parity
+parity = ctr % 2
+print(mult*a + parity, mult*b + parity)

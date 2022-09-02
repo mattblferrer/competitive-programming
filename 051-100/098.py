@@ -1,4 +1,4 @@
-import math
+from math import sqrt
 from collections import Counter
 
 
@@ -13,8 +13,8 @@ anagrams = []  # list of anagram word pairs
 for word in words:
     frequency = Counter(word)
 
-    for i in range(len(frequencies)):
-        if frequencies[i] == frequency:
+    for i, wordFreq in enumerate(frequencies):
+        if wordFreq == frequency:
             anagrams.append((word, words[i]))  # append current word and past word
 
     frequencies.append(frequency)
@@ -29,12 +29,11 @@ for pair in anagrams:
     wordLength = len(pair[0])
 
     if wordLength not in squares.keys():  # check if squares with number of digits already calculated
-        squares[wordLength] = []
-        lowerLimit = int(math.sqrt(10**(wordLength-1)))
-        upperLimit = int(math.sqrt(10**wordLength))
+        lowerLimit = int(sqrt(10**(wordLength-1)))
+        upperLimit = int(sqrt(10**wordLength))
 
-        for i in range(upperLimit, lowerLimit, -1):  # add squares sorted from highest to lowest
-            squares[wordLength].append(i**2)
+        # add squares sorted from highest to lowest
+        squares[wordLength] = [i*i for i in range(upperLimit, lowerLimit, -1)]  
 
     # calculate square anagram pairs
     num_frequencies = []  # frequencies of digits in the squares

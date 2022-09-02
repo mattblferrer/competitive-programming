@@ -1,4 +1,4 @@
-import math
+from math import sqrt
 
 
 # returns the number of solutions to (x+y)^2 + z^2 given x+y and z
@@ -13,12 +13,7 @@ def subdivide_pair(xy, z):
 
 # returns the number of cuboids from side length M-1 to side length M with the shortest path as integer
 def shortest_path_num(M):
-    counter = 0
-
-    for i in range(1, 2*M):
-        if math.sqrt(i*i + M*M).is_integer():
-            counter += subdivide_pair(i, M)
-
+    counter = sum(subdivide_pair(i, M) for i in range(1, 2*M) if sqrt(i*i + M*M).is_integer())
     return counter
 
 
@@ -34,4 +29,4 @@ while True:
     M += 1
 
 # print result
-print("The least value of M is", M)
+print(f"The least value of M is {M}")

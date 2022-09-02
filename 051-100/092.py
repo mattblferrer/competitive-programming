@@ -24,12 +24,8 @@ num_ends = [-1]*n  # initialize to -1, meaning not processed
 num_ends[1] = 0
 num_ends[89] = 1
 
-# output variable
-startNums = 0
-
-# iterate from 1 to n
-for i in range(1, n):
-    startNums += number_chain(i)
+# iterate output variable from 1 to n
+startNums = sum(number_chain(i) for i in range(1, n))
 
 # print result
 print(startNums)

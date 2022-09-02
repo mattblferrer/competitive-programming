@@ -1,13 +1,9 @@
-from math import sqrt
+from math import isqrt
 
 
 # returns the even indexed characters in string
 def even_index(string):
-    output = ""
-    for i in range(0, len(string), 2):
-        output += string[i]
-
-    return output
+    return string[::2]
 
 
 # checks if the square satisfies the concealed square property
@@ -18,8 +14,8 @@ def concealed_check(num):
 
 
 # declare variables
-lowerLimit = (int(sqrt(1121314151617181900)) // 330) * 330
-upperLimit = (int(sqrt(1929394959697989900)) // 330) * 330
+lowerLimit = isqrt(1121314151617181900) // 330 * 330  # multiples of 330
+upperLimit = isqrt(1929394959697989900) // 330 * 330
 n = lowerLimit
 
 # main loop (check n^2)

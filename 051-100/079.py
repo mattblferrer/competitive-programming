@@ -9,25 +9,21 @@ lines = file1.readlines()
 loginAttempts = set()
 
 # get 1st, 2nd, 3rd digits
-digit_1 = set()
-digit_2 = set()
-digit_3 = set()
+digits = [set() for _ in range(3)]
 
 for attempt in lines:
     attempt = attempt.strip()
     loginAttempts.add(attempt)
 
-    digit_1.add(attempt[0])
-    digit_2.add(attempt[1])
-    digit_3.add(attempt[2])
+    for i in range(3):
+        digits[i].add(attempt[i])
 
 # main algorithm
 passcode = ""
 
 # print digits used
-print("1st digits:", digit_1)
-print("2nd digits:", digit_2)
-print("3rd digits:", digit_3)
+for i in range(3):
+    print(f"Digit {i}:", digits[i])
 
 # - 4 and 5 do not appear in the passcode at all
 # - 7 only appears in digit_1, and 0 only appears in digit_3, so the passcode 
@@ -43,10 +39,8 @@ possibleCodes = ['7'+''.join(digit)+'0' for digit in list(permutations(unused))]
 for code in possibleCodes:
     isValid = True
     for attempt in loginAttempts:
-        dIndex = []  # indices of digits of attempt in passcode
-        for digit in attempt:
-            dIndex.append(code.index(digit))
-
+        # indices of digits of attempt in passcode
+        dIndex = [code.index(digit) for digit in attempt]  
         if not dIndex[0] < dIndex[1] < dIndex[2]:
             isValid = False
 

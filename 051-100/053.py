@@ -14,11 +14,9 @@ def combination(n, r):
 # declare variables
 limit = 1000000
 greaterValues = 0  # number of values of nCr greater than limit
-factorials = [1]
 
 # generate all factorial values from 1 to 100
-for i in range(1, 101):
-    factorials.append(factorial(i))
+factorials = [factorial(i) for i in range(101)]
 
 # check all nCr values
 for n in range(10, 101):  # start at 10! > 1000000
@@ -27,4 +25,4 @@ for n in range(10, 101):  # start at 10! > 1000000
             greaterValues += 1
 
 # print output
-print("The number of values of nCr greater than {} is {}".format(limit, greaterValues))
+print(f"The number of values of nCr greater than {limit} is {greaterValues}")
