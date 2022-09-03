@@ -1,3 +1,7 @@
+from functools import cache
+
+
+@ cache
 # returns the sum of the factorials of the digits of num
 def fac_digit_sum(num):
     factorial_list = [1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880]  # pre-computed list of all factorials 0-9
@@ -29,17 +33,9 @@ def fac_digit_chain(num):
 # declare variables
 limit = 1000000
 chainLength = [0]*1000000
-answer = 0
 
-# main loop
-for i in range(limit):
-    if fac_digit_chain(i) == 60:
-        answer += 1
+# loop through numbers up to limit
+answer = sum(1 for i in range(limit) if fac_digit_chain(i) == 60)
 
 # print result
-print("The number of chains that have 60 non-repeating terms:", answer)
-
-
-
-
-
+print(f"The number of chains that have 60 non-repeating terms: {answer}")

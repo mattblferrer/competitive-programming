@@ -2,7 +2,8 @@
 PLAN:
 use logarithms on both sides to simplify calculations
 """
-import math
+from math import log10
+
 
 # read from base_exp.txt
 file1 = open('p099_base_exp.txt', 'r')
@@ -21,11 +22,11 @@ for line in lines:
     powers.append(int(line[1]))
 
 # iterating through list base_exp.txt
-for i in range(len(bases)):
-    currentValue = powers[i]*math.log10(bases[i])  # using logarithm rule log(a^b) = b*log(a)
+for i, (base, power) in enumerate(zip(bases, powers)):
+    currentValue = power * log10(base)  # using logarithm rule log(a^b) = b*log(a)
     if currentValue > greatestValue:
         greatestValue = currentValue
         greatestLine = i
 
 # final output
-print(greatestLine+1)  # +1 because of zero-indexing
+print(greatestLine + 1)  # +1 because of zero-indexing
