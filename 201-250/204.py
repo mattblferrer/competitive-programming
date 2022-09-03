@@ -1,4 +1,4 @@
-from math import sqrt
+from math import isqrt
 
 
 # creates a Sieve of Eratosthenes array of size n
@@ -54,15 +54,12 @@ def is_gen_hamming(n):
 
 # create a sieve of Eratosthenes
 soe_limit = 100
-iterlimit = int(sqrt(soe_limit)) + 1
+iterlimit = isqrt(soe_limit) + 1
 isPrimeList = [True]*(soe_limit)
 soe(soe_limit)
 
 # convert to list of primes
-primeList = []
-for i in range(soe_limit):
-    if isPrimeList[i]:
-        primeList.append(i)
+primeList = [i for i in range(soe_limit) if isPrimeList[i]]
 
 # declare variables
 hammingNums = 0
@@ -78,4 +75,4 @@ for i in range(1, limit + 1):
         print(i)
 
 # print result
-print("Number of generalized Hamming numbers:", hammingNums)
+print(f"Number of generalized Hamming numbers: {hammingNums}")

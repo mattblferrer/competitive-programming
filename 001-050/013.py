@@ -100,5 +100,5 @@ numberList = [
     20849603980134001723930671666823555245252804609722,
     53503534226472524250874054075591789781264330331690]  # given number list
     
-largeSum = sum(numberList) // (10**42) # sum of 100 numbers
+largeSum = str(sum(numberList))[:10] # last 10 digits of sum of 100 numbers
 print(largeSum)

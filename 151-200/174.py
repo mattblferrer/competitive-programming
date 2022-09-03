@@ -15,11 +15,8 @@ for s in range(1, int(limit**0.5)+1):  # s = m-n (subtract)
                 Ln[m*m - n*n] += 1
 
 # count which t's have type L(n)
-valid = list(range(1, 11))  # valid type values
-
-for i in range(8, limit, 2):
-    if Ln[i] in valid:
-        Nn += 1
+valid = range(1, 11)  # valid type values
+Nn = sum(1 for i in range(8, limit, 2) if Ln[i] in valid)
 
 # print result
 print(Nn)

@@ -35,10 +35,7 @@ def hamming(n):
 # 1 to n, including repeats
 def count_range_sum(f, n):
     highest_power = int(log(n, f))
-    count = n // f
-
-    for power in range(2, highest_power+1):
-        count += n // (f ** power)
+    count = sum(n // (f ** power) for power in range(1, highest_power+1))
 
     return count
 
@@ -72,7 +69,7 @@ factors10 = count_range_sum(2, n) - count_range_sum(5, n)
 multiplier2 = pow(2, factors10, mod)
 
 # calculate product of coprime numbers up to (including) n // hamming numbers
-hammingList = list(reversed(sorted(hamming(n))))
+hammingList = reversed(sorted(hamming(n)))
 hammingIndex = 0
 coprimeIndex = 1
 productDict = {}
