@@ -2,9 +2,8 @@ from math import sqrt
 
 
 # returns the radical of num + whether it is prime
-def radical_pr(num):
+def radical_pr(num: int) -> tuple:
     radical = 1
-    limit = sqrt(num)
     originalNum = num  # for prime check
 
     # calculate the radical
@@ -15,7 +14,7 @@ def radical_pr(num):
             while num % prime == 0:
                 num //= prime
 
-        if prime > limit:  # we don't have to check these numbers
+        if prime > sqrt(num):  # we don't have to check these numbers
             break
 
     # check if prime
@@ -35,15 +34,13 @@ radDict = {
 limit = 100000
 
 for i in range(2, limit+1):
-    raw_rad = radical_pr(i)
-    rad = raw_rad[0]
-    isPrime = raw_rad[1]
+    rad, isPrime = radical_pr(i)
 
-    if rad not in radDict.keys():
+    if rad not in radDict:  # check if rad in dict
         radDict[rad] = []
 
-    if rad == 1 and isPrime:  # prime number check
-        if i not in radDict.keys():
+    if rad == 1:  # prime number check
+        if i not in radDict:
             radDict[i] = []
         
         radDict[i].append(i)
@@ -59,12 +56,12 @@ for key in radDict:
     for value in radDict[key]:
         if index == 10000:
             answer = value
-            isFound = True            
-
+            isFound = True
+            break            
         index += 1
 
     if isFound:
         break
 
 # print result
-print("E(10000) =", answer)
+print(f"E(10000) = {answer}")

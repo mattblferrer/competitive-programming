@@ -4,7 +4,7 @@ SOURCE: https://rosettacode.org/wiki/Miller%E2%80%93Rabin_primality_test#Python
 
 
 # test for composite
-def _try_composite(a, d, n, s):
+def _try_composite(a: int, d: int, n: int, s: int) -> bool:
     if pow(a, d, n) == 1:
         return False
     for i in range(s):
@@ -14,7 +14,7 @@ def _try_composite(a, d, n, s):
  
 
 # Miller-Rabin primality test
-def is_prime_mr(n):
+def is_prime_mr(n: int) -> bool:
     if n in _known_primes:
         return True
     if any((n % p) == 0 for p in _known_primes) or n in (0, 1):

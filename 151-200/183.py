@@ -2,7 +2,7 @@ from math import e, gcd
 
 
 # reduces fraction to its lowest terms
-def reduce(numerator, denominator):
+def reduce(numerator: int, denominator: int) -> tuple[int]:
     # divide numerator, denominator by their GCD
     frac_gcd = gcd(numerator, denominator)
     numerator //= frac_gcd
@@ -12,7 +12,7 @@ def reduce(numerator, denominator):
 
 
 # returns True if fraction's decimal expansion terminates, and False otherwise
-def is_terminating(denominator):
+def is_terminating(denominator: int) -> bool:
     for i in [2, 5]:
         while denominator % i == 0:
             denominator //= i
@@ -24,15 +24,12 @@ def is_terminating(denominator):
 
 # declare variables
 limit = 10000
-i = 5
 Dn = 0
 
 # main loop
-while i <= limit:
+for i in range(5, limit+1):
     maxParts = round(i/e)
-    reducedFrac = reduce(i, maxParts)
-    n = reducedFrac[0]  # numerator
-    d = reducedFrac[1]  # denominator
+    n, d = reduce(i, maxParts)  # reduced fraction
     
     # check if max parts evenly divide the number into integer parts
     if n == 1:
@@ -44,7 +41,5 @@ while i <= limit:
     else:
         Dn += i
 
-    i += 1
-
 # print result
-print("The sum of D(n) =", Dn)
+print(f"The sum of D(n) = {Dn}")

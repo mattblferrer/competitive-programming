@@ -1,10 +1,8 @@
 """
 SOURCE: https://rosettacode.org/wiki/Miller%E2%80%93Rabin_primality_test#Python
 """
-
-
 # test for composite
-def _try_composite(a, d, n, s):
+def _try_composite(a: int, d: int, n: int, s: int) -> bool:
     if pow(a, d, n) == 1:
         return False
     for i in range(s):
@@ -14,7 +12,7 @@ def _try_composite(a, d, n, s):
  
 
 # Miller-Rabin primality test
-def is_prime_mr(n):
+def is_prime_mr(n: int) -> bool:
     if n in _known_primes:
         return True
     if any((n % p) == 0 for p in _known_primes) or n in (0, 1):
@@ -48,9 +46,14 @@ sumN = 0
 
 # check primality
 for i in range(10, limit, 10):
+    # check factors of i
+    if any(i % j == 0 for j in {3, 7, 13}):
+        continue
+
+    # check for primality
     sqr = i*i
     if all(is_prime_mr(sqr+j) for j in {1, 3, 7, 9, 13, 27}):
-        # check if consecutive
+        # check if primes found are consecutive
         if not any(is_prime_mr(sqr+j) for j in {11, 17, 19, 21, 23}): 
             print(i)
             sumN += i

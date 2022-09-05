@@ -8,7 +8,7 @@ from math import sqrt
 
 
 # function that tells if a number num is a palindrome
-def is_palindrome(num):
+def is_palindrome(num: int) -> bool:
     if str(num) == str(num)[::-1]:  # if num == reverse(num)
         return True
     return False
@@ -16,15 +16,12 @@ def is_palindrome(num):
 
 # declare variables
 limit = 10**8
-squareLimit = int(sqrt(limit) // sqrt(2)) + 1
-squareList = []  # precomputed list of squares
+squareLimit = int(sqrt(limit) // sqrt(2))
 palindromicList = set()  # to account for repeated entries
-csSum = 0  # consecutive square sum (final output)
 n = 1  # starting num
 
 # compute squares that will be used
-for i in range(squareLimit):
-    squareList.append(i**2)
+squareList = [i*i for i in range(squareLimit)]
 
 # main loop
 while n < squareLimit:
@@ -37,11 +34,10 @@ while n < squareLimit:
             break
 
         if is_palindrome(pSum):
-            if pSum not in palindromicList:
-                palindromicList.add(pSum)
-                csSum += pSum
+            palindromicList.add(pSum)
 
     n += 1
 
 # print result
+csSum = sum(palindromicList)  # consecutive square sum (final output)
 print("Sum of palindromic square sums:", csSum)
