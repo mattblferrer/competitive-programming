@@ -1,19 +1,25 @@
 from itertools import permutations
+from functools import cache
 
 
+@cache
 # determines if num is prime
-def isprime(num):
-    if num % 2 == 0:  # for even numbers
+def isprime(num: int) -> bool:
+    if num == 2 or num == 3:  # for 2 and 3
+        return True
+    if num % 2 == 0 or num % 3 == 0:  # for 2 and 3
         return False
 
-    for i in range(3, int(num**0.5+1), 2):  # for odd numbers
-        if num % i == 0:
+    for i in range(6, int(num**0.5)+3, 6):  # for 6k +- 1
+        if num % (i-1) == 0:
+            return False
+        if num % (i+1) == 0:
             return False
     return True
 
 
 # generate next prime
-def next_prime(num):
+def next_prime(num: int) -> int:
     while True:
         num += 2
         if isprime(num):
@@ -21,8 +27,36 @@ def next_prime(num):
 
 
 # returns the set of all possible primes from concatenating 2 primes in the set
-def conc_prime_set(prime_set):
-    return [int(str(p1) + str(p2)) for p1, p2 in list(permutations(prime_set, 2))]
+def conc_prime_set(prime_set: list) -> list:
+    return [int(str(p1) + str(p2)) for p1, p2 in permutations(prime_set, 2)]
+
+
+# generator that generates primes x, y, x < y
+def prime_x_greater_y_gen(listOfPrimes: list) -> int:
+    for i, x in enumerate(listOfPrimes[:-1]):
+        for y in listOfPrimes[i+1:]:
+            yield x, y
+
+
+# builds a list of primes for which any two primes concatenate and make another
+# prime
+def build_conc_prime_set(limit: int, prime_set) -> None:
+    if all(isprime(n) for n in conc_prime_set(prime_set)):
+        if len(prime_set) == 5:
+            # print prime sets found
+            print(sum(prime_set), prime_set)
+        
+        else:
+            # call function with one more prime
+            max_prime = prime_set[-1]
+            max_index = listOfPrimes.index(max_prime)
+
+            for prime in listOfPrimes[max_index+1:]:
+                prime_set.append(prime)
+                build_conc_prime_set(limit, prime_set)
+
+    else:
+        prime_set.pop(-1)
 
 
 # declare variables
@@ -40,45 +74,5 @@ while prime < limit:
 prime_length = len(listOfPrimes)
 
 # main loop, iterate through all sets of 5 primes i, j, k, l, m building upwards
-for i in range(prime_length - 4):
-    # 1st prime (starting prime) in list
-    prime = listOfPrimes[i]
-
-    for j in range(i + 1, prime_length - 3):
-        # 2nd prime in list
-        prime_2 = listOfPrimes[j]
-        primeSet.append(prime)
-        primeSet.append(prime_2)
-
-        if all(isprime(n) for n in conc_prime_set(primeSet)):
-            # 3rd prime in list
-            for k in range(j + 1, prime_length - 2):
-                prime_3 = listOfPrimes[k]
-                primeSet.append(prime_3)
-
-                if all(isprime(n) for n in conc_prime_set(primeSet)):
-                    # 4th prime in list
-                    for l in range(k + 1, prime_length - 1):
-                        prime_4 = listOfPrimes[l]
-                        primeSet.append(prime_4)
-
-                        if all(isprime(n) for n in conc_prime_set(primeSet)):
-                            # 5th prime in list
-                            for m in range(l + 1, prime_length):
-                                prime_5 = listOfPrimes[m]
-                                primeSet.append(prime_5)
-
-                                if all(isprime(n) for n in conc_prime_set(primeSet)):
-                                    print(primeSet, sum(primeSet))
-                                else:
-                                    primeSet.pop(-1)
-                                    continue
-                        else:
-                            primeSet.pop(-1)
-                            continue
-                else:
-                    primeSet.pop(-1)
-                    continue
-        else:
-            primeSet = []
-            continue
+for i, j in prime_x_greater_y_gen(listOfPrimes):
+    primeSet = build_conc_prime_set(limit, [i, j])
