@@ -13,11 +13,11 @@ x-n and y-n are factors of n^2
 Therefore, the number of solutions increases as the number of factors increases.
 n has to be a highly composite number for it to have the most factors. 
 """
-from math import prod
+from math import prod, log
 
 
 # returns the number of solutions to Diophantine eqn 1/x + 1/y = 1/num for num 
-def number_factors_sqr(num):  
+def number_factors_sqr(num: int) -> tuple:  
     prime_factors = set()
     powers = []
     total_factors = 1
@@ -30,9 +30,9 @@ def number_factors_sqr(num):
     powers.append(total_factors - 1)
 
     # only have to check for odd factors up to limit
-    # n^(1/4) is a guess limit on how fast primes in HCNs grow
+    # log(n) is a guess limit on how fast primes in HCNs grow
     # (could be optimized)
-    for i in range(3, int(num**0.25)+10, 2):  
+    for i in range(3, int(log(num))+10, 2):  
         power = 1
         while num % i == 0:
             power += 2
@@ -45,7 +45,7 @@ def number_factors_sqr(num):
         total_factors *= power
 
     # get only positive solutions after x-num, return prime factors used
-    return prime_factors, total_factors // 2 + 1, powers  
+    return prime_factors, total_factors // 2 + 1 
 
 
 # declare variables
@@ -54,9 +54,8 @@ n = 4
 
 # main loop
 while True: 
-    solved = number_factors_sqr(n)
-    prime_fac = solved[0]  # prime factors used 
-    solutions = solved[1]  # number of solutions
+    # prime factors used and number of solutions
+    prime_fac, solutions = number_factors_sqr(n)
 
     if solutions > limit:
         break
@@ -74,14 +73,13 @@ ansSolutions = solutions
 while n > iterlimit:
     n -= product
 
-    solved = number_factors_sqr(n)
-    prime_fac = solved[0]  # prime factors used 
-    solutions = solved[1]  # number of solutions
+    # prime factors used and number of solutions
+    prime_fac, solutions = number_factors_sqr(n)
 
     if solutions > limit:
         answer = n
         ansSolutions = solutions
 
 # print result
-print("The least value of n is", answer)
-print("Number of solutions:", ansSolutions)
+print(f"The least value of n is {answer}")
+print(f"Number of solutions: {ansSolutions}")

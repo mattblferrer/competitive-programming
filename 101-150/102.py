@@ -17,7 +17,7 @@ for line in lines:
     line = [int(coord) for coord in line.strip().split(",")]  
 
     # barycentric coordinates
-    x1, y1, x2, y2, x3, y3 = line[0], line[1], line[2], line[3], line[4], line[5]
+    x1, y1, x2, y2, x3, y3 = line
 
     a = ((y2-y3)*-x3 + (x3-x2)*-y3) / ((y2-y3)*(x1-x3) + (x3-x2)*(y1-y3))
     b = ((y3-y1)*-x3 + (x1-x3)*-y3) / ((y2-y3)*(x1-x3) + (x3-x2)*(y1-y3))

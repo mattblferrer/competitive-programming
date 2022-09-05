@@ -1,5 +1,5 @@
 # returns the prime factors of num (non-repeating)
-def prime_factorize(num):
+def prime_factorize(num: int) -> set:
     factors = set()
 
     for i in [2, 3]:
@@ -31,11 +31,8 @@ factors = prime_factorize(phi)
 # sieve through all e where gcd(e, phi) = 1
 isCoprime = [True]*phi
 for fac in factors:
-    mult = fac
-
-    while mult < phi:
+    for mult in range(fac, phi, fac):
         isCoprime[mult] = False
-        mult += fac
 
 # find e where the number of unconcealed messages are at a minimum
 minimum = []
@@ -68,4 +65,4 @@ for e in range(minimum[1] + minDiff, phi, minDiff):  # check arithmetic progress
             sumE += e
 
 # print result
-print("Sum of all valid values of e:", sumE)
+print(f"Sum of all valid values of e: {sumE}")

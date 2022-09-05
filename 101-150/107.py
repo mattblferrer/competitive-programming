@@ -2,24 +2,18 @@
 file1 = open('p107_network.txt', 'r')
 lines = file1.readlines()
 
-# process lines
-lineNum = 0
+# process lines and calculate initial weight
 edges = []
 initialWeight = 0
 
-for line in lines:
-    line = line.strip()  # strip whitespace
-    lineArr = line.split(",")  # split into columns
+for lineNum, line in enumerate(lines):
+    line = line.strip().split(",")  # strip whitespace and split into columns
 
-    for i in range(lineNum):
-        weight = lineArr[i]
-
+    for i, weight in enumerate(line[:lineNum]):
         if weight != "-":
-            lineArr[i] = int(lineArr[i])  # convert weights to int
-            edges.append((lineArr[i], lineNum, i))  # convert edge weights to vertex form
-            initialWeight += lineArr[i]
-
-    lineNum += 1
+            line[i] = int(weight)  # convert weights to int
+            edges.append((line[i], lineNum, i))  # convert edge weights to vertex form
+            initialWeight += line[i]
 
 # sort edges by weight
 edges = sorted(edges)
@@ -49,6 +43,6 @@ while True:
         break
 
 # print result
-print("Initial weight:", initialWeight)
-print("Final weight:", finalWeight)
-print("Weight saved:", initialWeight - finalWeight)
+print(f"Initial weight: {initialWeight}")
+print(f"Final weight: {finalWeight}")
+print(f"Weight saved: {initialWeight - finalWeight}")
