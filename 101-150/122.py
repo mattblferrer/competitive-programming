@@ -35,7 +35,8 @@ def mult_chain(chains: list, limit: int) -> list:
                                 chains[max_exp].append(new_chain)
                                 break
 
-        print(index)  # track progress of function
+            ways = len(n)  # how many minimum chains there are for n 
+            print(index, ways, n[0])  # track progress of function
 
     return chains  # return list of minimum chains for each k below limit
  
