@@ -5,68 +5,57 @@ This program is a bit slow, and could be optimized further.
 from math import sqrt
 
 
-# creates a Sieve of Eratosthenes array of size n (offset)
-def soe(n):
-    # for even numbers
-    multiple = 4
+# creates a Sieve of Eratosthenes array of size n
+def soe(n: int) -> list:
+    iterlimit = int(sqrt(n)) + 1
+    isPrimeList = [True]*(n+1)
 
-    while multiple < n:
-        # assign multiples of 2 as not being prime
-            isPrimeList[multiple - 2] = False  
-            multiple += 2
+    # for 0 and 1 
+    isPrimeList[0] = isPrimeList[1] = False
 
-    # for 3
-    multiple = 9
-    
-    while multiple < n:
-        # assign multiples of 3 as not being prime
-            isPrimeList[multiple - 2] = False  
-            multiple += 3
+    # for 2 and 3
+    for i in [2, 3]:
+        for multiple in range(i*i, n, i):
+            # assign multiples of 2 or 3 as not being prime
+            isPrimeList[multiple] = False  
 
     # for 6k +- 1
-    for i in range(5, iterlimit+2, 6):  
-        multiple = i*i  # initialize to i^2 for optimization
+    for i in range(5, iterlimit+2, 6): 
+        for j in [0, 2]: 
+            for multiple in range((i+j) * (i+j), n, i+j):
+                # assign multiples of i+j as not being prime
+                isPrimeList[multiple] = False  
 
-        while multiple < n:
-            # assign multiples of i as not being prime
-            isPrimeList[multiple - 2] = False  
-            multiple += i
-
-        multiple = (i+2)*(i+2)  # initialize to i^2 for optimization
-
-        while multiple < n:
-            # assign multiples of i as not being prime
-            isPrimeList[multiple - 2] = False  
-            multiple += (i+2)
+    return isPrimeList
 
 
 # declare variables
 limit = 1000000
-iterlimit = int(sqrt(limit)) + 11
-isPrimeList = [True]*(limit + 100)
-soe(limit + 100)  # create a sieve of Eratosthenes
-
 p1 = 5  # start at p1 = 5, p2 = 7
 sSum = 0
+isPrimeList = soe(limit + 100)  # create a sieve of Eratosthenes
 
 # generate list of primes and iterate through it
-for i, isprime in enumerate(isPrimeList[5:]):
+for p2, isprime in enumerate(isPrimeList[7:], start=7):
     if p1 > limit:
         break
 
     if isprime:
-        n = p1
-        p2 = i + 7
-        x = 10**(len(str(p1)))  # power of 10 to add to p1
+        p10 = 10**(len(str(p1)))  # power of 10 to add to p1
+        r = p1  # remainder when divided by p2
+        r_p10 = p10 % p2  # remainder of power of 10 divided by p2
 
         # calculate value of S for p1, p2
-        while True:
-            n += x
+        for i in range(1, p2):
+            r += r_p10
 
-            if n % p2 == 0:
-                sSum += n
-                # print running p1, p2, and S
-                print(p1, p2, n)
+            if r >= p2:  # keep mod p2 under p2
+                r -= p2
+
+            if r == 0:  # p1 divides p2
+                s = i*p10 + p1  # append last digits of p1 to counter
+                sSum += s
+                print(p1, p2, s)  # print running p1, p2, s
                 break
 
         p1 = p2

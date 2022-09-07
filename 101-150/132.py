@@ -2,49 +2,32 @@ from math import sqrt
 
 
 # creates a Sieve of Eratosthenes array of size n
-def soe(n):
-    # for 0 and 1
-    isPrimeList[0] = False
-    isPrimeList[1] = False
+def soe(n: int) -> list:
+    iterlimit = int(sqrt(n)) + 1
+    isPrimeList = [True]*(n+1)
 
-    # for even numbers
-    multiple = 4
+    # for 0 and 1 
+    isPrimeList[0] = isPrimeList[1] = False
 
-    while multiple < n:
-        # assign multiples of 2 as not being prime
+    # for 2 and 3
+    for i in [2, 3]:
+        for multiple in range(i*i, n, i):
+            # assign multiples of 2 or 3 as not being prime
             isPrimeList[multiple] = False  
-            multiple += 2
-
-    # for 3
-    multiple = 9
-    
-    while multiple < n:
-        # assign multiples of 3 as not being prime
-            isPrimeList[multiple] = False  
-            multiple += 3
 
     # for 6k +- 1
-    for i in range(5, iterlimit+2, 6):  
-        multiple = i*i  # initialize to i^2 for optimization
+    for i in range(5, iterlimit+2, 6): 
+        for j in [0, 2]: 
+            for multiple in range((i+j) * (i+j), n, i+j):
+                # assign multiples of i+j as not being prime
+                isPrimeList[multiple] = False  
 
-        while multiple < n:
-            # assign multiples of i as not being prime
-            isPrimeList[multiple] = False  
-            multiple += i
-
-        multiple = (i+2)*(i+2)  # initialize to i^2 for optimization
-
-        while multiple < n:
-            # assign multiples of i as not being prime
-            isPrimeList[multiple] = False  
-            multiple += (i+2)
+    return isPrimeList
 
 
 # create a sieve of Eratosthenes
 limit = 1000000
-iterlimit = int(sqrt(limit)) + 1
-isPrimeList = [True]*(limit + 1)
-soe(limit)  
+isPrimeList = soe(limit)  
 
 # declare variables
 k = 10**9  # repunit exponent
@@ -65,4 +48,4 @@ for i, bool in enumerate(isPrimeList):
             break
 
 # print result
-print("Sum of factors:", factorSum)
+print(f"Sum of factors: {factorSum}")

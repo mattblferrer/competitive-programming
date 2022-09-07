@@ -2,7 +2,7 @@ from math import isqrt
 
 
 # determines if num is prime
-def isprime(num):
+def isprime(num: int) -> bool:
     if num == 2 or num == 3:  # for 2 and 3
         return True
     if num % 2 == 0 or num % 3 == 0:  # for 2 and 3
@@ -17,7 +17,7 @@ def isprime(num):
 
 
 # generate next prime
-def next_prime(num):
+def next_prime(num: int) -> int:
     while True:
         num += 2
         if isprime(num):
@@ -25,42 +25,27 @@ def next_prime(num):
 
 
 # creates a Sieve of Eratosthenes array of size n
-def soe(n):
-    # for 0 and 1
-    isPrimeList[0] = False
-    isPrimeList[1] = False
+def soe(n: int) -> list:
+    iterlimit = isqrt(n) + 1
+    isPrimeList = [True]*(n+1)
 
-    # for even numbers
-    multiple = 4
+    # for 0 and 1 
+    isPrimeList[0] = isPrimeList[1] = False
 
-    while multiple < n:
-        # assign multiples of 2 as not being prime
+    # for 2 and 3
+    for i in [2, 3]:
+        for multiple in range(i*i, n, i):
+            # assign multiples of 2 or 3 as not being prime
             isPrimeList[multiple] = False  
-            multiple += 2
-
-    # for 3
-    multiple = 9
-    
-    while multiple < n:
-        # assign multiples of 3 as not being prime
-            isPrimeList[multiple] = False  
-            multiple += 3
 
     # for 6k +- 1
-    for i in range(5, iterlimit+2, 6):  
-        multiple = i*i  # initialize to i^2 for optimization
+    for i in range(5, iterlimit+2, 6): 
+        for j in [0, 2]: 
+            for multiple in range((i+j) * (i+j), n, i+j):
+                # assign multiples of i+j as not being prime
+                isPrimeList[multiple] = False  
 
-        while multiple < n:
-            # assign multiples of i as not being prime
-            isPrimeList[multiple] = False  
-            multiple += i
-
-        multiple = (i+2)*(i+2)  # initialize to i^2 for optimization
-
-        while multiple < n:
-            # assign multiples of i as not being prime
-            isPrimeList[multiple] = False  
-            multiple += (i+2)
+    return isPrimeList
 
 
 # declare variables
@@ -74,9 +59,7 @@ while True:
     length = len(str(n))
     p10 = 10**length  # lowest power of 10 above n
     lp10 = 10**(length-1)  # highest power of 10 below n
-    iterlimit = isqrt(p10) + 1
-    isPrimeList = [True]*(p10 + 1)
-    soe(p10)
+    isPrimeList = soe(p10)
 
     # generate a set of primes
     primes = {i for i, prime in enumerate(isPrimeList) if prime}
@@ -106,7 +89,7 @@ while True:
 
         if isFound:  # if prime is found 
             # print result
-            print("Prime:", strN)
+            print(f"Prime: {strN}")
             break
 
         n = next_prime(n) # move to next prime
