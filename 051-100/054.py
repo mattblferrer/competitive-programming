@@ -5,7 +5,7 @@ They take two inputs: player 1 and player 2's card numbers (n), and their suits 
 from collections import Counter
 
 
-def royal_flush(n, s):
+def royal_flush(n: list, s: list) -> list:
     winners = []
 
     # check hands
@@ -34,7 +34,7 @@ def royal_flush(n, s):
     return winners
 
 
-def straight_flush(n, s):
+def straight_flush(n: list, s: list) -> tuple:
     winners = []
     highest = [0, 0]
 
@@ -62,7 +62,7 @@ def straight_flush(n, s):
     return winners, highest
 
 
-def four_kind(n):
+def four_kind(n: list) -> tuple:
     winners = []
     highest = [0, 0]
 
@@ -79,7 +79,7 @@ def four_kind(n):
     return winners, highest
 
 
-def full_house(n):
+def full_house(n: list) -> tuple:
     winners = []
     highest = [0, 0]
 
@@ -106,7 +106,7 @@ def full_house(n):
     return winners, highest
 
 
-def flush(n, s):
+def flush(n: list, s: list) -> tuple:
     winners = []
     highest = [0, 0]
 
@@ -121,7 +121,7 @@ def flush(n, s):
     return winners, highest
 
 
-def straight(n):
+def straight(n: list) -> tuple:
     winners = []
     highest = [0, 0]
 
@@ -142,7 +142,7 @@ def straight(n):
     return winners, highest
 
 
-def three_kind(n):
+def three_kind(n: list) -> tuple:
     winners = []
     highest = [0, 0]
 
@@ -159,7 +159,7 @@ def three_kind(n):
     return winners, highest
 
 
-def two_pairs(n):
+def two_pairs(n: list) -> tuple:
     winners = []
     highest = [0, 0]
 
@@ -183,7 +183,7 @@ def two_pairs(n):
     return winners, highest
 
 
-def one_pair(n):
+def one_pair(n: list) -> tuple:
     winners = []
     highest = [0, 0]
 
@@ -200,7 +200,7 @@ def one_pair(n):
 
 
 # returns the player with the highest hand
-def highest_hand(n, highest):
+def highest_hand(n: list, highest: list) -> int:
     # compare highest of hands
     if highest[0] > highest[1]:
         return 1
@@ -220,67 +220,23 @@ def highest_hand(n, highest):
 
 
 # check player 1 and player 2's hands and determine who wins
-def hands_check(n, s):
+def hands_check(n: list, s: list) -> int:
     # royal flush
     result = royal_flush(n, s)
     if result:
         return result
 
-    # straight flush
-    result = straight_flush(n, s)
-    if result[0] == [1, 2]:
-        return highest_hand(n, result[1])
-    elif result[0]:
-        return result[0][0]
+    # for all other combinations of hands
+    funcList = [straight_flush(n, s), four_kind(n), full_house(n), flush(n, s),
+        straight(n), three_kind(n), two_pairs(n), one_pair(n)]
 
-    # four of a kind
-    result = four_kind(n)
-    if result[0] == [1, 2]:
-        return highest_hand(n, result[1])
-    elif result[0]:
-        return result[0][0]
+    for func in funcList:
+        result = func  # run function to check for each hand
 
-    # full house
-    result = full_house(n)
-    if result[0] == [1, 2]:
-        return highest_hand(n, result[1])
-    elif result[0]:
-        return result[0][0]
-
-    # flush
-    result = flush(n, s)
-    if result[0] == [1, 2]:
-        return highest_hand(n, result[1])
-    elif result[0]:
-        return result[0][0]
-
-    # straight
-    result = straight(n)
-    if result[0] == [1, 2]:
-        return highest_hand(n, result[1])
-    elif result[0]:
-        return result[0][0]
-
-    # three of a kind
-    result = three_kind(n)
-    if result[0] == [1, 2]:
-        return highest_hand(n, result[1])
-    elif result[0]:
-        return result[0][0]
-
-    # two pairs
-    result = two_pairs(n)
-    if result[0] == [1, 2]:
-        return highest_hand(n, result[1])
-    elif result[0]:
-        return result[0][0]
-
-    # one pair
-    result = one_pair(n)
-    if result[0] == [1, 2]:
-        return highest_hand(n, result[1])
-    elif result[0]:
-        return result[0][0]
+        if result[0] == [1, 2]:
+            return highest_hand(n, result[1])
+        elif result[0]:
+            return result[0][0]
 
     # highest hand
     return highest_hand(n, [0, 0])
@@ -292,8 +248,7 @@ lines = file1.readlines()
 lines = [line.rstrip() for line in lines]  # strip \n from line
 
 # declare variables
-p1_wins = 0
-p2_wins = 0
+player_wins = [0, 0]  # for player 1, 2
 
 # read player 1 and player 2 hands from lines
 for i in range(1000):
@@ -303,21 +258,16 @@ for i in range(1000):
     # split into card number and suits
     nums = []
     suits = []
+    num_dict = {"T": 10, "J": 11, "Q": 12, "K": 13, "A": 14}  # mapping of cards
 
     for card in line:
         # filter nums and remove letters for easier comparisons
         num = card[0]
 
-        if num == "T":
-            num = 10
-        elif num == "J":
-            num = 11
-        elif num == "Q":
-            num = 12
-        elif num == "K":
-            num = 13
-        elif num == "A":
-            num = 14
+        # match letter cards to number equivalent
+        if num_dict.get(num) is not None:  
+            num = num_dict.get(num)
+
         nums.append(int(num))
 
         # add cards' suit
@@ -337,11 +287,8 @@ for i in range(1000):
     winner = hands_check(num_dict, suits_dict)
 
     # count number of wins for each player
-    if winner == 1:
-        p1_wins += 1
-    elif winner == 2:
-        p2_wins += 1
+    player_wins[winner - 1] += 1
 
 # print result
-print("Player 1 wins: {}".format(p1_wins))
-print("Player 2 wins: {}".format(p2_wins))
+print(f"Player 1 wins: {player_wins[0]}")
+print(f"Player 2 wins: {player_wins[1]}")
