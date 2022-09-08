@@ -1,56 +1,62 @@
-# determines if num is prime
-def isprime(num):
-    if num == 2 or num == 3:  # for 2 and 3
-        return True
-    if num % 2 == 0 or num % 3 == 0:  
-        return False
-
-    for i in range(6, int(num**0.5)+3, 6):  # for 6k +- 1
-        if num % (i-1) == 0:
-            return False
-        if num % (i+1) == 0:
-            return False
-    return True
+from math import sqrt
 
 
-# generate next prime
-def next_prime(num):
-    while True:
-        num += 1
-        if isprime(num):
-            return num
+# creates a Sieve of Eratosthenes array of size n
+def soe(n: int) -> list:
+    iterlimit = int(sqrt(n)) + 1
+    isPrimeList = [True]*(n+1)
+
+    # for 0 and 1 
+    isPrimeList[0] = isPrimeList[1] = False
+
+    # for 2 and 3
+    for i in [2, 3]:
+        for multiple in range(i*i, n, i):
+            # assign multiples of 2 or 3 as not being prime
+            isPrimeList[multiple] = False  
+
+    # for 6k +- 1
+    for i in range(5, iterlimit+2, 6): 
+        for j in [0, 2]: 
+            for multiple in range((i+j) * (i+j), n, i+j):
+                # assign multiples of i+j as not being prime
+                isPrimeList[multiple] = False  
+
+    return isPrimeList
 
 
 # declare variables
 limit = 5*10**7  # 50 million
+isPrimeList = soe(int(sqrt(limit)) + 1)
 expressibleNumbers = set()
-a = 2
+a = 0
+
+# create list of primes
+primeList = [i for i, isp in enumerate(isPrimeList) if isp]
 
 # calculate root
 limit_4 = int(limit**(1/4)) + 1
 
 # iterate through all a, b, c for which a^4 + b^3 + c^2 < limit
-while a < limit_4:
+while primeList[a] < limit_4:
     # calculate root, reset b
     limit_3 = int((limit - a**4)**(1/3)) + 1
-    b = 2
+    b = 0
 
-    while b < limit_3:
+    while primeList[b] < limit_3:
         # calculate root, reset c
         limit_2 = int((limit - a**3)**(1/2)) + 1
-        c = 2
+        c = 0
 
-        while c < limit_2:
+        while primeList[c] < limit_2:
             # calculate sum and compare against existing set
-            n = a**4+b**3+c**2
+            n = primeList[a]**4 + primeList[b]**3 + primeList[c]**2
 
-            if n < limit and n not in expressibleNumbers:
+            if n < limit:
                 expressibleNumbers.add(n)
-            c = next_prime(c)
-
-        b = next_prime(b)
-
-    a = next_prime(a)
+            c += 1
+        b += 1
+    a += 1
 
 # print result
 print(len(expressibleNumbers))
