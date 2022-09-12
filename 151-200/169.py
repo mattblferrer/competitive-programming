@@ -1,5 +1,5 @@
 # function that converts decimal to binary
-def dec_to_bin(num):
+def dec_to_bin(num: int) -> str:
     bin_str = bin(num).replace("0b","")
     return bin_str
 
@@ -8,18 +8,12 @@ def dec_to_bin(num):
 n = 10**25
 
 # get powers of two that add up to num (binary)
-binN = dec_to_bin(n)
-i = 1  # starting power of 2
-powersOf2 = []
-
-for digit in reversed(str(dec_to_bin(n))):
-    if digit == '1':
-        powersOf2.append(i)
-    i *= 2
+binN = reversed(dec_to_bin(n))  # reversed binary expansion of n
+powersOf2 = [i for i, digit in enumerate(binN) if digit == '1']
 
 # continuously split up 2^n into 2^(n-1)
 fN = 0
 # TODO
 
 # print result
-print(fN)
+print(powersOf2)
