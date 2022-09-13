@@ -30,6 +30,7 @@ def half_inverse_sqr(limit: int) -> int:
     n, d = 0, 1  # numerator and denominator
     is_used = [False]*(limit+1)  # marks which numbers were used in the expansion
 
+    # TODO function
 
 # declare variables
 n = 80
