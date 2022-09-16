@@ -1,3 +1,7 @@
+# numba was used to speedup this code.
+from numba import njit
+
+
 # creates a Sieve of Eratosthenes array of size n
 def soe(n: int) -> list:
     iterlimit = int(n**0.5) + 1
@@ -22,29 +26,30 @@ def soe(n: int) -> list:
     return isPrimeList
 
 
-# returns the prime factors of num (non-repeating)
-def prime_factorize(num: int) -> set:
-    factors = set()
-
-    for i in [2, 3]:
-        while num % i == 0:
-            factors.add(i)
-            num //= i
-
-    for i in range(6, int(num ** 0.5) + 3, 6):  # for 6k +- 1
-        for j in [-1, 1]:
-            while num % (i+j) == 0:
-                factors.add(i+j)
-                num //= (i+j)
-
-    if num != 1:
-        factors.add(num)
-
-    return factors
-
-
+@njit  # remove if numba is not installed
 # returns True if a number's square is progressive, False otherwise
 def is_progressive(n: int) -> bool:
+    # returns the prime factors of num (non-repeating)
+    def prime_factorize(num: int) -> set:
+        factors = set()
+
+        for i in [2, 3]:
+            while num % i == 0:
+                factors.add(i)
+                num //= i
+
+        for i in range(6, int(num ** 0.5) + 3, 6):  # for 6k +- 1
+            for j in [-1, 1]:
+                while num % (i+j) == 0:
+                    factors.add(i+j)
+                    num //= (i+j)
+
+        if num != 1:
+            factors.add(num)
+
+        return factors
+
+
     sqr = n*n
     factors = prime_factorize(n)
     iterlimit = int(n**(2/3))
