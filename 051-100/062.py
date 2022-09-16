@@ -1,10 +1,10 @@
-# returns the frequencies of digits of the cube of a number num
-def cube_digits(num):
-    cube = str(num**3)
-    freq = [0]*10  # frequencies of each digit in the cube
+from collections import Counter
 
-    for digit in cube:
-        freq[int(digit)] += 1
+
+# returns the frequencies of digits of the cube of a number num
+def cube_digits(num: int) -> dict:
+    cube = str(num**3)
+    freq = dict(Counter(cube)) # frequencies of each digit in the cube
 
     return freq
 
@@ -19,10 +19,10 @@ while True:
     frequencies.append(currentFreq)
 
     if frequencies.count(currentFreq) == 5:  # count permutations of cube
-        answer = currentFreq
+        answer = frequencies.index(currentFreq)**3
         break
 
     ctr += 1
 
 # print result
-print("The smallest cube for which exactly 5 of its permutations are cube is", frequencies.index(answer)**3)
+print(f"The smallest cube for which exactly 5 of its permutations are cube is {answer}")

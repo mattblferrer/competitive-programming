@@ -11,7 +11,7 @@ from math import sqrt, log
 
 
 # determines if num is a Fermi-Dirac prime
-def is_fd_prime(num):
+def is_fd_prime(num: int) -> bool:
     power = 0
 
     if num % 2 == 0:  # for even numbers
@@ -20,7 +20,7 @@ def is_fd_prime(num):
             power += 1
 
         # check if power of 2 or exponent != 2^k
-        if num == 1 and (log(power, 2).is_integer() or power == 1):  
+        if num == 1 and (log(power, 2).is_integer()):  
             return True
         return False
 
@@ -32,7 +32,7 @@ def is_fd_prime(num):
                     power += 1
 
                 # check if power of 2 or exponent != 2^k
-                if num == 1 and (log(power, 2).is_integer() or power == 1):  
+                if num == 1 and (log(power, 2).is_integer()):  
                     return True
                 return False
             
