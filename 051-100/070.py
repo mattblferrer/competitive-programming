@@ -2,7 +2,7 @@ from collections import Counter
 
 
 # returns the prime factors of num (non-repeating)
-def prime_factorize(num):
+def prime_factorize(num: int) -> set:
     factors = set()
 
     for i in [2, 3]:
@@ -23,7 +23,7 @@ def prime_factorize(num):
 
 
 # returns the Euler's totient of the number num using Euler's product formula
-def totient(num, p_factors):
+def totient(num: int, p_factors: set) -> int:
     phi = num  # totient
     for factor in p_factors:
         phi = phi * (factor-1)//factor
@@ -37,22 +37,22 @@ minimumRatio = 100
 minimumN = 0
 
 # main loop
-for i in range(1, limit, 2):  # number with min ratio cannot have factor of 2
-    prime_factors = prime_factorize(i)
+for n in range(3, limit, 2):  # number with min ratio cannot have factor of 2
+    prime_factors = prime_factorize(n)
 
     # if i is prime, there is no need to calculate it
     if len(prime_factors) != 1:
         # count digits
-        t = totient(i, prime_factors)
-        t_digits = Counter([int(digit) for digit in str(t)])
-        n_digits = Counter([int(digit) for digit in str(i)])
+        t = totient(n, prime_factors)
+        t_digits = Counter(str(t))
+        n_digits = Counter(str(n))
 
         # if totient is a permutation of the original number
         if t_digits == n_digits:
-            ratio = i/t
+            ratio = n/t
             if minimumRatio > ratio:
                 minimumRatio = ratio
-                minimumN = i
+                minimumN = n
 
 # print result
 print("The value of n for which phi(n) is a permutation and gives the minimum ratio is", minimumN)

@@ -5,7 +5,7 @@ modular multiplicative inverse.
 
 
 # returns the modular multiplicative inverse of num mod x
-def mod_mult_inv(num, x):
+def mod_mult_inv(num: int, x: int) -> int:
     r0, r1 = x, num
     t0, t1 = 0, 1
 
@@ -19,11 +19,8 @@ def mod_mult_inv(num, x):
         
 
 # declare variables
-a = 1504170715041707
+a = coin = maximum = eulercoinSum = 1504170715041707  # starting Eulercoin
 m = 4503599627370517
-coin = 1504170715041707  # starting Eulercoin
-maximum = 1504170715041707
-eulercoinSum = 1504170715041707
 
 # find first Eulercoins
 for i in range(1, 42298634):  # 42298634 found through brute force search
@@ -52,4 +49,4 @@ for i in range(1, maximum):
         eulercoinSum += i
 
 # print result
-print("The sum of all Eulercoins is", eulercoinSum)
+print(f"The sum of all Eulercoins is {eulercoinSum}")
