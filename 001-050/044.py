@@ -1,10 +1,10 @@
 # generates pentagonal number of certain index
-def pentagonal(ind):
+def pentagonal(ind: int) -> int:
     return ind*(3*ind-1)//2
 
 
 # determines if number num is pentagonal
-def is_pentagonal(num):
+def is_pentagonal(num: int) -> bool:
     pent_check = ((24*num+1)**0.5 + 1)/6
     if pent_check.is_integer():
         return True
@@ -12,7 +12,7 @@ def is_pentagonal(num):
 
 
 # difference of pentagonal numbers Pj and Pk
-def diff_pent(positions):
+def diff_pent(positions: list[tuple[int]]) -> tuple[int]:
     # calculate Pj - Pk
     for item in positions:
         (j, k) = item
@@ -26,7 +26,7 @@ def diff_pent(positions):
 
 
 # sum of pentagonal number num and current pentagonal list
-def sum_pent(pent_list, ind):
+def sum_pent(pent_list: list[int], ind: int) -> list[tuple[int]]:
     num = pentagonal(ind)
     length = len(pent_list)
     solutions = []  # all possible solutions for index ind
@@ -49,17 +49,15 @@ while difference == 0:
     # compute current pentagonal number
     pentagonalList.append(currentPentagonal)
 
-    # loop
+    # loop through pentagonal numbers until soln found
     pentagonalSum = sum_pent(pentagonalList, index)  # j and k, for which Pj + Pk is pentagonal
 
     if pentagonalSum:
         pentagonalDiff = diff_pent(pentagonalSum)
         if pentagonalDiff is not None:
-            # get Pj, Pk, and difference values
-            Pk = pentagonalDiff[0]
-            Pj = pentagonalDiff[1]
-            difference = pentagonalDiff[2]
-
+            # get Pj, Pk, and difference values and print
+            Pj, Pk, difference = pentagonalDiff
             print(f"Pk: {Pk}, Pj: {Pj}, Difference: {difference}")
+
     index += 1
-    currentPentagonal += 3*index - 2
+    currentPentagonal += 3*index - 2  # generate next pentagonal number

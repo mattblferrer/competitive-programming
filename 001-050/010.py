@@ -1,26 +1,36 @@
-import math
+from math import sqrt
 
-# Sieve of Eratosthenes
-limit = 2000000
-sumPrimes = 0
-listPrimes = [True for i in range(2, limit)]  # initialize array of booleans up to the limit
 
-# for 2
-multiple = 4
-while multiple < limit:
-    listPrimes[multiple - 2] = False
-    multiple += 2
+# creates a Sieve of Eratosthenes array of size n
+def soe(n: int) -> list:
+    iterlimit = int(sqrt(n)) + 1
+    isPrimeList = [True]*n
 
-# for odd numbers
-for i in range(3, math.ceil(limit ** 0.5), 2):
-    multiple = i ** 2  # initialize to i^2 for optimization
-    while multiple < limit:
-        listPrimes[multiple - 2] = False  # assign multiples of i as not being prime
-        multiple += i
+    # for 0 and 1 
+    isPrimeList[0] = isPrimeList[1] = False
+
+    # for 2 and 3
+    for i in [2, 3]:
+        for multiple in range(i*i, n, i):
+            # assign multiples of 2 or 3 as not being prime
+            isPrimeList[multiple] = False  
+
+    # for 6k +- 1
+    for i in range(5, iterlimit+2, 6): 
+        for j in [0, 2]: 
+            for multiple in range((i+j) * (i+j), n, i+j):
+                # assign multiples of i+j as not being prime
+                isPrimeList[multiple] = False  
+
+    return isPrimeList
+
+
+# declare variables
+limit = 2_000_000
+isPrimeList = soe(limit)
 
 # sum up all primes found by sieve
-for i in range(limit - 2):
-    if listPrimes[i]:
-        sumPrimes += (i + 2)  # add prime to sum (adjusted by 2)
+sum_primes = sum(idx for idx, isPrime in enumerate(isPrimeList) if isPrime)
 
-print(sumPrimes)
+# print result
+print(sum_primes)

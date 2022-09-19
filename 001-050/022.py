@@ -1,6 +1,6 @@
 # read from file names.txt
-file1 = open('p022_names.txt', 'r')
-names = file1.read()
+with open('p022_names.txt', 'r') as f:
+    names = f.read()
 
 # cleaning and sorting input
 names = sorted(names.replace('"', '').split(","))
@@ -12,5 +12,4 @@ for i, currentName in enumerate(names, start=1):  # iterate through sorted name 
     nameScore += i*sum(ord(char) - 64 for char in currentName)  # uppercase ascii, corrected
 
 # print result
-print("The total of all the name scores in the file is", nameScore)
-file1.close()  # close file
+print(f"The total of all the name scores in the file is {nameScore}")

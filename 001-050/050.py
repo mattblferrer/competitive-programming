@@ -1,60 +1,63 @@
-# determines if num is prime
-def isprime(num):
-    if num == 2 or num == 3:  # for 2 and 3
-        return True
-
-    if num % 2 == 0 or num % 3 == 0:  # for 2 and 3
-        return False
-
-    for i in range(6, int(num**0.5)+3, 6):  # for 6k +- 1
-        if num % (i-1) == 0:
-            return False
-        if num % (i+1) == 0:
-            return False
-    return True
+from math import sqrt
 
 
-# generate next prime
-def next_prime(num):
-    while True:
-        num += 2
-        if isprime(num):
-            return num
+# creates a Sieve of Eratosthenes array of size n
+def soe(n: int) -> list:
+    iterlimit = int(sqrt(n)) + 1
+    isPrimeList = [True]*n
+
+    # for 0 and 1 
+    isPrimeList[0] = isPrimeList[1] = False
+
+    # for 2 and 3
+    for i in [2, 3]:
+        for multiple in range(i*i, n, i):
+            # assign multiples of 2 or 3 as not being prime
+            isPrimeList[multiple] = False  
+
+    # for 6k +- 1
+    for i in range(5, iterlimit+2, 6): 
+        for j in [0, 2]: 
+            for multiple in range((i+j) * (i+j), n, i+j):
+                # assign multiples of i+j as not being prime
+                isPrimeList[multiple] = False  
+
+    return isPrimeList
 
 
 # declare variables
-primes = [2]
 limit = 1000000
-currentPrime = 3
-maximumPrime = 3
 maximumLength = 0  # length of longest sum of consecutive primes
 
+# create list of primes
+isPrimeList = soe(limit)
+primes = [idx for idx, isprime in enumerate(isPrimeList) if isprime]
+currentIndex = 0
+maximumPrime = 0
+
 # main loop
-while currentPrime < limit:
-    for startingPrime in range(len(primes)//500+1):
-        primeSum = 0
-        currentLength = 0
+length = len(primes)  # number of primes below 1 million
 
-        # loop through consecutive primes
-        while primeSum < currentPrime:
-            try:
-                primeSum += primes[startingPrime]
-                currentLength += 1
-            except IndexError:
-                break
+while currentIndex < (length - 1):  # iterate through all starting primes
+    sumPrimes = primes[currentIndex]
+    ctr = currentIndex
+    
+    # calculate sums of consecutive primes
+    while sumPrimes < limit:
+        ctr += 1
+        sumPrimes += primes[ctr]
 
-            startingPrime += 1
+    sumPrimes -= primes[ctr]  # backtrack to find highest lower than limit
 
-        # check if consecutive prime sum is equal
-        if primeSum == currentPrime:
-            if maximumLength < currentLength:
-                maximumLength = currentLength
-                maximumPrime = currentPrime
+    # check if chain of primes is the longest
+    if sumPrimes in primes and ctr - currentIndex > maximumLength:
+        maximumLength = ctr - currentIndex 
+        maximumPrime = sumPrimes
+        print(currentIndex, maximumPrime, maximumLength) 
 
     # next prime
-    primes.append(currentPrime)
-    currentPrime = next_prime(currentPrime)
+    currentIndex += 1
 
 # print result
-print(f"The prime below 1 million that can be written as the sum of the most consecutive"
-      "primes is {maximumPrime}, length: {maximumLength}")
+print(f"The prime below 1 million that can be written as the sum of the most\
+consecutive primes is {maximumPrime}, length: {maximumLength}")
