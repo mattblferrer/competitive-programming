@@ -1,8 +1,12 @@
 from math import sqrt
+from collections import defaultdict
 
 
 # returns the radical of num + whether it is prime
 def radical_pr(num: int) -> tuple:
+    if num in [0, 1]:
+        return num, False
+    
     radical = 1
     originalNum = num  # for prime check
 
@@ -27,22 +31,13 @@ def radical_pr(num: int) -> tuple:
 
 # declare variables
 primeList = [2]
-radDict = {
-        0: [0],
-        1: [1]
-    }  # radicals for 0 and 1, keys are rad(n), values are n
+radDict = defaultdict(list)  # keys are rad(n), values are n
 limit = 100000
 
-for i in range(2, limit+1):
+for i in range(limit+1):
     rad, isPrime = radical_pr(i)
 
-    if rad not in radDict:  # check if rad in dict
-        radDict[rad] = []
-
-    if rad == 1:  # prime number check
-        if i not in radDict:
-            radDict[i] = []
-        
+    if i != 1 and rad == 1:  # prime number check
         radDict[i].append(i)
         primeList.append(i)
     else:

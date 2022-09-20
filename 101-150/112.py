@@ -1,22 +1,19 @@
 # returns True if a number num is bouncy, and False otherwise
-def is_bouncy(num):
+def is_bouncy(num: int) -> bool:
     # number can't be bouncy below 100
     if num < 100:
         return False
 
     else:  
-        digits = [int(digit) for digit in str(num)]
+        digits = str(num)
 
         # check if number is supposed to be increasing or decreasing
-        if digits[0] < digits[-1]:
-            is_increasing = True
-        else:
-            is_increasing = False 
+        is_increasing = True if digits[0] < digits[-1] else False
 
         # calculate differences between adjacent digits
         diff_array = []
         for i, digit in enumerate(digits[1:]):
-            diff_array.append(digit - digits[i])  # digit ahead - digit behind
+            diff_array.append(ord(digit) - ord(digits[i]))  # digit ahead - digit behind
 
         # check if number is bouncy based on differences
         for diff in diff_array:
@@ -31,7 +28,6 @@ def is_bouncy(num):
 # declare variables
 bouncyNum = 0
 n = 99
-index = 1
 
 # main loop
 while True:
@@ -40,7 +36,7 @@ while True:
 
     if bouncyNum / n == 0.99:  # check ratio
         # print result
-        print("The least number for which the proportion is 99%\ is", n)
+        print("The least number for which the proportion is 99% is", n)
         break
 
     n += 1
