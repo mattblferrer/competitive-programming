@@ -29,11 +29,23 @@ def radical_pr(num: int) -> tuple:
     return radical, True
 
 
+# iterates through dict and finds nth element
+def find_element_124(d: dict[int], n: int) -> int:
+    index = 0
+
+    for key in d:
+        for value in d[key]:
+            if index == n:
+                return value           
+            index += 1
+
+
 # declare variables
 primeList = [2]
 radDict = defaultdict(list)  # keys are rad(n), values are n
 limit = 100000
 
+# fill in dict with radical values
 for i in range(limit+1):
     rad, isPrime = radical_pr(i)
 
@@ -43,20 +55,7 @@ for i in range(limit+1):
     else:
         radDict[rad].append(i)
 
-# iterate through dict and find 10000th element
-index = 0
-isFound = False
-
-for key in radDict:
-    for value in radDict[key]:
-        if index == 10000:
-            answer = value
-            isFound = True
-            break            
-        index += 1
-
-    if isFound:
-        break
+answer = find_element_124(radDict, 10000)
 
 # print result
 print(f"E(10000) = {answer}")
