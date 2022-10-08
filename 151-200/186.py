@@ -19,40 +19,55 @@ def lagged_fib_gen() -> int:
             terms.popleft()
 
 
+# find in disjoint set data structure
+def find_ds(node: int) -> int:
+    if network[node] != node:  # check if root
+        network[node] = find_ds(network[node])
+        return network[node]
+    return node
+
+
+# union in disjoint set data structure
+def union_ds(x: int, y: int) -> None:
+    x, y = find_ds(x), find_ds(y)
+
+    if x != y:  # two elements are not in the same tree
+        network[y] = x
+        network_size[x] += network_size[y]
+
+
 # declare variables
 pm_number = 524287
 pm_included = False
 users = 1_000_000  # number of telephone users
 friend_prop_limit = 0.99  # proportion of friends of friends of ... of PM
-network = [-1]*users
-
 caller, called = 0, 0  # initialize caller, called variables
 unsuccessful_calls = 0
 
+# create network
+network = [i for i in range(users+1)]
+network_size = [1]*(users+1)
+
 # loop through calls until proportion of friends of PM found
-for call, i in enumerate(lagged_fib_gen(), start=1):
-    if i == pm_number:  # if PM is called
+for call, n in enumerate(lagged_fib_gen(), start=1):
+    if n == pm_number:  # if PM is called
         pm_included = True
 
     if call % 2 == 1:  # caller reached called
         if not caller == called:  # if not misdial
-            graph_1, graph_2 = 0, 0
-            s = 0
+            union_ds(caller, called)
+            if call % 100000 == 1:  # progress tracker
+                print(call // 2, max(network_size))
             
-            # TODO disjoint-set data structure
-
             if pm_included:  # check if PM was already reached
-                for graph in network:
-                    if pm_number in graph:
-                        friends = graph
-                if len(friends) >= friend_prop_limit * users:
+                if network_size[find_ds(pm_number)] >= friend_prop_limit*users:
                     break
                 
         else:  # misdial
             unsuccessful_calls += 1
-        caller = i
+        caller = n
     else:
-        called = i
+        called = n
     
 # print results
-print(call // 2 - unsuccessful_calls)
+print(call // 2 - unsuccessful_calls + 1)  # add one to count latest call
