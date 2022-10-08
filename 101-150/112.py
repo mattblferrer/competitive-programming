@@ -3,26 +3,23 @@ def is_bouncy(num: int) -> bool:
     # number can't be bouncy below 100
     if num < 100:
         return False
+  
+    digits = str(num)
 
-    else:  
-        digits = str(num)
+    # check if number is supposed to be increasing or decreasing
+    is_increasing = True if digits[0] < digits[-1] else False
 
-        # check if number is supposed to be increasing or decreasing
-        is_increasing = True if digits[0] < digits[-1] else False
+    # calculate differences between adjacent digits
+    diff_array = [ord(d) - ord(digits[i]) for i, d in enumerate(digits[1:])]
+    
+    # check if number is bouncy based on differences
+    for diff in diff_array:
+        if diff > 0 and not is_increasing:
+            return True
+        elif diff < 0 and is_increasing:
+            return True
 
-        # calculate differences between adjacent digits
-        diff_array = []
-        for i, digit in enumerate(digits[1:]):
-            diff_array.append(ord(digit) - ord(digits[i]))  # digit ahead - digit behind
-
-        # check if number is bouncy based on differences
-        for diff in diff_array:
-            if diff > 0 and not is_increasing:
-                return True
-            elif diff < 0 and is_increasing:
-                return True
-
-        return False
+    return False
 
 
 # declare variables

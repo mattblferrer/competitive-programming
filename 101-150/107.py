@@ -1,6 +1,6 @@
 # read file
-file1 = open('p107_network.txt', 'r')
-lines = file1.readlines()
+with open('p107_network.txt', 'r') as f:
+    lines = f.readlines()
 
 # process lines and calculate initial weight
 edges = []
@@ -23,22 +23,15 @@ usedVertices = {0}
 finalWeight = 0
 
 while True: 
-    # main algorithm
-    validEdges = []  # find valid edges
-    for edge in edges:
-        if edge[1] in usedVertices or edge[2] in usedVertices:  # valid edges
-            # filter out edges that will form cycles
-            if not (edge[1] in usedVertices and edge[2] in usedVertices):
-                validEdges.append(edge)
+    # find valid edges
+    validEdges = [e for e in edges if (e[1] in usedVertices) ^ (e[2] in usedVertices)]  
 
     if validEdges:
-        edge = min(validEdges)  # take minimum of valid edges
+        edge = validEdges[0]  # take minimum of valid edges
         finalWeight += edge[0]  # add weight of edge
 
         # add used vertices to total set
-        usedVertices.add(edge[1])
-        usedVertices.add(edge[2])
-
+        usedVertices.update({edge[1], edge[2]})
     else:
         break
 
