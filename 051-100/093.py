@@ -10,7 +10,7 @@ def rpn_evaluate(exp):
             if str(char).isdigit():  # if number
                 stack.append(int(char))
             else:  # if operator, pop two from stack
-                a, b = stack.pop(-2), stack.pop(-1)
+                a, b = stack.pop(), stack.pop()
 
                 # evaluate and push back to stack
                 if char == "+":
@@ -58,19 +58,22 @@ def rpn_combination(digit_set):
             return i+1
 
 
-# generate strictly increasing 4-set of numbers of 1 through 9
-digitList = []
+# generates increasing combinations of digits
+def digit_generator() -> list[int]:
+    for a in range(1, 7):
+        for b in range(a+1, 8):
+            for c in range(b+1, 9):
+                for d in range(c+1, 10):
+                    yield([a, b, c, d])
 
-for a in range(1, 7):
-    for b in range(a+1, 8):
-        for c in range(b+1, 9):
-            for d in range(c+1, 10):
-                digitList.append([a, b, c, d])
+
+# generate strictly increasing 4-set of numbers of 1 through 9
+digitGenerator = digit_generator()
 
 # main loop
 maximumN = 0
 
-for combination in digitList:
+for combination in digitGenerator:
     n = rpn_combination(combination)
     print(n, combination)
     
