@@ -2,25 +2,25 @@ from itertools import permutations, combinations_with_replacement
 
 
 # returns the result from an expression in Reverse Polish Notation
-def rpn_evaluate(exp):
+def rpn_evaluate(exp: tuple):
     stack = []
 
     try:
         for char in exp:  # read expression from left to right
             if str(char).isdigit():  # if number
-                stack.append(int(char))
+                stack.append(char)
             else:  # if operator, pop two from stack
                 a, b = stack.pop(), stack.pop()
 
                 # evaluate and push back to stack
                 if char == "+":
-                    stack.append(float(a+b))
+                    stack.append(a+b)
                 elif char == "-":
-                    stack.append(float(a-b))
+                    stack.append(a-b)
                 elif char == "*":
-                    stack.append(float(a*b))
+                    stack.append(a*b)
                 elif char == "/":
-                    stack.append(float(a/b))
+                    stack.append(a/b)
 
     except:  # invalid RPN notation (stack too short)
         return "Invalid"
@@ -28,7 +28,7 @@ def rpn_evaluate(exp):
         
 
 # evaluates all possible combinations of operations for a given set of digits
-def rpn_combination(digit_set):
+def rpn_combination(digit_set: list[int]) -> int:
     all_operations = ["+", "-", "*", "/"]
     answer_set = set()
 
@@ -44,7 +44,7 @@ def rpn_combination(digit_set):
                 # evaluate RPN
                 for perm in permutations(total_set):
                     # construct RPN expression
-                    answer = rpn_evaluate(list(digit_comb[:2] + perm + tuple(opr)))
+                    answer = rpn_evaluate(digit_comb[:2] + perm + tuple(opr))
 
                     if answer != "Invalid" and answer > 0:
                         if float(answer).is_integer():
@@ -59,7 +59,7 @@ def rpn_combination(digit_set):
 
 
 # generates increasing combinations of digits
-def digit_generator() -> list[int]:
+def digit_generator() -> list[list[int]]:
     for a in range(1, 7):
         for b in range(a+1, 8):
             for c in range(b+1, 9):

@@ -2,31 +2,22 @@
 PLAN:
 use logarithms on both sides to simplify calculations
 """
-from math import log10
+from math import log
 
 
 # read from base_exp.txt
-file1 = open('p099_base_exp.txt', 'r')
-lines = file1.readlines()
+with open('p099_base_exp.txt', 'r') as f:
+    lines = f.readlines()
 
 # initializing base, power, other variables
-bases = []
-powers = []
-greatestValue = 0  # greatest value
-greatestLine = 0  # line with the greatest value
-
-# processing input
-for line in lines:
-    line = line.split(",")
-    bases.append(int(line[0]))
-    powers.append(int(line[1]))
+base_power_pairs = [map(int, line.split(",")) for line in lines]
+greatestValue, greatestLine = 0, 0  # greatest value
 
 # iterating through list base_exp.txt
-for i, (base, power) in enumerate(zip(bases, powers)):
-    currentValue = power * log10(base)  # using logarithm rule log(a^b) = b*log(a)
+for line, (base, power) in enumerate(base_power_pairs):
+    currentValue = power * log(base)  # using logarithm rule log(a^b) = b*log(a)
     if currentValue > greatestValue:
-        greatestValue = currentValue
-        greatestLine = i
+        greatestValue, greatestLine = currentValue, line
 
 # final output
 print(greatestLine + 1)  # +1 because of zero-indexing

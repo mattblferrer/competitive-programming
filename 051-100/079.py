@@ -1,29 +1,34 @@
 from itertools import permutations
 
 
+# returns True if code is valid, False otherwise
+def check_code(code: str) -> bool:
+    for attempt in loginAttempts:
+        # indices of digits of attempt in passcode
+        dIndex = [code.index(digit) for digit in attempt]  
+        if not dIndex[0] < dIndex[1] < dIndex[2]:
+            return False
+        
+    return True
+
+
 # read file
-file1 = open('p079_keylog.txt', 'r')
-lines = file1.readlines()
+with open('p079_keylog.txt', 'r') as f:
+    lines = f.readlines()
 
-# remove duplicates
-loginAttempts = set()
-
-# get 1st, 2nd, 3rd digits
-digits = [set() for _ in range(3)]
+loginAttempts = set()  # remove duplicates
+digits = [set() for _ in range(3)]  # get 1st, 2nd, 3rd digits
 
 for attempt in lines:
     attempt = attempt.strip()
     loginAttempts.add(attempt)
 
-    for i in range(3):
-        digits[i].add(attempt[i])
-
-# main algorithm
-passcode = ""
+    for i, digit in enumerate(attempt):
+        digits[i].add(digit)
 
 # print digits used
 for i in range(3):
-    print(f"Digit {i}:", digits[i])
+    print(f"Digit {i}: {digits[i]}")
 
 # - 4 and 5 do not appear in the passcode at all
 # - 7 only appears in digit_1, and 0 only appears in digit_3, so the passcode 
@@ -33,19 +38,10 @@ for i in range(3):
 
 # generate all possible codes 
 unused = "123689"
-possibleCodes = ['7'+''.join(digit)+'0' for digit in list(permutations(unused))]
+possibleCodes = ('7'+''.join(digit)+'0' for digit in permutations(unused))
 
 # iterate through all codes and check for passcode validity
 for code in possibleCodes:
-    isValid = True
-    for attempt in loginAttempts:
-        # indices of digits of attempt in passcode
-        dIndex = [code.index(digit) for digit in attempt]  
-        if not dIndex[0] < dIndex[1] < dIndex[2]:
-            isValid = False
-
-    # check for validity
-    if isValid:
-        # print result
-        print("code:", code)
+    if check_code(code):  # check for validity
+        print(f"code: {code}")  # print result
         break
