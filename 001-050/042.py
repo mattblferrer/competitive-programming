@@ -1,9 +1,6 @@
 # read from file words.txt
-file1 = open('p042_words.txt', 'r')
-words = file1.read()
-
-# cleaning input
-words = words.replace('"', '').split(",")
+with open('p042_words.txt', 'r') as f:
+    words = f.read().replace('"', '').split(",")  # cleaning input
 
 # word score
 triangleWords = 0
