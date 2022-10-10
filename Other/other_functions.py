@@ -24,3 +24,15 @@ def convergent_terms(num: int, bound: int) -> tuple[list[int]]:
         k += 1
 
     return n_arr, d_arr
+
+
+# code for profiling
+import cProfile
+import pstats
+
+with cProfile.Profile() as pr:
+    pass  # code
+
+stats = pstats.Stats(pr)
+stats.sort_stats(pstats.SortKey.TIME)
+stats.print_stats()

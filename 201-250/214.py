@@ -1,3 +1,4 @@
+from functools import cache
 from math import sqrt
 
 
@@ -46,19 +47,20 @@ def prime_factorize(num: int) -> set:
     return factors
 
 
+@cache
 # returns the Euler's totient of the number num using Euler's product formula
 def totient(num: int) -> int:
     p_factors = prime_factorize(num)
     phi = num  # totient
     for factor in p_factors:
-        phi = phi * (factor-1)//factor
+        phi *= (factor-1)//factor
 
     return phi
 
 
 # declare variables
 limit = 40000000
-primeSum = 0
+prime_sum = 0
 chainLenList = [0]*(limit + 1)
 isPrimeList = soe(limit)  # create a sieve of Eratosthenes
 
@@ -70,10 +72,7 @@ for i in range(1, limit):
 
         while n > 1:
             # calculate totient
-            if isPrimeList[n]:
-                n -= 1
-            else:
-                n = totient(n)
+            n = n-1 if isPrimeList[n] else totient(n)
 
             # check chain length list for already calculated chains
             if chainLenList[n]:
@@ -82,7 +81,7 @@ for i in range(1, limit):
             length += 1
 
         if length == 25:  # check chain length
-            primeSum += i
+            prime_sum += i
 
         chainLenList[i] = length
     
@@ -91,4 +90,4 @@ for i in range(1, limit):
         print(i)
 
 # print result
-print("The sum of all primes < 40,000,000 with chain length 25:", primeSum)
+print(f"The sum of all primes < 40,000,000 with chain length 25: {prime_sum}")

@@ -9,14 +9,8 @@ For the sake of simplicity, the 10 will always be the top left node of the 5-gon
 from itertools import permutations
 
 
-# returns a list of 5 digit permutations of numbers 1 to 9 for the inner ring
-def five_d_permutations():
-    perm_list = list(permutations(range(1, 10), 5))
-    return perm_list
-
-
 # returns a permutation of the outer ring based on the permutation of inner ring
-def outer_ring_perm(inner_ring):
+def outer_ring_perm(inner_ring: list[int]) -> list[int]:
     # define outer ring
     possible_outer_ring = set(range(1, 10)) - set(inner_ring)
     outer_ring = [10]
@@ -38,7 +32,6 @@ def outer_ring_perm(inner_ring):
                 if a+b+j == ring_sum:
                     outer_ring.append(j)
                     possible_outer_ring.remove(j)
-                    # print(inner_ring[0:5], outer_ring, possible_outer_ring)
                     break
 
     if len(outer_ring) != 5:
@@ -49,7 +42,7 @@ def outer_ring_perm(inner_ring):
 
 
 # returns the string representation of a solution
-def ring_string(inner_ring, outer_ring):
+def ring_string(inner_ring: list[int], outer_ring: list[int]) -> str:
     string = ""
 
     # start from numerically lowest external (outer) node, go clockwise
@@ -60,23 +53,22 @@ def ring_string(inner_ring, outer_ring):
 
     # add each "line" to final string
     for i in range(5):
-        string += str(outer_ring[i]) + str(inner_ring[i]) + str(inner_ring[(i+1) % 5])
+        string += f"{outer_ring[i]}{inner_ring[i]}{inner_ring[(i+1) % 5]}"
 
     return string
 
 
 # main loop
 maximumString = 0
-for ring in five_d_permutations():
+for ring in permutations(range(1, 10), 5):
     ring = list(ring)
 
     # if solution is found
     solution = outer_ring_perm(ring)
     if solution != 0:
         solutionString = int(ring_string(ring, solution))
-        if maximumString < solutionString:
-            maximumString = solutionString
+        maximumString = max(maximumString, solutionString)
         print(ring, solution, solutionString)
 
 # print result
-print("\nThe maximum 16-digit string for a 5-gon ring is", maximumString)
+print(f"\nThe maximum 16-digit string for a 5-gon ring is {maximumString}")

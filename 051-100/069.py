@@ -28,9 +28,8 @@ n = 2
 # main loop
 while n < limit:
     n *= currPrime  # calculate next primorial
-    
     checkPrime = currPrime
     currPrime = next_prime(currPrime)
 
 # print output
-print("The value of n for which n/phi(n) is at a maximum is {}".format(n // checkPrime))
+print(f"The value of n for which n/phi(n) is at a maximum is {n // checkPrime}")

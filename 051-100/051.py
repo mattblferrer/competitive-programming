@@ -48,52 +48,46 @@ def soe(n: int) -> list:
     return isPrimeList
 
 
+# finds the prime that solves the problem, given a starting number
+def find_prime_51(n: int) -> int:
+    # calculate all possible values in prime family
+    while True:
+        # create a sieve of Eratosthenes
+        length = len(str(n))
+        p10 = 10**length  # lowest power of 10 above n
+        isPrimeList = soe(p10)
+
+        # generate a set of primes
+        primes = {i for i, prime in enumerate(isPrimeList) if prime}
+
+        # generate all possible ways to replace digits in num
+        perms = [format(n, f'0{length-1}b') for n in range(1, 2**(length-1))]
+        
+        while n < p10:
+            strN = str(n)
+
+            # try all combinations and check if it is part of an 8-prime family
+            for perm in perms:
+                pos = [i for i, d in enumerate(perm) if d == '1']
+                validSubs = []  # array of valid digit substitutions in family
+                for i in range(10):
+                    temp = strN  # temporary variable for digit replacement
+                    for j in pos:  # positions of digits to be replaced
+                        temp = temp[:j] + str(i) + temp[j+1:]
+
+                    # check if prime and has no leading zeroes
+                    if int(temp) in primes and temp[0] != '0':
+                        validSubs.append(temp)
+
+                if len(validSubs) == 8:
+                    strN = validSubs[0]
+                    return strN
+
+            n = next_prime(n) # move to next prime
+
+
 # declare variables
 n = 56993  # starting num
 
-# calculate all possible values in prime family
-isFound = False
-
-while True:
-    # create a sieve of Eratosthenes
-    length = len(str(n))
-    p10 = 10**length  # lowest power of 10 above n
-    lp10 = 10**(length-1)  # highest power of 10 below n
-    isPrimeList = soe(p10)
-
-    # generate a set of primes
-    primes = {i for i, prime in enumerate(isPrimeList) if prime}
-
-    # generate all possible ways to replace digits in num
-    perms = [format(n, '0'+str(length-1)+'b') for n in range(1, 2**(length-1))]
-    
-    while n < p10:
-        strN = str(n)
-
-        # try all combinations and check whether it is part of an 8-prime family
-        for perm in perms:
-            pos = [i for i, d in enumerate(perm) if d == '1']
-            validSubs = []  # array of valid digit substitutions in family
-            for i in range(10):
-                temp = strN  # temporary variable for digit replacement
-                for j in pos:  # positions of digits to be replaced
-                    temp = temp[:j] + str(i) + temp[j+1:]
-
-                # check if prime and has no leading zeroes
-                if int(temp) in primes and temp[0] != '0':
-                    validSubs.append(temp)
-
-            if len(validSubs) == 8:
-                strN = validSubs[0]
-                isFound = True
-
-        if isFound:  # if prime is found 
-            # print result
-            print(f"Prime: {strN}")
-            break
-
-        n = next_prime(n) # move to next prime
-
-    if isFound:
-        break
-    print(p10)  # progress tracker
+# print result
+print(f"Prime: {find_prime_51(n)}")
