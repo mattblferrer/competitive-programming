@@ -4,7 +4,7 @@ We only have to check for numbers from 1000 to 10000
 
 
 # checks if a number num is pandigital
-def pandigital_check(num):
+def pandigital_check(num: int) -> bool:
     digits_used = {int(digit) for digit in str(num)}
 
     if digits_used == set(range(1, 10)):
@@ -13,7 +13,7 @@ def pandigital_check(num):
 
 
 # returns the factors of num in pairs (non-repeating)
-def factorize(num):
+def factorize(num: int) -> set[int]:
     factors = set()
     factors.add((1, num))
 
@@ -25,21 +25,19 @@ def factorize(num):
 
 
 # returns the multiplicand, multiplier, and product as a concatenated number
-def conc_factors(num):
+def conc_factors(num: int) -> list[str]:
     factors = factorize(num)
     string_list = [str(num)]*len(factors)
-    ctr = 0  # counter for iterating through factors
 
-    for factor in factors:  # two factors (tuple) at a time
-        string_list[ctr] += str(factor[0]) + str(factor[1])
-        ctr += 1
+    for ctr, factor in enumerate(factors):  # two factors (tuple) at a time
+        string_list[ctr] += f"{factor[0]}{factor[1]}"
 
     return string_list
 
 
 # declare variables
 products = []  # products that can be written as 1 to 9 pandigital
-productSum = 0
+product_sum = 0
 
 # main loop
 for i in range(1000, 10000):
@@ -48,8 +46,8 @@ for i in range(1000, 10000):
     for identity in identities:
         if pandigital_check(identity):
             products.append(i)
-            productSum += i
+            product_sum += i
             break
 
 # print output
-print("The sum of all products is", productSum)
+print(f"The sum of all products is {product_sum}")
