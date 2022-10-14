@@ -11,14 +11,14 @@ def soe(n: int) -> list:
     isPrimeList[0] = isPrimeList[1] = False
 
     # for 2 and 3
-    for i in [2, 3]:
+    for i in (2, 3):
         for multiple in range(i*i, n, i):
             # assign multiples of 2 or 3 as not being prime
             isPrimeList[multiple] = False  
 
     # for 6k +- 1
     for i in range(5, iterlimit+2, 6): 
-        for j in [0, 2]: 
+        for j in (0, 2): 
             for multiple in range((i+j) * (i+j), n, i+j):
                 # assign multiples of i+j as not being prime
                 isPrimeList[multiple] = False  
@@ -30,13 +30,13 @@ def soe(n: int) -> list:
 def prime_factorize(num: int) -> set:
     factors = set()
 
-    for i in [2, 3]:
+    for i in (2, 3):
         while num % i == 0:
             factors.add(i)
             num //= i
 
-    for i in range(6, int(num ** 0.5) + 3, 6):  # for 6k +- 1
-        for j in [-1, 1]:
+    for i in range(5, int(num ** 0.5) + 3, 6):  # for 6k +- 1
+        for j in (0, 2):
             while num % (i+j) == 0:
                 factors.add(i+j)
                 num //= (i+j)
@@ -53,7 +53,7 @@ def totient(num: int) -> int:
     p_factors = prime_factorize(num)
     phi = num  # totient
     for factor in p_factors:
-        phi *= (factor-1)//factor
+        phi = phi*(factor-1)//factor
 
     return phi
 

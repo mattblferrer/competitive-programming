@@ -34,8 +34,8 @@ def recurring_cycle(n: int) -> int:
 # given parameters
 d = 1000
 
-# iterate from d downwards
-for i in range(d, 0, -1):
+# iterate from odd d downwards
+for i in range(d-1, 0, -2):
     currentCycle = recurring_cycle(i)
     if currentCycle == i-1:
         break

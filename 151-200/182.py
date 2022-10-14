@@ -19,11 +19,18 @@ def prime_factorize(num: int) -> set:
     return factors
 
 
+# yields every e such that the number of unconcealed messages is at a minimum
+def arithmetic_progression_rsa() -> int:
+    for e in range(minimum[1] + minDiff, phi, minDiff):
+        if isCoprime[e]:
+            # check divisibility of e-1
+            if all((fac == 2 or (e-1) % fac) for fac in factors): 
+                yield e
+
+
 # declare variables
-p = 1009
-q = 3643
-n = p*q
-phi = (p-1)*(q-1)
+p, q = 1009, 3643
+n, phi = p*q, (p-1)*(q-1)
 unconc = [0]*phi  # number of unconcealed messages
 sumE = 0  # sum of all minimal values of e
 factors = prime_factorize(phi)
@@ -43,7 +50,7 @@ for e in range(3, phi, 2):  # since (p-1)*(q-1) is always even
         for m in range(n):
             if pow(m, e, n) == m:  # compute m^e mod n
                 unconc[e] += 1
-            if unconc[e] > minUnconc:  # if unconcealed > minimum, no need to compute
+            if unconc[e] > minUnconc:  # no need to compute
                 break
         if unconc[e] == minUnconc:  # check if minimum
             minimum.append(e)
@@ -53,16 +60,7 @@ for e in range(3, phi, 2):  # since (p-1)*(q-1) is always even
         minDiff = minimum[1] - minimum[0]
         break
 
-for e in range(minimum[1] + minDiff, phi, minDiff):  # check arithmetic progression of mins
-    if isCoprime[e]:
-        isPossible = True  # if e is a possible candidate for minimum
-        for fac in factors:
-            if fac != 2 and (e-1) % fac == 0:  # check divisibility of e-1
-                isPossible = False
-                break
-
-        if isPossible:
-            sumE += e
+sumE += sum(e for e in arithmetic_progression_rsa())
 
 # print result
 print(f"Sum of all valid values of e: {sumE}")
