@@ -120,13 +120,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # code for profiling
-    import cProfile
-    import pstats
-
-    with cProfile.Profile() as pr:
-        main() # code
-
-    stats = pstats.Stats(pr)
-    stats.sort_stats(pstats.SortKey.TIME)
-    stats.print_stats()
+    main()
