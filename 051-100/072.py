@@ -2,41 +2,40 @@
 Length of Farey sequence n = 1 + sum of totient functions from 1 to n
 """
 
-
 # returns the Mobius function of n
-def mobius(n):
+def mobius(n: int) -> int:
     if n == 1:
         return 1
-    else:
-        factors = 0
 
-        for i in [2, 3]:
-            if n % i == 0:  # for 2 and 3
+    factors = 0
+    for i in (2, 3):
+        if n % i == 0:  # for 2 and 3
+            factors += 1
+            n //= i
+
+            if n % i == 0:  # if divisible again
+                return 0
+
+    # only have to check for odd factors up to sqrt(n)
+    for i in range(5, int(n ** 0.5) + 1, 6):
+        if i*i > n:
+            break
+        for j in (0, 2):  # 6k+-1
+            if n % (i+j) == 0:  # 
                 factors += 1
-                n //= i
+                n //= (i+j)
 
-                if n % i == 0:  # if divisible again
+                if n % (i+j) == 0:
                     return 0
 
-        # only have to check for odd factors up to sqrt(n)
-        for i in range(5, int(n ** 0.5) + 1, 6):
-            for j in [0, 2]:  # 6k+-1
-                if n % (i + j) == 0:  # 
-                    factors += 1
-                    n //= (i + j)
+    # check if prime
+    if n != 1:
+        factors += 1
 
-                    if n % (i + j) == 0:
-                        return 0
-
-        # check if prime
-        if n != 1:
-            factors += 1
-
-        # check for sign of function result
-        if factors % 2 == 0:
-            return 1
-        else:
-            return -1
+    # check for sign of function result
+    if factors % 2 == 0:
+        return 1
+    return -1
 
 
 # declare variables

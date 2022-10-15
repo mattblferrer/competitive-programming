@@ -1,25 +1,14 @@
-from collections import Counter
-
-
-# returns the frequencies of digits of the cube of a number num
-def cube_digits(num: int) -> dict:
-    cube = str(num**3)
-    freq = dict(Counter(cube)) # frequencies of each digit in the cube
-
-    return freq
-
-
 # declare variables
 frequencies = []  # list of frequencies of digits of cube of index ctr
 ctr = 0
 
 # main loop
 while True:
-    currentFreq = cube_digits(ctr)
-    frequencies.append(currentFreq)
+    current_freq = sorted(str(ctr**3))
+    frequencies.append(current_freq)
 
-    if frequencies.count(currentFreq) == 5:  # count permutations of cube
-        answer = frequencies.index(currentFreq)**3
+    if frequencies.count(current_freq) == 5:  # count permutations of cube
+        answer = frequencies.index(current_freq)**3
         break
 
     ctr += 1

@@ -36,6 +36,9 @@ def prime_factorize(num: int) -> set:
             num //= i
 
     for i in range(5, int(num ** 0.5) + 3, 6):  # for 6k +- 1
+        if i*i > num:
+            break
+
         for j in (0, 2):
             while num % (i+j) == 0:
                 factors.add(i+j)
@@ -58,36 +61,41 @@ def totient(num: int) -> int:
     return phi
 
 
-# declare variables
-limit = 40000000
-prime_sum = 0
-chainLenList = [0]*(limit + 1)
-isPrimeList = soe(limit)  # create a sieve of Eratosthenes
+def main():
+    # declare variables
+    limit = 40000000
+    prime_sum = 0
+    chainLenList = [0]*(limit + 1)
+    isPrimeList = soe(limit)  # create a sieve of Eratosthenes
 
-# main loop
-for i in range(1, limit):
-    if isPrimeList[i]:
-        n = i  # chain variable
-        length = 1  # chain length
+    # main loop
+    for i in range(1, limit):
+        if isPrimeList[i]:
+            n = i  # chain variable
+            length = 1  # chain length
 
-        while n > 1:
-            # calculate totient
-            n = n-1 if isPrimeList[n] else totient(n)
+            while n > 1:
+                # calculate totient
+                n = n-1 if isPrimeList[n] else totient(n)
 
-            # check chain length list for already calculated chains
-            if chainLenList[n]:
-                length += chainLenList[n]
-                break
-            length += 1
+                # check chain length list for already calculated chains
+                if chainLenList[n]:
+                    length += chainLenList[n]
+                    break
+                length += 1
 
-        if length == 25:  # check chain length
-            prime_sum += i
+            if length == 25:  # check chain length
+                prime_sum += i
 
-        chainLenList[i] = length
-    
-    # progress tracker
-    if i % 100000 == 0:
-        print(i)
+            chainLenList[i] = length
+        
+        # progress tracker
+        if i % 100000 == 0:
+            print(i)
 
-# print result
-print(f"The sum of all primes < 40,000,000 with chain length 25: {prime_sum}")
+    # print result
+    print(f"The sum of all primes < {limit} with chain length 25: {prime_sum}")
+
+
+if __name__ == "__main__":
+    main()
