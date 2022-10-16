@@ -20,12 +20,11 @@ def generate_factor_list(x: int, y: int) -> list[list[int]]:
 def isprime(num: int) -> bool:
     if num == 2 or num == 3:  # for 2 and 3
         return True
+
     if num % 2 == 0 or num % 3 == 0:  # for 2 and 3
         return False
 
-    for i in range(5, isqrt(num)+1, 6):  # for 6k +- 1
-        if i*i > num: 
-            break
+    for i in range(5, isqrt(num)+3, 6):  # for 6k +- 1
         if num % i == 0 or num % (i+2) == 0:
             return False
     return True
@@ -43,7 +42,7 @@ def dnd_prime(factors: list[int]) -> bool:
 
 def main():
     # declare variables
-    limit = 100_000_000
+    limit = 10_000_000
     sumN = 1  # loop will only detect even numbers (excluding 1)
     block_size = 250_000
 
@@ -62,4 +61,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()  # code
+    main()
+
