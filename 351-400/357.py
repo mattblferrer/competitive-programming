@@ -2,15 +2,16 @@ from functools import cache
 from math import isqrt
 
 
-# returns a list of all the factors of n from x to y
-def generate_factor_list(x: int, y: int) -> list[list[int]]:
-    factors = [[] for _ in range(y-x+1)]
+# returns a list of all the factors of n, n % 4 == 2 from x to y
+def generate_factor_list_357(x: int, y: int) -> list[list[int]]:
+    factors = [[1] for _ in range((x//4)*4 + 2, y+1, 4)]
     
     # add factor to list for every multiple of factor
-    for fac in range(1, y+1):
+    for fac in range(2, y+1):
         # get first multiple of factor above x as lower limit
         for mult in range((x-1) // fac * fac + fac, y+1, fac):
-            factors[mult-x].append(fac)
+            if mult % 4 == 2:
+                factors[(mult-x) // 4].append(fac)
 
     return factors
 
@@ -42,24 +43,23 @@ def dnd_prime(factors: list[int]) -> bool:
 
 def main():
     # declare variables
-    limit = 10_000_000
-    sumN = 1  # loop will only detect even numbers (excluding 1)
-    block_size = 250_000
+    limit = 100_000_000
+    sum_n = 1  # loop will only detect even numbers (excluding 1)
+    block_size = 1_000_000
 
     # loop through all even ints below limit
     for lower_m in range(limit // block_size):
         # generate list of factors
-        factor_list = generate_factor_list(
+        factor_list = generate_factor_list_357(
             lower_m * block_size + 2, (lower_m+1) * block_size)
-        sumN += sum(factors[-1] for factors in factor_list[::2] 
+        sum_n += sum(factors[-1] for factors in factor_list
             if dnd_prime(factors))
         
-        print(lower_m * block_size)  # progress tracker
+        print(lower_m * block_size, sum_n)  # progress tracker
 
     # print result
-    print(sumN)
+    print(f"Sum of all n up to {limit}: {sum_n}")
 
 
 if __name__ == "__main__":
     main()
-
