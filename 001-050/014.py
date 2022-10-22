@@ -11,17 +11,23 @@ def collatz(n: int) -> int:
     return steps
 
 
-# declare variables
-limit = 1000000  # only numbers below this limit will be checked
-longestSequence = 0  # largest number of steps to get to 1
-longestStartNum = 0  # starting number with the largest number of steps
+def main():
+    # declare variables
+    limit = 1000000  # only numbers below this limit will be checked
+    longest_sequence = 0  # largest number of steps to get to 1
+    longest_start_num = 0  # starting number with the largest number of steps
 
-# for n < limit / 2, 2n will have 1 more Collatz step than n
-for i in range(limit // 2, limit):
-    currentSequence = collatz(i)
-    if currentSequence > longestSequence:
-        longestSequence, longestStartNum  = currentSequence, i
+    # for n < limit / 2, 2n will have 1 more Collatz step than n
+    for i in range(limit // 2, limit):
+        current_sequence = collatz(i)
+        if current_sequence > longest_sequence:
+            longest_sequence, longest_start_num  = current_sequence, i
 
-# print result
-print(longestStartNum)
-print(f"Sequence: {longestSequence}")
+    # print result
+    print(longest_start_num)
+    print(f"Sequence: {longest_sequence}")
+
+
+if __name__ == "__main__":
+    main()
+

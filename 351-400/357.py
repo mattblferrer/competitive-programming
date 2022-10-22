@@ -55,7 +55,8 @@ def main():
         sum_n += sum(factors[-1] for factors in factor_list
             if dnd_prime(factors))
         
-        print(lower_m * block_size, sum_n)  # progress tracker
+        # progress tracker
+        print(f"block: {(lower_m + 1) * block_size}, sum: {sum_n}")  
 
     # print result
     print(f"Sum of all n up to {limit}: {sum_n}")
