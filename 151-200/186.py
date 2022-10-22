@@ -53,21 +53,23 @@ for call, n in enumerate(lagged_fib_gen(), start=1):
     if n == pm_number:  # if PM is called
         pm_included = True
 
-    if call % 2 == 1:  # caller reached called
+    if call % 2 == 0:  # caller reached called
+        caller = n
         if not caller == called:  # if not misdial
             union_ds(caller, called)
-            if call % 100000 == 1:  # progress tracker
-                print(call // 2, max(network_size))
+
+            if call % 100_000 == 0:  # progress tracker
+                print(f"call: {call // 2}, network size: {max(network_size)}")
             
-            if pm_included:  # check if PM was already reached
-                if network_size[find_ds(pm_number)] >= friend_prop_limit*users:
+            # check if PM was already reached
+            if pm_included and (network_size[find_ds(pm_number)] 
+                >= friend_prop_limit * users):  
                     break
                 
         else:  # misdial
             unsuccessful_calls += 1
-        caller = n
     else:
         called = n
     
 # print results
-print(call // 2 - unsuccessful_calls + 1)  # add one to count latest call
+print(f"Number of calls: {call // 2 - unsuccessful_calls}")

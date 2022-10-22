@@ -47,7 +47,7 @@ def main():
             sumN += i
 
         if i % 100000 == 0:  # progress tracker
-            print(i, sumN)
+            print(f"n: {i}, sum: {sumN}")
 
     # print result
     print(f"Sum of all n: {sumN}")
