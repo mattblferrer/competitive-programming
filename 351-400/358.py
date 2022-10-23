@@ -1,10 +1,7 @@
-from collections import defaultdict
-from functools import cache
 from itertools import product
 from math import gcd, prod, isqrt
 
 
-@cache
 # returns the prime factors of num with multiplicity (repeating)
 def prime_factorize(num: int) -> dict[int]:
     factors = {}
@@ -131,29 +128,16 @@ def main():
     u_limit = (10**left_digit_num) // left_digits  # upper limit
 
     # get cyclic primes 
-    arr = []  # stores cyclic prime denominators
-    unique_freq = defaultdict(int)  # stores the frequency of denominators mod 100,000
-
     for n in range((l_limit // 2)*2 + 1, u_limit, 2):  # check odds only
-        if unique_freq[n % 100_000]:  # check if mod is unique
+        if (right_digits * n) % 100_000 != 99_999:  # check rightmost digits
             continue
 
         if not recurring_cycle(div_2_5(n)) == n-1:  # check if cyclic
             continue
 
-        # check if rightmost digits match
-        dec = 1 / n
-        rc = right_digits / 100_000
-        lc = dec * 1_000
-
-        # get fractional part only
-        frac_rem = ((rc + lc) / dec) - ((rc + lc) // dec)
-        unique_freq[n % 100_000] += 1
-        arr.append((frac_rem, n))
-        print(f"n: {n}")
+        break  # break loop if n found
 
     # take sum of digits of decimal expansion
-    n = list(reversed(sorted(arr)))[0][1]  # get n of best guess of cyclic
     sum_digits = 0        
 
     for i, digit in enumerate(long_division(1, n)):
