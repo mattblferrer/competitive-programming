@@ -43,16 +43,23 @@ def is_prime_mr(n: int) -> bool:
 _known_primes = [2, 3]
 
 
-# declare variables
-limit = 50000000
-primes = 0  
+def main():
+    # declare variables
+    limit = 50_000_000
+    primes = 1  # count 2 
 
-# test 2n^2 - 1 for primality
-for n in range(1, limit):
-    if is_prime_mr(2*n*n - 1):
-        primes += 1
-    if n % 100000 == 0:  # progress tracker
-        print(n, primes)
+    # test 2n^2 - 1 for primality
+    for n in range(1, limit):
+        if n % 100_000 == 0:  # progress tracker
+            print(f"{n}, primes: {primes}")
+        if n % 7 == 2 or n % 7 == 5:
+            continue
+        if is_prime_mr(2*n*n - 1):
+            primes += 1
 
-# print result
-print("Numbers t(n) that are prime:", primes)
+    # print result
+    print(f"Numbers t(n) up to {limit} that are prime: {primes}")
+
+
+if __name__ == "__main__":
+    main()
