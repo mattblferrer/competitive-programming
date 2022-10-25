@@ -90,7 +90,7 @@ def is_primeproof(n: int) -> bool:
 def main():
     # declare variables
     limit = 200
-    limit_p = 1_000_000
+    limit_p = 200_000
     is_prime_list = soe(limit_p)  # guess limit
     prime_list = [i for i, is_prime in enumerate(is_prime_list) if is_prime]
     sqube_list = set()

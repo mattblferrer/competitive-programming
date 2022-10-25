@@ -11,7 +11,7 @@ def is_power(num: int, base: int) -> bool:
     if base == 1:
         return False
 
-    exp = int(round(log(num, base)))  # round log to nearest whole number
+    exp = round(log(num, base))  # round log to nearest whole number
     if base ** exp == num:  # check if log is an integer
         return True
     return False
