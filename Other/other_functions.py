@@ -26,6 +26,23 @@ def convergent_terms(num: int, bound: int) -> tuple[list[int]]:
     return n_arr, d_arr
 
 
+# adds 1 to base b array
+def base_add_one(num_arr: int, b: int) -> list[int]:
+    num_arr[0] += 1
+
+    for i in range(len(num_arr)):
+        if num_arr[i] >= b:
+            num_arr[i] = 0
+            if i == len(num_arr) - 1:  # array is too short for carry
+                num_arr.insert(len(num_arr), 1)
+            else:  # carry over digit > base
+                num_arr[i + 1] += 1
+        
+        else:
+            return num_arr
+    return num_arr
+
+
 # code for profiling
 import cProfile
 import pstats
