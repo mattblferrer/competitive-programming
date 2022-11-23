@@ -2,92 +2,100 @@ from math import sqrt
 from collections import Counter
 
 
-# read file
-file1 = open('p098_words.txt', 'r')
-words = file1.readline().replace('"', '').split(",")  # process line, remove quotes
+def main():
+    # read file
+    with open('p098_words.txt', 'r') as f:
+        words = f.readline().replace('"', '').split(",")
 
-# find anagrams
-frequencies = []  # frequencies of letters in the word
-anagrams = []  # list of anagram word pairs
+    # find anagrams
+    frequencies = []  # frequencies of letters in the word
+    anagrams = []  # list of anagram word pairs
 
-for word in words:
-    frequency = Counter(word)
+    for word in words:
+        frequency = Counter(word)
 
-    for i, wordFreq in enumerate(frequencies):
-        if wordFreq == frequency:
-            anagrams.append((word, words[i]))  # append current word and past word
+        for i, word_freq in enumerate(frequencies):
+            if word_freq == frequency:
+                # append current word and past word
+                anagrams.append((word, words[i]))  
 
-    frequencies.append(frequency)
+        frequencies.append(frequency)
 
-# main loop
-squares = {}
-num_anagrams = {}  # dict of anagram squares
-maximumSquare = 0
+    # main loop
+    squares = {}
+    num_anagrams = {}  # dict of anagram squares
+    maximum_square = 0
 
-for pair in anagrams:
-    # calculate squares
-    wordLength = len(pair[0])
+    for pair in anagrams:
+        # calculate squares
+        word_length = len(pair[0])
 
-    if wordLength not in squares.keys():  # check if squares with number of digits already calculated
-        lowerLimit = int(sqrt(10**(wordLength-1)))
-        upperLimit = int(sqrt(10**wordLength))
+        # check if squares with number of digits already calculated
+        if word_length not in squares.keys():  
+            lower_limit = int(sqrt(10**(word_length-1)))
+            upper_limit = int(sqrt(10**word_length))
 
-        # add squares sorted from highest to lowest
-        squares[wordLength] = [i*i for i in range(upperLimit, lowerLimit, -1)]  
+            # add squares sorted from highest to lowest
+            squares[word_length] = (i*i for i in 
+            range(upper_limit, lower_limit, -1))
 
-    # calculate square anagram pairs
-    num_frequencies = []  # frequencies of digits in the squares
-    frequency = tuple(sorted([int(i) for i in Counter(pair[0]).values()]))
+        # calculate square anagram pairs
+        num_frequencies = []  # frequencies of digits in the squares
+        frequency = tuple(sorted([int(i) for i in Counter(pair[0]).values()]))
 
-    if frequency not in num_anagrams.keys():  # each distribution of digits has its own key in dict
-        num_anagrams[frequency] = []
+        # each distribution of digits has its own key in dict
+        if frequency not in num_anagrams.keys():  
+            num_anagrams[frequency] = []
 
-        # find anagrams
-        for square in squares[wordLength]:
-            num_frequency = Counter(str(square))
-            num_freq_array = tuple(sorted([int(i) for i in num_frequency.values()]))
+            # find anagrams
+            for square in squares[word_length]:
+                num_frequency = Counter(str(square))
+                num_freq_array = tuple(sorted([int(i) for i in 
+                num_frequency.values()]))
 
-            for i in range(len(num_frequencies)):
-                if num_frequencies[i][1] == num_frequency:
-                    num_anagrams[frequency].append((square, num_frequencies[i][0]))
+                for i, frequency_2 in enumerate(num_frequencies):
+                    if frequency_2[1] == num_frequency:
+                        num_anagrams[frequency].append((square, frequency_2[0]))
 
-            if num_freq_array == frequency:  # if frequency of num and word match
-                num_frequencies.append((square, num_frequency))
+                # if frequency of num and word match
+                if num_freq_array == frequency:  
+                    num_frequencies.append((square, num_frequency))
 
-    # get largest square number formed with anagrams
-    for squarePair in num_anagrams[frequency]:
-        for i in range(2):  # check for order (0: min first, 1: max first)
-            if i == 1:
-                squarePair = tuple(reversed(squarePair))
+        # get largest square number formed with anagrams
+        for square_pair in num_anagrams[frequency]:
+            for i in range(2):  # check for order (0: min first, 1: max first)
+                if i == 1:
+                    square_pair = tuple(reversed(square_pair))
 
-            isAnagram = True
-            letterAssignment = {}  # assign letters to digits
+                is_anagram = True
+                letter_assignment = {}  # assign letters to digits
 
-            # 1st in pair
-            for j in range(len(str(squarePair[0]))):
-                letter = pair[0][j]
-                digit = str(squarePair[0])[j]
+                # 1st in pair
+                for j, digit in enumerate(str(square_pair[0])):
+                    letter = pair[0][j]
 
-                if letter not in letterAssignment.keys(): 
-                    letterAssignment[letter] = digit
-                elif digit != letterAssignment[letter]:
-                    isAnagram = False
+                    if letter not in letter_assignment.keys(): 
+                        letter_assignment[letter] = digit
+                    elif digit != letter_assignment[letter]:
+                        is_anagram = False
 
-            # 2nd in pair
-            for j in range(len(str(squarePair[1]))):
-                letter = pair[1][j]
-                digit = str(squarePair[1])[j]
+                # 2nd in pair
+                for j, digit in enumerate(str(square_pair[1])):
+                    letter = pair[1][j]
 
-                if digit != letterAssignment[letter]:
-                    isAnagram = False
+                    if digit != letter_assignment[letter]:
+                        is_anagram = False
 
-            # check for maximum
-            if isAnagram and squarePair[1] > maximumSquare:
-                maximumSquare = max(squarePair)
-                maximumPair = pair
+                # check for maximum
+                if is_anagram and square_pair[1] > maximum_square:
+                    maximum_square = max(square_pair)
+                    maximum_pair = pair
+                    break
 
-                break
+    # print result
+    print(f"Maximum square: {maximum_square}")
+    print(f"Maximum pair: {maximum_pair}")
 
-# print result
-print(maximumSquare)
-print(maximumPair)
+
+if __name__ == "__main__":
+    main()
