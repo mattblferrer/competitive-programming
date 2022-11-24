@@ -21,17 +21,20 @@ def mult_chain(chains: list, limit: int) -> list:
                     
                     # check if a chain does not exist
                     if not chains[max_exp]: 
-                        chains[max_exp].append(new_chain)
+                        chains[max_exp] = [new_chain]
                         
                     # if a chain exists, then...
                     else:
                         for check_chain in chains[max_exp]:
+                            new_chain_length = len(new_chain)
+                            check_chain_length = len(check_chain)
+
                             # check if chain generated is more efficient
-                            if len(new_chain) < len(check_chain):
+                            if new_chain_length < check_chain_length:
                                 chains[max_exp] = [new_chain]
 
                             # if chain is just as efficient, add choice to list
-                            if len(new_chain) == len(check_chain) and new_chain not in chains[max_exp]:
+                            if new_chain_length == check_chain_length and new_chain not in chains[max_exp]:
                                 chains[max_exp].append(new_chain)
                                 break
 
@@ -41,18 +44,23 @@ def mult_chain(chains: list, limit: int) -> list:
     return chains  # return list of minimum chains for each k below limit
  
 
-# declare variables
-k = 200
-minMults = [[] for _ in range(k+1)]  # list of minimum multiplication chains
+def main():
+    # declare variables
+    k = 200
+    min_mults = [[] for _ in range(k + 1)]  # list of minimum multiplication chains
 
-# calculate all possible minimum chains of multiplications to get to n^k
-minMults[1] = [[1]]  # n^1 (only one way)
-minMults = mult_chain(minMults, k)[1:]   # not counting 0
+    # calculate all possible minimum chains of multiplications to get to n^k
+    min_mults[1] = [[1]]  # n^1 (only one way)
+    min_mults = mult_chain(min_mults, k)[1:]   # not counting 0
 
-# calculate sum of all m(k) below limit k
-minMults = [chains[0] for chains in minMults]
-mk = [len(chain) - 1 for chain in minMults]
-sum_mk = sum(mk)
+    # calculate sum of all m(k) below limit k
+    min_mults = [chains[0] for chains in min_mults]
+    mk = [len(chain) - 1 for chain in min_mults]
+    sum_mk = sum(mk)
 
-# print result
-print(f"Sum of m(k): {sum_mk}")
+    # print result
+    print(f"Sum of m(k): {sum_mk}")
+
+
+if __name__ == "__main__":
+    main()
