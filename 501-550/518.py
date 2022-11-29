@@ -1,3 +1,7 @@
+from itertools import product
+from math import prod
+
+
 # creates a Sieve of Eratosthenes array of size n
 def soe(n: int) -> list:
     iterlimit = int(n**0.5) + 1
@@ -22,6 +26,36 @@ def soe(n: int) -> list:
     return isPrimeList
 
 
+# returns the prime factors of num with multiplicity (repeating)
+def prime_factorize(num: int) -> dict[int]:
+    factors = {}
+
+    for i in (2, 3):
+        count = 0
+        while num % i == 0:  # for only even prime
+            count += 1
+            num //= i
+        if count:
+            factors[i] = count
+
+    for i in range(5, int(num ** 0.5) + 1, 6):  # for 6k +- 1
+        if i*i > num:
+            break
+
+        for j in (0, 2):
+            count = 0
+            while num % (i+j) == 0:
+                count += 1
+                num //= (i+j)
+            if count:
+                factors[i+j] = count
+
+    if num != 1:
+        factors[num] = 1
+
+    return factors
+
+
 def main():
     # declare variables
     limit = 10**8
@@ -30,20 +64,38 @@ def main():
     prime_set = set(prime_list)
     abc_sum = 0
 
-    # iterate through primes a, b and find c from geometric sequence
-    for idxa, a in enumerate(prime_list):
-        for b in prime_list[idxa + 1:]:
-            a1, b1 = a + 1, b + 1
-            c1 = b1*b1 / a1
-            c = c1 - 1
+    # iterate through primes a and find b and c from geometric sequence
+    for a in prime_list:
+        # get square factors of a + 1 as ratio for geometric sequence
+        a1 = a + 1
+        prog_factors = {x: (val // 2) for x, val in prime_factorize(a1).items() 
+            if val > 1}
+        powers = [
+            [base**power for power in range(count+1)]
+            for base, count in prog_factors.items()
+        ]
+        factors = [prod(power_combo) for power_combo in product(*powers)]
+        c_set = set()
 
-            if c > limit:
-                break
+        for d in factors:  # denominator of ratio
+            n = d + 1  # numerator of ratio
+    
+            while True:
+                # calculate b and c, b + 1 and c + 1
+                b1 = a1 * n // d
+                b = b1 - 1
+                c1 = b1*b1 // a1
+                c = c1 - 1
+                
+                if c > limit:
+                    break
 
-            if c in prime_set:
-                abc_sum += int(a + b + c)
+                # check if b and c are primes, and c is unique
+                if b in prime_set and c in prime_set and c not in c_set:
+                    c_set.add(c)
+                    abc_sum += int(a + b + c)
 
-        print(idxa, a)
+                n += 1
 
     # print result
     print(f"S({limit}) = {abc_sum}")
