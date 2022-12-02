@@ -1,61 +1,88 @@
-"""
-SOURCE: https://rosettacode.org/wiki/Miller%E2%80%93Rabin_primality_test#Python
-"""
+# uses the Tonelli-Shanks algorithm to return the solution to x^2 = n mod p
+def tonelli_shanks(n: int, p: int) -> tuple[int, int]:
+    if pow(n, (p - 1) // 2, p) == 1:  # check that n is a square mod p
+        q = p - 1
+        s = 0
+
+        while q % 2 == 0:
+            q //= 2
+            s += 1
+
+        if s == 1:  # if p = 3 mod 4
+            ans = pow(n, (p + 1) // 4, p)
+            return ans, -ans
+
+        for z in range(2, p):
+            if pow(z, (p - 1) // 2, p) == p - 1:  # check Legendre symbol of z
+                m = s
+                c = pow(z, q, p)
+                r = pow(n, (q + 1) // 2, p)
+                t = pow(n, q, p)
+                break
+        
+        while t % p != 1:
+            t2 = (t * t) % p
+            for i in range(1, m):
+                if t2 % p == 1:
+                    b = pow(c, 1 << (m - i - 1), p)
+                    m = i
+                    c = (b * b) % p
+                    r = (r * b) % p
+                    t = (t * b * b) % p
+                    break
+
+                t2 = (t2 * t2) % p
+
+        return r, p - r
 
 
-# test for composite
-def _try_composite(a: int, d: int, n: int, s: int) -> bool:
-    if pow(a, d, n) == 1:
-        return False
-    for i in range(s):
-        if pow(a, 2**i * d, n) == n-1:
-            return False
-    return True  # n  is definitely composite
- 
+# creates a Sieve of Eratosthenes array of size n
+def soe(n: int) -> list:
+    iterlimit = int(n ** 0.5) + 1
+    isPrimeList = [True]*(n+1)
 
-# Miller-Rabin primality test
-def is_prime_mr(n: int) -> bool:
-    if n in _known_primes:
-        return True
-    if any((n % p) == 0 for p in _known_primes) or n in (0, 1):
-        return False
-    d, s = n - 1, 0
-    while not d % 2:
-        d, s = d >> 1, s + 1
-    # Returns exact according to http://primes.utm.edu/prove/prove2_3.html
-    if n < 1373653: 
-        return not any(_try_composite(a, d, n, s) for a in (2, 3))
-    if n < 25326001: 
-        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5))
-    if n < 118670087467: 
-        if n == 3215031751: 
-            return False
-        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7))
-    if n < 2152302898747: 
-        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11))
-    if n < 3474749660383: 
-        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 13))
-    if n < 341550071728321: 
-        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 13, 17))
-    else:
-        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 13, 17, 19, 23))
+    # for 0 and 1 
+    isPrimeList[0] = isPrimeList[1] = False
 
-_known_primes = [2, 3]
+    # for 2 and 3
+    for i in (2, 3):
+        for multiple in range(i*i, n, i):
+            # assign multiples of 2 or 3 as not being prime
+            isPrimeList[multiple] = False  
+
+    # for 6k +- 1
+    for i in range(5, iterlimit+2, 6): 
+        for j in (0, 2): 
+            for multiple in range((i+j) * (i+j), n, i+j):
+                # assign multiples of i+j as not being prime
+                isPrimeList[multiple] = False  
+
+    return isPrimeList
 
 
 def main():
     # declare variables
     limit = 50_000_000
-    primes = 1  # count 2 
+    is_prime_list = soe(int(2 ** 0.5 * (limit + 1)))
+    prime_list = [i for i, isprime in enumerate(is_prime_list) if isprime]
+    prime_list.remove(2)
+    is_square_prime = [True] * (limit + 1)
+    is_square_prime[0] = is_square_prime[1] = False  # - 1 is not prime
 
-    # test 2n^2 - 1 for primality
-    for n in range(1, limit):
-        if n % 100_000 == 0:  # progress tracker
-            print(f"{n}, primes: {primes}")
-        if n % 7 == 2 or n % 7 == 5:
-            continue
-        if is_prime_mr(2*n*n - 1):
-            primes += 1
+    # test 2n^2 - 1 for primality using Tonelli-Shanks algorithm 
+    for p in prime_list:
+        roots = tonelli_shanks((p + 1) // 2, p)
+        if roots:
+            for root in roots:
+                x = root
+                while x < 0:
+                    x += p
+                while x <= limit:
+                    if 2*x*x - 1 != p:
+                        is_square_prime[x] = False
+                    x += p
+
+    primes = sum(is_square_prime)
 
     # print result
     print(f"Numbers t(n) up to {limit} that are prime: {primes}")
