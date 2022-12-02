@@ -71,16 +71,17 @@ def main():
 
     # test 2n^2 - 1 for primality using Tonelli-Shanks algorithm 
     for p in prime_list:
-        roots = tonelli_shanks((p + 1) // 2, p)
-        if roots:
-            for root in roots:
-                x = root
-                while x < 0:
-                    x += p
-                while x <= limit:
-                    if 2*x*x - 1 != p:
-                        is_square_prime[x] = False
-                    x += p
+        if p % 8 == 1 or p % 8 == 7:
+            roots = tonelli_shanks((p + 1) // 2, p)
+            if roots:
+                for root in roots:
+                    x = root
+                    while x < 0:
+                        x += p
+                    while x <= limit:
+                        if 2*x*x - 1 != p:
+                            is_square_prime[x] = False
+                        x += p
 
     primes = sum(is_square_prime)
 
