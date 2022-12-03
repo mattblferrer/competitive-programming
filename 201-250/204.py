@@ -1,10 +1,11 @@
+from functools import cache
 from math import isqrt
 
 
 # creates a Sieve of Eratosthenes array of size n
 def soe(n: int) -> list:
     iterlimit = isqrt(n) + 1
-    isPrimeList = [True]*(n+1)
+    isPrimeList = [True]*n
 
     # for 0 and 1 
     isPrimeList[0] = isPrimeList[1] = False
@@ -25,37 +26,30 @@ def soe(n: int) -> list:
     return isPrimeList
 
 
-# returns True if number is a generalized Hamming number
-def is_gen_hamming(n: int) -> bool: 
-    for prime in primeList:
-        while n % prime == 0:
-            n //= prime
+def main():
+    @cache
+    # adds Generalized Hamming numbers below limit to list 
+    def gen_hamming(n: int, limit: int) -> None: 
+        for prime in prime_list:
+            if n * prime > limit: 
+                return None
+            gen_hammings.add(n * prime)
+            gen_hamming(n * prime, limit)
 
-        if n == 1:
-            return True
 
-    return False
+    # create a sieve of Eratosthenes
+    soe_limit = 100
+    is_prime_list = soe(soe_limit + 1)
+    prime_list = [i for i, isprime in enumerate(is_prime_list) if isprime]
+    gen_hammings = {1}
+
+    # declare variables
+    limit = 10**9
+    gen_hamming(1, limit)  # main loop
+
+    # print result
+    print(f"Number of generalized Hamming numbers: {len(gen_hammings)}")
 
 
-# create a sieve of Eratosthenes
-soe_limit = 100
-isPrimeList = soe(soe_limit)
-
-# convert to list of primes
-primeList = [i for i in range(soe_limit) if isPrimeList[i]]
-
-# declare variables
-hammingNums = 0
-limit = 10**9
-
-# main loop
-for i in range(1, limit + 1):
-    if is_gen_hamming(i):
-        hammingNums += 1
-
-    # progress tracker
-    if i % 1000000 == 0:
-        print(i)
-
-# print result
-print(f"Number of generalized Hamming numbers: {hammingNums}")
+if __name__ == "__main__":
+    main()
