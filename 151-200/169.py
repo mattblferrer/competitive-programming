@@ -1,19 +1,25 @@
-# function that converts decimal to binary
-def dec_to_bin(num: int) -> str:
-    bin_str = bin(num).replace("0b","")
-    return bin_str
+from functools import cache
 
 
-# declare variables
-n = 10**25
+@cache
+# returns the n'th Stern-Brocot number (recursive formula)
+def stern_brocot(n: int) -> int:
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    elif n % 2 == 0:
+        return stern_brocot(n // 2)
+    else:
+        return stern_brocot(n // 2) + stern_brocot(n // 2 + 1)
 
-# get powers of two that add up to num (binary)
-binN = reversed(dec_to_bin(n))  # reversed binary expansion of n
-powersOf2 = [i for i, digit in enumerate(binN) if digit == '1']
 
-# continuously split up 2^n into 2^(n-1)
-fN = 0
-# TODO
+def main():
+    # Number of ways to express n as the sum of integer powers of 2 using each
+    # power no more than twice = (n + 1)th Stern-Brocot number
+    n = 10**25
+    print(stern_brocot(n + 1))
 
-# print result
-print(powersOf2)
+
+if __name__ == "__main__":
+    main()
