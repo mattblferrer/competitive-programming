@@ -3,9 +3,7 @@ from math import isqrt
 
 # function that tells if a number num is a palindrome
 def is_palindrome(num: int) -> bool:
-    if str(num) == str(num)[::-1]:  # if num == reverse(num)
-        return True
-    return False
+    return str(num) == str(num)[::-1]  # if num == reverse(num)
 
 
 # determines if num is prime

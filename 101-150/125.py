@@ -9,35 +9,38 @@ from math import sqrt
 
 # function that tells if a number num is a palindrome
 def is_palindrome(num: int) -> bool:
-    if str(num) == str(num)[::-1]:  # if num == reverse(num)
-        return True
-    return False
+    return str(num) == str(num)[::-1]  # if num == reverse(num)
 
 
-# declare variables
-limit = 10**8
-squareLimit = int(sqrt(limit) // sqrt(2))
-palindromicList = set()  # to account for repeated entries
-n = 1  # starting num
+def main():
+    # declare variables
+    limit = 10**8
+    square_limit = int(sqrt(limit) // sqrt(2))
+    palindromic_list = set()  # to account for repeated entries
+    n = 1  # starting num
 
-# compute squares that will be used
-squareList = [i*i for i in range(squareLimit)]
+    # compute squares that will be used
+    square_list = [i*i for i in range(square_limit)]
 
-# main loop
-while n < squareLimit:
-    pSum = squareList[n]  # partial sum of squares
-    
-    for i in range(n+1, squareLimit):
-        pSum += squareList[i]
+    # main loop
+    while n < square_limit:
+        p_sum = square_list[n]  # partial sum of squares
+        
+        for i in range(n+1, square_limit):
+            p_sum += square_list[i]
 
-        if pSum >= limit:
-            break
+            if p_sum >= limit:
+                break
 
-        if is_palindrome(pSum):
-            palindromicList.add(pSum)
+            if is_palindrome(p_sum):
+                palindromic_list.add(p_sum)
 
-    n += 1
+        n += 1
 
-# print result
-csSum = sum(palindromicList)  # consecutive square sum (final output)
-print("Sum of palindromic square sums:", csSum)
+    # print result
+    cs_sum = sum(palindromic_list)  # consecutive square sum (final output)
+    print("Sum of palindromic square sums:", cs_sum)
+
+
+if __name__ == "__main__":
+    main()
