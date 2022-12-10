@@ -2,7 +2,7 @@ from math import gcd
 
 
 # reduces fraction to its lowest terms
-def reduce(numerator, denominator):
+def reduce(numerator: int, denominator: int) -> tuple[int, int]:
     # divide numerator, denominator by their GCD
     frac_gcd = gcd(numerator, denominator)
     numerator //= frac_gcd
@@ -12,48 +12,56 @@ def reduce(numerator, denominator):
 
 
 # loop through all numerators up to a given denominator and cancel digits
-def cancel_digits(denominator):
+def cancel_digits(denominator: int) -> tuple[int, int]:
     for numerator in range(10, denominator):
-        numerator_digits = [digit for digit in str(numerator)]  # get digits of numerator
-        denominator_digits = [digit for digit in str(denominator)]  # get digits of denominator
+        # get digits of numerator and denominator in list
+        numerator_digits = [digit for digit in str(numerator)]  
+        denominator_digits = [digit for digit in str(denominator)]
 
-        cancelable_digits = [digit for digit in numerator_digits if digit in denominator_digits]  # intersection
-        cancelable_digits = [digit for digit in cancelable_digits if digit != '0']  # remove 0s (trivial)
+        cancelable_digits = [digit for digit in numerator_digits 
+            if digit in denominator_digits and digit != '0']  # intersection
 
         # iterate through all similar digits in numerator and denominator
         for digit in cancelable_digits:
             # if numerator and denominator don't have exactly the same digits
-            if sorted(numerator_digits) != sorted(denominator_digits):
-                # cancel digits
-                if digit in numerator_digits and digit in denominator_digits:
-                    numerator_digits.remove(digit)
-                    denominator_digits.remove(digit)
+            if sorted(numerator_digits) == sorted(denominator_digits):
+                continue
 
-                # merge digits back to int
-                reduced_num = int("".join(numerator_digits))
-                reduced_denom = int("".join(denominator_digits))
+            # cancel digits
+            if digit in numerator_digits and digit in denominator_digits:
+                numerator_digits.remove(digit)
+                denominator_digits.remove(digit)
 
-                # if denominator or numerator is 0, do not reduce
-                if reduced_num and reduced_denom:
-                    if reduce(reduced_num, reduced_denom) == reduce(numerator, denominator):
-                        return numerator, denominator
+            # merge digits back to int
+            reduced_num = int("".join(numerator_digits))
+            reduced_denom = int("".join(denominator_digits))
+
+            # if denominator or numerator is 0, do not reduce
+            if not reduced_num or not reduced_denom or (reduce(
+                reduced_num, reduced_denom) != reduce(numerator, denominator)):
+                continue
+
+            return numerator, denominator
 
 
-# declare variables
-fractionNum = 0  # current number of digit cancelling fractions
-numeratorProduct = 1
-denominatorProduct = 1
+def main():
+    # declare variables
+    numerator_product, denominator_product = 1, 1
 
-# loop until all 4 2-digit solutions are found
-for d in range(10, 99):
-    currentFractions = cancel_digits(d)
-    if currentFractions is not None:  # if solution is found
-        print(currentFractions)
-        numeratorProduct *= currentFractions[0]
-        denominatorProduct *= currentFractions[1]
+    # loop until all 4 2-digit solutions are found
+    for d in range(10, 99):
+        current_fractions = cancel_digits(d)
+        if current_fractions:  # if solution is found
+            print(current_fractions)
+            numerator_product *= current_fractions[0]
+            denominator_product *= current_fractions[1]
 
-# print final result
-finalFraction = reduce(numeratorProduct, denominatorProduct)
-numeratorProduct = finalFraction[0]
-denominatorProduct = finalFraction[1]
-print(f"The product of the four fractions is {numeratorProduct}/{denominatorProduct}")
+    # print final result
+    numerator_product, denominator_product = reduce(
+        numerator_product, denominator_product)
+    print("The product of the four fractions is "\
+        f"{numerator_product}/{denominator_product}")
+
+    
+if __name__ == "__main__":
+    main()

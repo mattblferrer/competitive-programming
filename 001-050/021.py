@@ -1,47 +1,50 @@
-from math import prod
-
-def sum_factors(num):  # returns the sum of the factors of num
+def sum_factors(num: int) -> int:  # returns the sum of the factors of num
+    factor_sum = 1
     check = num
-    factors = []
 
-    for i in [2, 3]:  # for 2 and 3
-        power = 1
-        cFactor = 1
+    for i in (2, 3):  # for 2 and 3
+        power = i
+        c_factor = 1
 
         while num % i == 0:
-            cFactor += i**power
+            c_factor += power
             num //= i
-            power += 1
+            power *= i
 
-        factors.append(cFactor)
+        factor_sum *= c_factor
 
-    for i in range(6, int(num ** 0.5) + 3, 6):  # for 6k +- 1
-        for j in [-1, 1]:  # 6k +- 1
-            power = 1
-            cFactor = 1
-            while num % (i + j) == 0:
-                cFactor += (i + j) ** power
-                num //= (i + j)
-                power += 1
-
-            factors.append(cFactor)
-
-        if num == 1:
+    for i in range(5, int(num ** 0.5) + 3, 6):  # for 6k +- 1
+        if i*i > num:
             break
 
+        for j in (0, 2):  # 6k +- 1
+            power = (i + j)
+            c_factor = 1
+            while num % (i + j) == 0:
+                c_factor += power
+                num //= (i + j)
+                power *= (i + j)
+
+            factor_sum *= c_factor
+
     if num != 1:
-        factors.append(num+1)
+        factor_sum *= num + 1
 
-    return prod(factors) - check
+    return factor_sum - check
 
 
-limit = 10000  # given parameter
-amicSum = 0  # sum of amicable numbers up to limit
+def main():
+    limit = 10000  # given parameter
+    amic_sum = 0  # sum of amicable numbers up to limit
 
-for b in range(2, limit):
-    a = sum_factors(b)
-    if sum_factors(a) == b and a != b:
-        amicSum += b
+    for b in range(2, limit):
+        a = sum_factors(b)
+        if sum_factors(a) == b and a != b:
+            amic_sum += b
 
-# print result
-print(f"The sum of all amicable numbers below {limit} is {amicSum}")
+    # print result
+    print(f"The sum of all amicable numbers below {limit} is {amic_sum}")
+
+
+if __name__ == "__main__":
+    main()

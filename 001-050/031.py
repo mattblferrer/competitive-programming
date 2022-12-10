@@ -10,11 +10,10 @@ def change_ways(coin_set: tuple[int], num: int) -> int:
         return 0
     elif len(coin_set) == 0:  # no ways to make change with no choice of coins
         return 0
-    else:
-        # recursive formula given number of ways to give change with smaller 
-        # set of change
-        return (change_ways(coin_set[:-1], num) 
-            + change_ways(coin_set, num-coin_set[-1]))
+    # recursive formula given number of ways to give change with smaller 
+    # set of change
+    return (change_ways(coin_set[:-1], num)
+        + change_ways(coin_set, num-coin_set[-1]))
 
 
 # given variables
