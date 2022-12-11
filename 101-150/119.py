@@ -12,28 +12,25 @@ def is_power(num: int, base: int) -> bool:
         return False
 
     exp = round(log(num, base))  # round log to nearest whole number
-    if base ** exp == num:  # check if log is an integer
-        return True
-    return False
+    return base ** exp == num  # check if log is an integer
 
 
-# generate i^p up to reasonable limit
-powers = set()
-limit = 100
+def main():
+    # generate i^p up to reasonable limit
+    limit = 100
+    powers = sorted(list(
+        {i ** p for p in range(1, limit) for i in range(1, limit)}))
 
-for i in range(1, limit):
-    for p in range(1, limit):
-        powers.add(i**p)
+    # iterate through powers
+    a = 1
+    for num in powers:
+        if num > 10 and is_power(num, digit_sum(num)):
+            print(a, num)
+            a += 1
 
-powers = sorted(list(powers))
+        if a > 30:
+            break
 
-# iterate through powers
-a = 1
 
-for num in powers:
-    if num > 10 and is_power(num, digit_sum(num)):
-        print(a, num)
-        a += 1
-
-    if a > 30:
-        break
+if __name__ == "__main__":
+    main()
