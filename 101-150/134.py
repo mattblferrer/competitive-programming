@@ -1,7 +1,3 @@
-"""
-This program is a bit slow, and could be optimized further.
-(Took approximately 1 hour to run)
-"""
 from math import sqrt
 
 
@@ -29,36 +25,44 @@ def soe(n: int) -> list:
     return isPrimeList
 
 
-# declare variables
-limit = 1000000
-p1 = 5  # start at p1 = 5, p2 = 7
-sSum = 0
-isPrimeList = soe(limit + 100)  # create a sieve of Eratosthenes
+# returns the modular multiplicative inverse of num mod x
+def mod_mult_inv(num: int, x: int) -> int:
+    r0, r1 = x, num
+    t0, t1 = 0, 1
 
-# generate list of primes and iterate through it
-for p2, isprime in enumerate(isPrimeList[7:], start=7):
-    if p1 > limit:
-        break
+    # extended Euclidean algorithm
+    while r1 != 0:
+        q = r0 // r1
+        r0, r1 = r1, r0 % r1  # remainders after Euclidean division
+        t0, t1 = t1, (t0 - t1*q) % x
+        
+    return t0
 
-    if isprime:
-        p10 = 10**(len(str(p1)))  # power of 10 to add to p1
-        r = p1  # remainder when divided by p2
-        r_p10 = p10 % p2  # remainder of power of 10 divided by p2
 
-        # calculate value of S for p1, p2
-        for i in range(1, p2):
-            r += r_p10
+def main():
+    # declare variables
+    limit = 1_000_000
+    p1 = 5  # start at p1 = 5, p2 = 7
+    s_sum = 0
+    is_prime_list = soe(limit + 100)  # create a sieve of Eratosthenes
 
-            if r >= p2:  # keep mod p2 under p2
-                r -= p2
+    # generate list of primes and iterate through it
+    for p2, isprime in enumerate(is_prime_list[7:], start=7):
+        if p1 > limit:
+            break
 
-            if r == 0:  # p1 divides p2
-                s = i*p10 + p1  # append last digits of p1 to counter
-                sSum += s
-                print(p1, p2, s)  # print running p1, p2, s
-                break
+        if isprime:
+            p10 = 10**(len(str(p1)))  # power of 10 to add to p1
 
-        p1 = p2
+            # find q to multiply to power of 10 such that total s is
+            # divisible by p2
+            q = ((p2 - p1) * mod_mult_inv(p10, p2)) % p2
+            s_sum += p10 * q + p1
+            p1 = p2  # switch p1, p2 and find new p2
 
-# print result
-print(sSum)
+    # print result
+    print(s_sum)
+
+
+if __name__ == "__main__":
+    main()
