@@ -4,9 +4,9 @@ from math import sqrt
 # creates a Sieve of Eratosthenes array of size n
 def soe(n: int) -> list:
     iterlimit = int(sqrt(n)) + 1
-    isPrimeList = [True]*(n+1)
+    isPrimeList = [True]*n
 
-    # for 0 and 1 
+    # for 0 and 1
     isPrimeList[0] = isPrimeList[1] = False
 
     # for 2 and 3
@@ -16,11 +16,11 @@ def soe(n: int) -> list:
             isPrimeList[multiple] = False  
 
     # for 6k +- 1
-    for i in range(5, iterlimit+2, 6): 
-        for j in [0, 2]: 
+    for i in range(5, iterlimit+2, 6):
+        for j in [0, 2]:
             for multiple in range((i+j) * (i+j), n, i+j):
                 # assign multiples of i+j as not being prime
-                isPrimeList[multiple] = False  
+                isPrimeList[multiple] = False
 
     return isPrimeList
 
