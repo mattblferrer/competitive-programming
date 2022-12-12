@@ -19,46 +19,43 @@ def is_fd_prime(num: int) -> bool:
             num //= 2
             power += 1
 
-        # check if power of 2 or exponent != 2^k
-        if num == 1 and (log(power, 2).is_integer()):  
-            return True
-        return False
+        # check if power of 2 and exponent == 2^k
+        return num == 1 and log(power, 2).is_integer()
 
-    else:
-        for i in range(3, int(sqrt(num))+1, 2):  # for odd numbers
-            if num % i == 0:
-                while num % i == 0:
-                    num //= i
-                    power += 1
+    for i in range(3, int(sqrt(num))+1, 2):  # for odd numbers
+        if num % i == 0:
+            while num % i == 0:
+                num //= i
+                power += 1
 
-                # check if power of 2 or exponent != 2^k
-                if num == 1 and (log(power, 2).is_integer()):  
-                    return True
-                return False
-            
-        # if no factors below sqrt(n) divide n
-        return True
+            # check if exponent == 2^k
+            return num == 1 and log(power, 2).is_integer()
+        
+    # if no factors below sqrt(n) divide n
+    return True
 
 
-# declare variables
-limit = 500500
-mod = 500500507
-x = 1
+def main():
+    # declare variables
+    limit = 500_500
+    mod = 500_500_507
+    x = 1  # output
+    primes = 0
+    n = 2  # number being checked
 
-# main loop
-primes = 0
-n = 2
+    while primes < limit:
+        if is_fd_prime(n):
+            primes += 1
+            x *= n
 
-while primes < limit:
-    if is_fd_prime(n):
-        primes += 1
-        x *= n
+            if x > mod:  # calculate mod
+                x = x % mod
 
-        # calculate mod
-        if x > mod:
-            x = x % mod
+        n += 1
+        
+    # print result
+    print(x)
 
-    n += 1
-    
-# print result
-print(x)
+
+if __name__ == "__main__":
+    main()

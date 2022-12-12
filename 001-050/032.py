@@ -6,10 +6,7 @@ We only have to check for numbers from 1000 to 10000
 # checks if a number num is pandigital
 def pandigital_check(num: int) -> bool:
     digits_used = {int(digit) for digit in str(num)}
-
-    if digits_used == set(range(1, 10)):
-        return True
-    return False
+    return digits_used == set(range(1, 10))
 
 
 # returns the factors of num in pairs (non-repeating)
@@ -35,19 +32,24 @@ def conc_factors(num: int) -> list[str]:
     return string_list
 
 
-# declare variables
-products = []  # products that can be written as 1 to 9 pandigital
-product_sum = 0
+def main():
+    # declare variables
+    products = []  # products that can be written as 1 to 9 pandigital
+    product_sum = 0
 
-# main loop
-for i in range(1000, 10000):
-    identities = conc_factors(i)
+    # main loop
+    for i in range(1000, 10000):
+        identities = conc_factors(i)
 
-    for identity in identities:
-        if pandigital_check(identity):
-            products.append(i)
-            product_sum += i
-            break
+        for identity in identities:
+            if pandigital_check(identity):
+                products.append(i)
+                product_sum += i
+                break
 
-# print output
-print(f"The sum of all products is {product_sum}")
+    # print output
+    print(f"The sum of all products is {product_sum}")
+
+
+if __name__ == "__main__":
+    main()
