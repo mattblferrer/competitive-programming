@@ -5,13 +5,12 @@ start at n = 1,000,001 and check odd numbers for divisibility.
 
 
 # returns a(n) for a given n
-def repunit_a(n):
-    r = 1  # start at R1
-    a = 1  # 
+def repunit_a(n: int) -> int:
+    a, r = 1, 1 # start at R1
 
     # check remainder, else check next repunit
     while r != 0:
-        r = (r*10 + 1) % n
+        r = (r * 10 + 1) % n
         a += 1
         
         if a > n:  # A(n) can never exceed n
@@ -20,19 +19,23 @@ def repunit_a(n):
     return a
 
 
-# declare variables
-limit = 1000000
-n = limit + 1
+def main():
+    # declare variables
+    limit = 1_000_000
+    n = limit + 1
+    a_n = 0
 
-# main loop
-while True:
-    if n % 5 != 0:
-        aN = repunit_a(n)
+    # main loop
+    while a_n < limit:
+        n += 2
+        if n % 5 == 0:
+            n += 2
 
-        if aN > limit:
-            break
+        a_n = repunit_a(n)
 
-    n += 2
+    # print result
+    print("The least value of n is:", n)
 
-# print result
-print("The least value of n is:", n)
+
+if __name__ == "__main__":
+    main()
