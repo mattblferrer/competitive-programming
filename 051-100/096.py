@@ -16,8 +16,8 @@ from copy import deepcopy
 
 
 # returns the possibilities for each cell in the grid
-def possibilities(grid):
-    possibilities = [[[]]*9 for i in range(9)] # initialize 9x9 array
+def possibilities(grid: list[list[int]]) -> list[list[int]]:
+    possibilities = [[[]]*9 for _ in range(9)] # initialize 9x9 array
     all_nums = [i for i in range(1, 10)]
 
     # rows
@@ -27,8 +27,9 @@ def possibilities(grid):
 
         # assign row possibilities to cells in row
         for col_num, cell in enumerate(row):
-            if cell == 0:
-                possibilities[row_num][col_num] = row_poss
+            if cell != 0:
+                continue
+            possibilities[row_num][col_num] = row_poss
 
     # columns
     for col_num in range(9):
@@ -38,18 +39,20 @@ def possibilities(grid):
 
         # subtract column possibilities from row possibilities
         for row_num, cell in enumerate(row):
-            if cell == 0:
-                curr_poss = possibilities[row_num][col_num]  # current possibilities
+            if cell != 0:
+                continue
+            curr_poss = possibilities[row_num][col_num]  # current possibilities
 
-                # take intersection
-                possibilities[row_num][col_num] = [val for val in curr_poss if val in col_poss]
+            # take intersection
+            possibilities[row_num][col_num] = [val for val in 
+            curr_poss if val in col_poss]
 
     # 3x3 squares
     for grid_r in range(3):  # grid row
         for grid_c in range(3):   # grid column
             square = []  # initialize 3x3 square array
 
-            for row_num in range(grid_r*3, grid_r*3 + 3):  # 3 rows in 3x3 sqr
+            for row_num in range(grid_r*3, grid_r*3 + 3):  # 3 rows 3x3 sqr
                 col = [grid[row_num][i] for i in range(grid_c*3, grid_c*3 + 3)]
                 square.extend(col)
 
@@ -57,19 +60,23 @@ def possibilities(grid):
             sqr_poss = list(set(all_nums) - set(sqr_poss))  # inverse
 
             # subtract square possibilities from current possibilities
-            for row_num in range(grid_r*3, grid_r*3 + 3):  # 3 rows in 3x3 sqr
-                for col_num in range(grid_c*3, grid_c*3 + 3):  # 3 cols in 3x3 sqr
-                    if grid[row_num][col_num] == 0:
-                        curr_poss = possibilities[row_num][col_num]  # current possibilities
+            for row_num in range(grid_r*3, grid_r*3 + 3):  # 3 rows 3x3 sqr
+                for col_num in range(grid_c*3, grid_c*3 + 3):  # 3 cols 3x3 sqr
+                    if grid[row_num][col_num] != 0:
+                        continue
+                    # current possibilities
+                    curr_poss = possibilities[row_num][col_num]  
 
-                        # take intersection
-                        possibilities[row_num][col_num] = [val for val in curr_poss if val in sqr_poss]
+                    # take intersection
+                    possibilities[row_num][col_num] = [val for val in 
+                    curr_poss if val in sqr_poss]
 
     return possibilities   
 
 
 # fills in cells in the grid with only a single possibility
-def one_poss_fill(grid, poss): 
+def one_poss_fill(grid: list[list[int]], poss: list[list[int]]) -> list[list
+[int]]: 
     for row_num in range(9):
         for col_num in range(9):
             if len(poss[row_num][col_num]) == 1:
@@ -80,7 +87,7 @@ def one_poss_fill(grid, poss):
 
 # returns True if a digit can be put in the grid cell with coords (x, y), False 
 # otherwise
-def is_possible(grid, digit, x, y):
+def is_possible(grid: list[list[int]], digit: int, x: int, y: int) -> bool:
     if grid[y][x] != 0:  # cell already occupied
         return False
 
@@ -88,8 +95,7 @@ def is_possible(grid, digit, x, y):
         if grid[y][i] == digit or grid[i][x] == digit:
             return False
 
-    grid_r = y // 3  # row of 3x3 square
-    grid_c = x // 3  # column of 3x3 square
+    grid_r, grid_c = y // 3, x // 3  # row and column of 3x3 square
 
     for i in range(3):  # check 3x3 square
         for j in range(3):
@@ -100,24 +106,19 @@ def is_possible(grid, digit, x, y):
 
 
 # solves a Sudoku using backtracking
-def solve_bt(grid):
-    # position in the grid to be checked
-    ptr = 0
+def solve_bt(grid: list[list[int]]) -> bool:
+    ptr = 0  # position in the grid to be checked
 
     # check if grid is solved
-    isSolved = True
     for i in range(81):
         if grid[i // 9][i % 9] == 0:
             ptr = i
-            isSolved = False
             break
-
-    if isSolved:
+    else:  # if grid solving did not break
         return True
 
     # backtrack
-    row = ptr // 9
-    col = ptr % 9   
+    row, col = divmod(ptr, 9)
     for i in range(1, 10):  # try all from 1 to 9
         if is_possible(grid, i, col, row):
             grid[row][col] = i
@@ -129,46 +130,48 @@ def solve_bt(grid):
     return False
 
 
-# read file
-file1 = open('p096_sudoku.txt', 'r')
-lines = file1.readlines()
+def main():
+    # read file
+    with open('p096_sudoku.txt', 'r') as f:
+        lines = f.readlines()
 
-# strip whitespace and read Sudoku grids
-line_num = 0
-grids = []
+    # strip whitespace and read Sudoku grids
+    line_num = 0
+    grids = []
 
-while line_num < len(lines):
-    line = lines[line_num].strip()
-    if line[0:4] == "Grid":  # check for grid number
-        grid = []
-        for i in range(1, 10):
-            row = lines[line_num+i].strip()  # strip whitespace from rows
-            row = [int(digit) for digit in row]  # convert to single digits
-            grid.append(row)
+    while line_num < len(lines):
+        line = lines[line_num].strip()
+        if line[0:4] == "Grid":  # check for grid number
+            grid = []
+            for i in range(1, 10):
+                row = lines[line_num+i].strip()  # strip whitespace from rows
+                row = [int(digit) for digit in row]  # convert to single digits
+                grid.append(row)
 
-        grids.append(grid)
-        line_num += 10
+            grids.append(grid)
+            line_num += 10
 
-# solve each grid
-sum3digits = 0  # sum of 3 digit numbers in top left corner
+    # solve each grid
+    sum_3_digits = 0  # sum of 3 digit numbers in top left corner
 
-for grid in grids:
-    # eliminate "easy" cells
-    while True:
-        prevGrid = deepcopy(grid)  # previous iteration of grid
-        grid = one_poss_fill(grid, possibilities(grid))
+    for grid in grids:
+        # eliminate "easy" cells
+        prev_grid = None
+        while grid != prev_grid:
+            prev_grid = deepcopy(grid)  # previous iteration of grid
+            grid = one_poss_fill(grid, possibilities(grid))
 
-        if grid == prevGrid:  # if nothing changed
-            break
+        solve_bt(grid)  # solve grid
+        for row in grid:  # print solved grid
+            print(row)
+        print("")
 
-    # solve grid
-    solve_bt(grid)
-    for row in grid:  # print solved grid
-        print(row)
-    print("")
+        # get first 3 digits of each grid
+        sum_3_digits += 100 * grid[0][0] + 10 * grid[0][1] + grid[0][2]
 
-    # get first 3 digits of each grid
-    sum3digits += 100*grid[0][0] + 10*grid[0][1] + grid[0][2]
+    # print result
+    print(sum_3_digits)
 
-# print result
-print(sum3digits)
+
+if __name__ == "__main__":
+    main()

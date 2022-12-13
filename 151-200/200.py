@@ -32,11 +32,14 @@ def is_prime_mr(n: int) -> bool:
     if n < 2152302898747: 
         return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11))
     if n < 3474749660383: 
-        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 13))
+        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 
+        13))
     if n < 341550071728321: 
-        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 13, 17))
+        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 
+        13, 17))
     else:
-        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 13, 17, 19, 23))
+        return not any(_try_composite(a, d, n, s) for a in (2, 3, 5, 7, 11, 
+        13, 17, 19, 23))
 
 _known_primes = [2, 3]
 
@@ -44,7 +47,7 @@ _known_primes = [2, 3]
 # creates a Sieve of Eratosthenes array of size n
 def soe(n: int) -> list:
     iterlimit = int(n**0.5) + 1
-    isPrimeList = [True]*(n+1)
+    isPrimeList = [True]*n
 
     # for 0 and 1 
     isPrimeList[0] = isPrimeList[1] = False
@@ -68,9 +71,7 @@ def soe(n: int) -> list:
 # returns True if number contains the substring given
 def num_contains_substring(n: int, substring: str) -> bool:
     n = str(n)  # convert number to string
-    if substring in n: 
-        return True
-    return False
+    return substring in n
 
 
 # returns True if any digit of the number can't be changed to make a prime
@@ -108,8 +109,8 @@ def main():
 
     # loop through squbes p^2*q^3 for p and q
     maximum = max(sqube_list) 
-    for q in prime_list:
-        for p in prime_list:
+    for p in prime_list:
+        for q in prime_list:
             if p == q:  # distinct primes needed
                 continue
 
@@ -125,8 +126,8 @@ def main():
     answer = sorted(sqube_list)[limit - 1]  # get 200th element of sqube array
 
     # print result
-    print(f"The {limit}th prime-proof sqube containing the contiguous sub\
-string 200 is {answer}")
+    print(f"The {limit}th prime-proof sqube containing the contiguous sub"\
+    f"string 200 is {answer}")
 
 
 if __name__ == "__main__":

@@ -1,19 +1,17 @@
 # generates pentagonal number of certain index
 def pentagonal(ind: int) -> int:
-    return ind*(3*ind-1)//2
+    return ind * (3 * ind - 1) // 2
 
 
 # determines if number num is pentagonal
 def is_pentagonal(num: int) -> bool:
-    pent_check = ((24*num+1)**0.5 + 1)/6
-    if pent_check.is_integer():
-        return True
-    return False
+    pent_check = ((24 * num + 1) ** 0.5 + 1) / 6
+    return pent_check.is_integer()
 
 
-# difference of pentagonal numbers Pj and Pk
+# difference of pentagonal numbers p_j and p_k
 def diff_pent(positions: list[tuple[int]]) -> tuple[int]:
-    # calculate Pj - Pk
+    # calculate p_j - p_k
     for item in positions:
         (j, k) = item
         p_j = pentagonal(j)
@@ -31,33 +29,40 @@ def sum_pent(pent_list: list[int], ind: int) -> list[tuple[int]]:
     length = len(pent_list)
     solutions = []  # all possible solutions for index ind
 
-    for i in range(length-1, 0, -1):  # iterate from highest to lowest index to decrease difference
+    # iterate from highest to lowest index to decrease difference
+    for i in range(length-1, 0, -1):  
         if is_pentagonal(num + pent_list[i-1]):
             solutions.append((ind, i))
 
     return solutions
 
 
-# declare variables
-difference = 0  # difference between Pj and Pk
-index = 3  # starting index for pentagonal()
-pentagonalList = [1, 5]  # list of pentagonal numbers calculated
-currentPentagonal = pentagonal(index)  # starting pentagonal
+def main():
+    # declare variables
+    difference = 0  # difference between p_j and p_k
+    index = 3  # starting index for pentagonal()
+    pentagonal_list = [1, 5]  # list of pentagonal numbers calculated
+    current_pentagonal = pentagonal(index)  # starting pentagonal
 
-# loop until Pj and Pk are found
-while difference == 0:
-    # compute current pentagonal number
-    pentagonalList.append(currentPentagonal)
+    # loop until p_j and p_k are found
+    while difference == 0:
+        # compute current pentagonal number
+        pentagonal_list.append(current_pentagonal)
 
-    # loop through pentagonal numbers until soln found
-    pentagonalSum = sum_pent(pentagonalList, index)  # j and k, for which Pj + Pk is pentagonal
+        # loop through pentagonal numbers until soln j and k, for which 
+        # p_j + p_k is pentagonal is found
+        pentagonal_sum = sum_pent(pentagonal_list, index)  
 
-    if pentagonalSum:
-        pentagonalDiff = diff_pent(pentagonalSum)
-        if pentagonalDiff is not None:
-            # get Pj, Pk, and difference values and print
-            Pj, Pk, difference = pentagonalDiff
-            print(f"Pk: {Pk}, Pj: {Pj}, Difference: {difference}")
+        if pentagonal_sum:
+            pentagonal_diff = diff_pent(pentagonal_sum)
+            if pentagonal_diff is not None:
+                # get p_j, p_k, and difference values and print
+                p_j, p_k, difference = pentagonal_diff
+                print(f"p_k: {p_k}, p_j: {p_j}, Difference: {difference}")
 
-    index += 1
-    currentPentagonal += 3*index - 2  # generate next pentagonal number
+        index += 1
+        current_pentagonal += 3*index - 2  # generate next pentagonal number
+
+
+if __name__ == "__main__":
+    main()

@@ -25,7 +25,7 @@ def next_odd_composite(num: int) -> int:
 
 # loops through all the squares and checks for prime difference
 def square_check(num: int) -> bool:
-    limit = isqrt(num // 2)+1  # upper bound of squares to be checked
+    limit = isqrt(num // 2) + 1  # upper bound of squares to be checked
 
     for i in range(1, limit):
         prime_cand = num - 2*i*i  # candidate for being prime
@@ -35,15 +35,21 @@ def square_check(num: int) -> bool:
     return False
 
 
-# declare variables
-composite = 33  # start at 33, given
+def main():
+    # declare variables
+    composite = 33  # start at 33, given
 
-print("The odd composites that can't be written as the sum of a prime and twice a square are: ")
+    print("The odd composites that can't be written as the sum of a prime "\
+        "and twice a square are: ")
 
-# main loop
-while True:
-    composite = next_odd_composite(composite)
+    # odd composite search
+    while True:
+        composite = next_odd_composite(composite)
 
-    if not square_check(composite):
-        print(composite)
-        break
+        if not square_check(composite):
+            print(composite)
+            break
+
+
+if __name__ == "__main__":
+    main()
