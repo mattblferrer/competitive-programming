@@ -84,8 +84,7 @@ def carmichael(num: int) -> int:
         for base, power in factor_ctr.items():
             if base == 2 and power > 2:
                 return totient(num, list(factor_ctr)) // 2
-            else:
-                return totient(num, list(factor_ctr))
+            return totient(num, list(factor_ctr))
 
     # if not prime power
     l_lambdas = [carmichael(base**power) for base, power in factor_ctr.items()]

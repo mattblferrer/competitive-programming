@@ -26,18 +26,20 @@ def soe(n: int) -> list:
 
 
 # returns the largest number k <= N only divisible by primes p, q 
-def M(p, q, N):
-    if p*q > N:
+def M(p: int, q: int, N: int) -> int:
+    if p * q > N:
         return 0
-    k = p*q
+
+    k = p * q
     largest = k
 
     while k <= N:
         m = k
+
         while m <= N:
             if largest < m:
                 largest = m
-            m *= q
+            m *= q  
             
         k *= p
     

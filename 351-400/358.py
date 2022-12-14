@@ -81,8 +81,7 @@ def carmichael(num: int) -> int:
         for base, power in factor_ctr.items():
             if base == 2 and power > 2:
                 return totient(num, list(factor_ctr)) // 2
-            else:
-                return totient(num, list(factor_ctr))
+            return totient(num, list(factor_ctr))
 
     # if not prime power
     l_lambdas = [carmichael(base**power) for base, power in factor_ctr.items()]
@@ -105,7 +104,7 @@ def long_division(dividend: int, n: int):
     dividend *= 10
 
     # continued long division, only have to check up to n digits
-    for _ in range(n-1):  
+    for _ in range(n - 1):  
         if dividend // n == 0:  # multiply dividend by 10 and move to the right
             dividend *= 10
             yield 0
@@ -128,7 +127,7 @@ def main():
     u_limit = (10**left_digit_num) // left_digits  # upper limit
 
     # get cyclic primes 
-    for n in range((l_limit // 2)*2 + 1, u_limit, 2):  # check odds only
+    for n in range((l_limit // 2) * 2 + 1, u_limit, 2):  # check odds only
         if (right_digits * n) % 100_000 != 99_999:  # check rightmost digits
             continue
 
@@ -143,18 +142,16 @@ def main():
     for i, digit in enumerate(long_division(1, n)):
         sum_digits += digit
 
-        # get last 5 digits of cyclic number
-        if i == n - 7: 
+        if i == n - 7:  # get last 5 digits of cyclic number
             last_5_digits = []
+        
+        elif i == n - 2 and last_5_digits == [5, 6, 7, 8, 9]:  # check digits
+            print(f"sum: {sum_digits}")
 
         elif i > n - 7:
             last_5_digits.append(digit)
 
-        # check digits
-        if i == n - 2 and last_5_digits == [5, 6, 7, 8, 9]:
-            print(f"sum: {sum_digits}")
-
-        if i % 100_000_000 == 0:  # progress tracker
+        elif i % 100_000_000 == 0:  # progress tracker
             print(f"checking {n}, digit: {i}")
 
 
