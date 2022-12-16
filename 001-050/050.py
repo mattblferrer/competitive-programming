@@ -25,39 +25,42 @@ def soe(n: int) -> list:
     return isPrimeList
 
 
-# declare variables
-limit = 1000000
-maximumLength = 0  # length of longest sum of consecutive primes
+def main():
+    # declare variables
+    limit = 1_000_000
+    maximum_length = 0  # length of longest sum of consecutive primes
+    maximum_prime = 0
 
-# create list of primes
-isPrimeList = soe(limit)
-primes = [idx for idx, isprime in enumerate(isPrimeList) if isprime]
-currentIndex = 0
-maximumPrime = 0
+    # create list and set of primes for faster searching
+    is_prime_list = soe(limit)
+    primes = [idx for idx, isprime in enumerate(is_prime_list) if isprime]
+    prime_set = set(primes)
 
-# main loop
-length = len(primes)  # number of primes below 1 million
+    # main loop
+    for idx, prime in enumerate(primes): # iterate through starting primes
+        sum_primes = prime
+        length = 0
+        
+        # calculate sums of consecutive primes
+        while sum_primes < limit:
+            length += 1
+            sum_primes += primes[idx + length]
 
-while currentIndex < (length - 1):  # iterate through all starting primes
-    sumPrimes = primes[currentIndex]
-    ctr = currentIndex
-    
-    # calculate sums of consecutive primes
-    while sumPrimes < limit:
-        ctr += 1
-        sumPrimes += primes[ctr]
+        # backtrack to find highest lower than limit
+        sum_primes -= primes[idx + length]  
 
-    sumPrimes -= primes[ctr]  # backtrack to find highest lower than limit
+        # check if chain of primes is the longest
+        if sum_primes in prime_set and length > maximum_length:
+            maximum_length = length  # find length of chain 
+            maximum_prime = sum_primes
 
-    # check if chain of primes is the longest
-    if sumPrimes in primes and ctr - currentIndex > maximumLength:
-        maximumLength = ctr - currentIndex 
-        maximumPrime = sumPrimes
-        print(currentIndex, maximumPrime, maximumLength) 
+        if length < maximum_length:  # if no longer chain can be made
+            break
 
-    # next prime
-    currentIndex += 1
+    # print result
+    print(f"The prime below {limit} that can be written as the sum of the "\
+    f"most consecutive primes is {maximum_prime}, length: {maximum_length}")
 
-# print result
-print(f"The prime below 1 million that can be written as the sum of the most\
-consecutive primes is {maximumPrime}, length: {maximumLength}")
+
+if __name__ == "__main__":
+    main()
