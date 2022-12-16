@@ -4,34 +4,34 @@ import numpy as np
 
 
 def main():
-    # creates a Sieve of Eratosthenes array of size n
     def soe(n: int) -> list[bool]:
+        """creates a Sieve of Eratosthenes array of size n"""
         iterlimit = int(sqrt(n)) + 1
-        isPrimeList = [True]*n
+        is_prime_list = [True]*(n + 1)
 
         # for 0 and 1 
-        isPrimeList[0] = isPrimeList[1] = False
+        is_prime_list[0] = is_prime_list[1] = False
 
         # for 2 and 3
         for i in (2, 3):
             for multiple in range(i*i, n, i):
                 # assign multiples of 2 or 3 as not being prime
-                isPrimeList[multiple] = False  
+                is_prime_list[multiple] = False  
 
         # for 6k +- 1
-        for i in range(5, iterlimit + 2, 6): 
+        for i in range(5, iterlimit+2, 6): 
             for j in (0, 2): 
                 for multiple in range((i+j) * (i+j), n, i+j):
                     # assign multiples of i+j as not being prime
-                    isPrimeList[multiple] = False  
+                    is_prime_list[multiple] = False  
 
-        return isPrimeList
+        return is_prime_list
 
 
     @njit
-    # returns the prime factors of num with multiplicity (repeating) as a
-    # numpy array
     def prime_factorize_650(num: int) -> np.array:
+        """returns the prime factors of num with multiplicity (repeating) as a
+        numpy array"""
         factors = [0]*length
         ctr = 0
 
@@ -49,8 +49,8 @@ def main():
 
 
     @njit
-    # returns the modular multiplicative inverse of num mod x
     def mod_mult_inv(num: int, x: int) -> int:
+        """returns the modular multiplicative inverse of num mod x"""
         r0, r1 = x, num
         t0, t1 = 0, 1
 
@@ -63,8 +63,9 @@ def main():
         return t0
 
 
-    # returns the sum of the factors of num mod n given its prime factorization
-    def sum_factors_650(factors: np.array, n: int) -> int:  
+    def sum_factors_650(factors: np.array, n: int) -> int:
+        """returns the sum of the factors of num mod n given its prime 
+        factorization"""
         sum_factors = 1
         for p, power in zip(prime_list, factors):
             # convert from numpy type to int type for arbitrary precision
@@ -78,9 +79,9 @@ def main():
 
 
     @njit
-    # returns the factorization of the product of all combinations of 
-    # two numbers n choose k
     def comb_factor_array(n: int) -> np.array:
+        """returns the factorization of the product of all combinations of 
+        two numbers n choose k"""
         factors = np.array([0]*length)
         for k in range(1, n + 1):
             factors += factor_list[k] * (2*k - 1 - n)

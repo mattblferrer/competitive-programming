@@ -1,5 +1,6 @@
-# uses the Tonelli-Shanks algorithm to return the solution to x^2 = n mod p
 def tonelli_shanks(n: int, p: int) -> tuple[int, int]:
+    """uses the Tonelli-Shanks algorithm to return the solution to x^2 = n 
+    mod p"""
     if pow(n, (p - 1) // 2, p) == 1:  # check that n is a square mod p
         q = p - 1
         s = 0
@@ -36,28 +37,28 @@ def tonelli_shanks(n: int, p: int) -> tuple[int, int]:
         return r, p - r
 
 
-# creates a Sieve of Eratosthenes array of size n
-def soe(n: int) -> list:
+def soe(n: int) -> list[bool]:
+    """creates a Sieve of Eratosthenes array of size n"""
     iterlimit = int(n ** 0.5) + 1
-    isPrimeList = [True]*(n+1)
+    is_prime_list = [True]*n
 
     # for 0 and 1 
-    isPrimeList[0] = isPrimeList[1] = False
+    is_prime_list[0] = is_prime_list[1] = False
 
     # for 2 and 3
     for i in (2, 3):
         for multiple in range(i*i, n, i):
             # assign multiples of 2 or 3 as not being prime
-            isPrimeList[multiple] = False  
+            is_prime_list[multiple] = False  
 
     # for 6k +- 1
     for i in range(5, iterlimit+2, 6): 
         for j in (0, 2): 
             for multiple in range((i+j) * (i+j), n, i+j):
                 # assign multiples of i+j as not being prime
-                isPrimeList[multiple] = False  
+                is_prime_list[multiple] = False  
 
-    return isPrimeList
+    return is_prime_list
 
 
 def main():
@@ -71,17 +72,20 @@ def main():
 
     # test 2n^2 - 1 for primality using Tonelli-Shanks algorithm 
     for p in prime_list:
-        if p % 8 == 1 or p % 8 == 7:
-            roots = tonelli_shanks((p + 1) // 2, p)
-            if roots:
-                for root in roots:
-                    x = root
-                    while x < 0:
-                        x += p
-                    while x <= limit:
-                        if 2*x*x - 1 != p:
-                            is_square_prime[x] = False
-                        x += p
+        if not (p % 8 == 1 or p % 8 == 7):
+            continue
+
+        roots = tonelli_shanks((p + 1) // 2, p)
+        if not roots:
+            continue
+        for root in roots:
+            x = root
+            while x < 0:
+                x += p
+            while x <= limit:
+                if 2*x*x - 1 != p:
+                    is_square_prime[x] = False
+                x += p
 
     primes = sum(is_square_prime)
 

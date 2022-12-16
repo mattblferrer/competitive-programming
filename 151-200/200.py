@@ -1,8 +1,8 @@
 """
 SOURCE: https://rosettacode.org/wiki/Miller%E2%80%93Rabin_primality_test#Python
 """
-# test for composite
 def _try_composite(a: int, d: int, n: int, s: int) -> bool:
+    """returns True if a number n is definitely composite"""
     if pow(a, d, n) == 1:
         return False
     for i in range(s):
@@ -11,8 +11,8 @@ def _try_composite(a: int, d: int, n: int, s: int) -> bool:
     return True  # n  is definitely composite
  
 
-# Miller-Rabin primality test
 def is_prime_mr(n: int) -> bool:
+    """returns True if a number n is likely prime using Miller-Rabin test"""
     if n in _known_primes:
         return True
     if any((n % p) == 0 for p in _known_primes) or n in (0, 1):
@@ -44,38 +44,39 @@ def is_prime_mr(n: int) -> bool:
 _known_primes = [2, 3]
 
 
-# creates a Sieve of Eratosthenes array of size n
-def soe(n: int) -> list:
-    iterlimit = int(n**0.5) + 1
-    isPrimeList = [True]*n
+def soe(n: int) -> list[bool]:
+    """creates a Sieve of Eratosthenes array of size n"""
+    iterlimit = int(n ** 0.5) + 1
+    is_prime_list = [True]*n
 
     # for 0 and 1 
-    isPrimeList[0] = isPrimeList[1] = False
+    is_prime_list[0] = is_prime_list[1] = False
 
     # for 2 and 3
     for i in (2, 3):
         for multiple in range(i*i, n, i):
             # assign multiples of 2 or 3 as not being prime
-            isPrimeList[multiple] = False  
+            is_prime_list[multiple] = False  
 
     # for 6k +- 1
     for i in range(5, iterlimit+2, 6): 
         for j in (0, 2): 
             for multiple in range((i+j) * (i+j), n, i+j):
                 # assign multiples of i+j as not being prime
-                isPrimeList[multiple] = False  
+                is_prime_list[multiple] = False  
 
-    return isPrimeList
+    return is_prime_list
 
 
-# returns True if number contains the substring given
 def num_contains_substring(n: int, substring: str) -> bool:
+    """returns True if number n contains the substring given"""
     n = str(n)  # convert number to string
     return substring in n
 
 
-# returns True if any digit of the number can't be changed to make a prime
 def is_primeproof(n: int) -> bool:
+    """returns True if any digit of the number can't be changed to 
+    make a prime"""
     n = str(n)  # convert number to list of characters
     for i, digit in enumerate(n):
         for j in range(1, 10):
@@ -102,7 +103,7 @@ def main():
             if p == q:  # distinct primes needed
                 continue
 
-            sqube = (p*p) * (q*q*q)
+            sqube = p * p * q * q * q
             if num_contains_substring(sqube, '200') and is_primeproof(sqube):
                 sqube_list.add(sqube)
                 print(p, q, sqube) 
@@ -114,7 +115,7 @@ def main():
             if p == q:  # distinct primes needed
                 continue
 
-            sqube = (p*p) * (q*q*q)
+            sqube = p * p * q * q * q
 
             if sqube > maximum:
                 break

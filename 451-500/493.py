@@ -15,19 +15,19 @@ being:
 """
 
 
-# calculates the factorial of n
-def factorial(n):
+def factorial(n: int) -> int:
+    """calculates the factorial of an integer n"""
     fac = 1  # factorial
     for i in range(1, n+1):
         fac *= i
     return fac
 
 
-# the function n choose r
-def combination(n, r):
-    return factorial(n)//(factorial(r)*factorial(n-r))
+def combination(n: int, r: int) -> int:
+    """returns the result of the function n choose r"""
+    return factorial(n) // (factorial(r) * factorial(n - r))
 
 
 # calculate and print result
-answer = 7*(combination(70, 20) - combination(60, 20))/(combination(70, 20))
+answer = 7 * (combination(70, 20) - combination(60, 20))/(combination(70, 20))
 print("{:.9f}".format(answer))

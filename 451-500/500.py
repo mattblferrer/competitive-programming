@@ -10,8 +10,9 @@ Source: https://oeis.org/A037992
 from math import sqrt, log
 
 
-# determines if num is a Fermi-Dirac prime
 def is_fd_prime(num: int) -> bool:
+    """returns True if num is a Fermi-Dirac prime, or a number of the form
+    p^(2^k) with integer k and prime p"""
     power = 0
 
     if num % 2 == 0:  # for even numbers

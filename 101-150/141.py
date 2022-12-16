@@ -1,34 +1,35 @@
 from math import isqrt
 
 
-# creates a Sieve of Eratosthenes array of size n
-def soe(n: int) -> list:
-    iterlimit = int(n**0.5) + 1
-    isPrimeList = [True]*(n+1)
+def soe(n: int) -> list[bool]:
+    """creates a Sieve of Eratosthenes array of size n"""
+    iterlimit = isqrt(n) + 1
+    is_prime_list = [True]*(n + 1)
 
     # for 0 and 1 
-    isPrimeList[0] = isPrimeList[1] = False
+    is_prime_list[0] = is_prime_list[1] = False
 
     # for 2 and 3
     for i in (2, 3):
         for multiple in range(i*i, n, i):
             # assign multiples of 2 or 3 as not being prime
-            isPrimeList[multiple] = False  
+            is_prime_list[multiple] = False  
 
     # for 6k +- 1
     for i in range(5, iterlimit+2, 6): 
         for j in (0, 2): 
             for multiple in range((i+j) * (i+j), n, i+j):
                 # assign multiples of i+j as not being prime
-                isPrimeList[multiple] = False  
+                is_prime_list[multiple] = False  
 
-    return isPrimeList
+    return is_prime_list
 
 
-# returns True if a number's square is progressive, False otherwise
 def is_progressive(n: int) -> bool:
-    # returns the prime factors of num (non-repeating)
-    def prime_factorize(num: int) -> set:
+    """returns True if a number n's square is progressive, or has a dividend,
+    quotient, and remainder with a common ratio"""
+    def prime_factorize(num: int) -> set[int]:
+        """returns the prime factors of num (non-repeating)"""
         factors = set()
 
         for i in (2, 3):
@@ -68,19 +69,18 @@ def is_progressive(n: int) -> bool:
 def main():
     # declare variables
     limit = isqrt(10**12)
-    progressiveSum = 9  # include 9 as given
+    progressive_sum = 9  # include 9 as given
 
     # create a sieve of Eratosthenes
-    isPrimeList = soe(limit)
+    is_prime_list = soe(limit)
 
     # iterate through values of i
     for i in range(4, limit):
-        if not isPrimeList[i]:
-            if is_progressive(i):
-                progressiveSum += i*i
+        if not is_prime_list[i] and is_progressive(i):
+            progressive_sum += i*i
 
     # print result
-    print(f"The sum of all progressive perfect squares is: {progressiveSum}")
+    print(f"The sum of all progressive perfect squares is: {progressive_sum}")
 
 
 if __name__ == "__main__":
