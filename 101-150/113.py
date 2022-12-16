@@ -9,26 +9,30 @@ This uses a "recursive" algorithm to get the number of non-bouncy numbers of x
 digits from the number of non-bouncy numbers of x-1 digits.
 """
 
+def main():
+    # loop to generate number of increasing and decreasing numbers
+    # (increasing + decreasing = total non-bouncy numbers)
+    arr = list(range(1, 10))
+    increasing = 45
+    decreasing = 54
+    pow10 = 100  # power of 10 in limit
 
-# loop to generate number of increasing and decreasing numbers
-# (increasing + decreasing = total non-bouncy numbers)
-arr = list(range(1, 10))
-increasing = 45
-decreasing = 54
-pow10 = 100  # power of 10 in limit
+    for i in range(2, pow10):  # 1 digit = 9, 2 digit = 45 inc + 45 dec
+        # calculate number of non-bouncy numbers for i digits
+        new_arr = []
+        current_term = 0
 
-for i in range(2, pow10):  # 1 digit = 9, 2 digit = 45 inc + 45 dec
-    # calculate number of non-bouncy numbers for i digits
-    newArr = []
-    currentTerm = 0
+        for j in range(1, 10):
+            current_term += sum(arr[:j])
+            new_arr.append(sum(arr[:j]))
+        
+        increasing += current_term
+        decreasing += increasing
+        arr = new_arr
 
-    for j in range(1, 10):
-        currentTerm += sum(arr[:j])
-        newArr.append(sum(arr[:j]))
-    
-    increasing += currentTerm
-    decreasing += increasing
-    arr = newArr
+    # print result
+    print(f"Number of non-bouncy: {increasing + decreasing}")
 
-# print result
-print("Number of non-bouncy:", increasing + decreasing)
+
+if __name__ == "__main__":
+    main()
