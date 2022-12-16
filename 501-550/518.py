@@ -68,7 +68,7 @@ def main():
     for a in prime_list:
         # get square factors of a + 1 as ratio for geometric sequence
         a1 = a + 1
-        prog_factors = {x: (val // 2) for x, val in prime_factorize(a1).items() 
+        prog_factors = {x: val // 2 for x, val in prime_factorize(a1).items() 
             if val > 1}
         powers = [
             [base**power for power in range(count+1)]
@@ -84,7 +84,7 @@ def main():
                 # calculate b and c, b + 1 and c + 1
                 b1 = a1 * n // d
                 b = b1 - 1
-                c1 = b1*b1 // a1
+                c1 = b1 * b1 // a1
                 c = c1 - 1
                 
                 if c > limit:
