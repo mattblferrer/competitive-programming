@@ -24,18 +24,21 @@ def next_prime(num: int) -> int:
 
 
 def main():
-    def generate_admissible_numbers(n: int, limit: int, factors: set[int]) -> \
-        None:
+    def generate_admissible_numbers(n: int, limit: int, factor: int) -> None:
         """adds admissible numbers, or numbers with consecutive distinct prime 
-        factors, to a list recursively by multiplying the number n to given 
-        factors"""
+        factors, to a list recursively by multiplying the number n to factors
+        
+        parameters:
+        n: current number  
+        limit: limit that number cannot exceed
+        factor: largest factor of n"""
         if n > limit:
             return
         admissible_numbers.append(n)  # add n to list if admissible
-        prime = next_prime(factors[-1])
+        prime = next_prime(factor)
 
-        generate_admissible_numbers(n * factors[-1], limit, factors)
-        generate_admissible_numbers(n * prime, limit, factors + [prime])
+        generate_admissible_numbers(n * factor, limit, factor)
+        generate_admissible_numbers(n * prime, limit, prime)
 
 
     # declare variables
@@ -44,7 +47,7 @@ def main():
     limit = 10**9
 
     # generate sorted list of admissible numbers below limit
-    generate_admissible_numbers(2, limit, [2])
+    generate_admissible_numbers(2, limit, 2)
 
     # find psuedo-Fortunate numbers for each admissible number
     for n in sorted(admissible_numbers):
