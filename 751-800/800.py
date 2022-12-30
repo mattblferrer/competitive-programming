@@ -27,7 +27,7 @@ def soe(n: int) -> list[bool]:
 
 def main():
     # declare variables
-    limit = 20 * 800_800  # guess limit for prime sieve
+    limit = int(log(800_800, 2) * 800_800) + 1  # limit for prime sieve
     log_limit = log(800_800) * 800_800  # ln(800,800 ^ 800,800)
     is_prime_list = soe(limit)
     prime_list = [i for i, isprime in enumerate(is_prime_list) if isprime]
@@ -37,22 +37,17 @@ def main():
 
     # loop through p^q * q^p for primes p, q, p != q
     for idx_p, p in enumerate(prime_list):
-        hybrid_log = (log_list[idx_p] * prime_list[idx_p + 1]) + (
-            log_list[idx_p + 1] * p)
-        if hybrid_log > log_limit:  # break if no more q > p is available
-            break
-
         # search backwards through q as log increases for higher p, q
         while idx_p < idx_q:
             hybrid_log = log_list[idx_p] * prime_list[idx_q] + \
             log_list[idx_q] * p  # p^q * q^p
 
-            if hybrid_log > log_limit:
-                idx_q -= 1
-            else:
+            if hybrid_log <= log_limit:
                 hybrid_integers += idx_q - idx_p
                 break
 
+            idx_q -= 1  
+                
     # print result
     print(hybrid_integers)
 
