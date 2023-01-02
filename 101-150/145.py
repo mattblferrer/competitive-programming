@@ -16,16 +16,21 @@ def is_reversible(num):
 """
 
 
-# declare variables
-maxP = 9  # max power of 10
-reversibles = 0  # number of reversible numbers
+def main():
+    # declare variables
+    max_p = 9  # max power of 10
+    reversibles = 0  # number of reversible numbers
 
-# main loop 
-for i in range(1, maxP+1):
-    if i % 2 == 0:  # 0 or 2 mod 4
-        reversibles += 20*30**(i//2 - 1)
-    elif i % 4 == 3:  # 3 mod 4
-        reversibles += 100*500**((i-3)//4)
+    # main loop 
+    for i in range(1, max_p + 1):
+        if i % 2 == 0:  # 0 or 2 mod 4
+            reversibles += 20 * 30**(i // 2 - 1)
+        elif i % 4 == 3:  # 3 mod 4
+            reversibles += 100 * 500**((i - 3) // 4)
 
-# print result
-print("Number of reversibles:", reversibles)
+    # print result
+    print("Number of reversibles:", reversibles)
+
+
+if __name__ == "__main__":
+    main()
