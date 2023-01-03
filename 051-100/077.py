@@ -2,24 +2,23 @@ from functools import cache
 
 
 @cache
-# returns the number of ways to partition a number into different sets 
-# (same as change_ways function)
 def change_ways(coin_set: tuple[int], num: int) -> int:
+    """returns the number of ways to partition a number into different sets 
+    (same as change_ways function)"""
     if num == 0:  # 1 way to make change with 0 money (no coins)
         return 1
     elif num < 0:  # no ways to make change for less than 0 money
         return 0
     elif len(coin_set) == 0:  # no ways to make change with no choice of coins
         return 0
-    else:
-        # recursive formula given number of ways to give change with smaller 
-        # set of change
-        return (change_ways(coin_set[:-1], num) 
-            + change_ways(coin_set, num-coin_set[-1]))
+    # recursive formula given number of ways to give change with smaller 
+    # set of change
+    return (change_ways(coin_set[:-1], num) 
+        + change_ways(coin_set, num-coin_set[-1]))
 
 
-# determines if num is prime
 def isprime(num: int) -> bool:
+    """returns True if num is prime"""
     if num == 2 or num == 3:  # for 2 and 3
         return True
 
@@ -32,29 +31,34 @@ def isprime(num: int) -> bool:
     return True
 
 
-# generate next prime
 def next_prime(num: int) -> int:
+    """return the smallest prime larger than num"""
     while True:
         num += 2
         if isprime(num):
             return num
 
 
-# declare variables
-primeList = [2, 3, 5, 7]
-currentNumber = 10
-numberOfWays = 5
+def main():
+    # declare variables
+    prime_list = [2, 3, 5, 7]
+    current_number = 10
+    number_of_ways = 5
 
-# main loop
-while numberOfWays <= 5000:
-    currentNumber += 1
+    # main loop
+    while number_of_ways <= 5000:
+        current_number += 1
 
-    # update prime list
-    if isprime(currentNumber):
-        primeList.append(currentNumber)
+        # update prime list
+        if current_number % 2 == 1 and isprime(current_number):
+            prime_list.append(current_number)
 
-    # calculate number of ways to write number as a sum of primes
-    numberOfWays = change_ways(tuple(primeList), currentNumber)
+        # calculate number of ways to write number as a sum of primes
+        number_of_ways = change_ways(tuple(prime_list), current_number)
 
-# print result
-print(f"{currentNumber} can be written in {numberOfWays} ways")
+    # print result
+    print(f"{current_number} can be written in {number_of_ways} ways")
+
+
+if __name__ == "__main__":
+    main()
