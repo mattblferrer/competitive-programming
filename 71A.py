@@ -1,4 +1,5 @@
 lines = int(input())
+
 for i in range(lines):
     word = input()
     if len(word) > 10:

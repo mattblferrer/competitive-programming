@@ -1,5 +1,2 @@
-m, n = input().split(" ")
-m = int(m)
-n = int(n)
- 
-print((m * n)//2)
+m, n = map(int, input().split(" ")) 
+print((m * n) // 2)
