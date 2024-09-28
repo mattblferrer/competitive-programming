@@ -1,4 +1,4 @@
-def Problem1328A() -> None:
+def problem1328A() -> None:
     test_cases = int(input())
     for _ in range(test_cases):
         a, b = map(int, input().split(" "))  # get line input from user
@@ -9,4 +9,4 @@ def Problem1328A() -> None:
             print(b - (a % b))
 
 if __name__ == "__main__":
-    Problem1328A()
+    problem1328A()

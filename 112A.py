@@ -1,4 +1,4 @@
-def Problem112A():  
+def problem112A() -> int:  
     str1 = input().lower()
     str2 = input().lower()
 
@@ -11,4 +11,4 @@ def Problem112A():
     return 0
 
 if __name__ == "__main__":
-    print(Problem112A())
+    print(problem112A())

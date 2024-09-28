@@ -1,4 +1,4 @@
-def Problem25A() -> None:
+def problem25A() -> None:
     _ = int(input())
     iq_test = list(map(int, input().split(" ")))  # get input as list
     evens, odds = 0, 0
@@ -17,4 +17,4 @@ def Problem25A() -> None:
     
 
 if __name__ == "__main__":
-    print(Problem25A())
+    print(problem25A())
