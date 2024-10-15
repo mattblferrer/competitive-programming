@@ -7,6 +7,7 @@ def problem1462C() -> int:
     numbers = set(range(9, 0, -1))
     while x > 0:
         can_use = min(x, max(numbers))
+        numbers.remove(can_use)
         number += str(can_use)
         x -= can_use
 
