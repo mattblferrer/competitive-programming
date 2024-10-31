@@ -1,30 +1,21 @@
 def problem230B() -> None:
-    cache = {}  # dynamic programming cache of isPrime values
+    # generate list of all squares of primes up to 10^12
+    limit = 10 ** 6
+    sieve = [True] * (limit + 1)
+    sieve[0] = sieve[1] = False
 
-    def isPrime(n: int) -> bool:
-        if n < 2:
-            return False
-        for i in range(2, int(n ** 0.5) + 1):
-            if n % i == 0:
-                return False
-        return True
+    for p in range(2, int(limit ** 0.5) + 1):
+        for i in range(2 * p, limit + 1, p):
+            sieve[i] = False
 
+    prime_squares = set(i * i for i in range(limit + 1) if sieve[i])
+
+    # get queries of T-primes (is T-prime if square of prime)
     _ = input()  # number of integers 
-    test = list(map(int, input().split(' ')))
+    x = list(map(int, input().split(' ')))
 
-    for n in test:
-        sqrt = int(n ** 0.5)
-
-        if sqrt ** 2 != n:  # test if perfect square
-            print("NO")
-            continue
-
-        if sqrt in cache:
-            is_prime = cache[sqrt]
-        else:
-            is_prime = isPrime(sqrt)
-            cache[sqrt] = is_prime
-        if is_prime:  # test if square of prime
+    for x_i in x:
+        if x_i in prime_squares:
             print("YES")
         else:
             print("NO")

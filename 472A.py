@@ -1,10 +1,8 @@
 def problem472A() -> None:
     n = int(input())
-    if n % 3 == 0:
-        print(6, n - 6)  # both divisible by 3
-    elif n % 3 == 1:
-        print(4, n - 4)  # since 4 mod 3 = 1, if n mod 3 = 1, n - 4 mod 3 = 0
-    elif n % 3 == 2:
-        print(8, n - 8)  # since 8 mod 3 = 2, if n mod 3 = 2, n - 8 mod 3 = 0
+    if n % 2 == 0:
+        print(8, n - 8)  # both divisible by 2
+    else:
+        print(9, n - 9)  # 9 = 3 * 3, n - 9 is divisible by 2
     
 problem472A()
