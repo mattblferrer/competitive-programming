@@ -9,8 +9,6 @@ def problem1352A() -> None:
                 round_numbers.append(int(digit) * 10**i)
 
         print(len(round_numbers)) 
-        for r in round_numbers:
-            print(r, end=" ")  # print all round numbers in one line
-        print("\n")  # format answer
+        print(*round_numbers[::-1])
 
 problem1352A()
