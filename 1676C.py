@@ -7,13 +7,9 @@ def problem1676C() -> int:
         return diff
 
     n, _ = map(int, input().split(" "))
-    strings = []
-
-    for _ in range(n):  # get input strings as list
-        string = input()
-        strings.append(string)
-
+    strings = [input() for _ in range(n)]
     min_diff = float('inf')
+    
     for i in range(n):  # get differences between every pair strings i and j.
         for j in range(i + 1, n):
             diff = word_difference(strings[i], strings[j])
