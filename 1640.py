@@ -1,12 +1,11 @@
-def CSES1640() -> None:
+def CSES1640() -> str:
     n, x = map(int, input().split())
     a = list(map(int, input().split()))
     sorted_a = sorted(a)
 
     for i, a_i in enumerate(sorted_a):
         if a_i >= x:
-            print("IMPOSSIBLE")
-            return
+            return "IMPOSSIBLE"
         
         left, right = -1, n
         while right - left > 1:
@@ -21,9 +20,9 @@ def CSES1640() -> None:
             continue
         if n_1 + n_2 != x:
             continue
-        print(a.index(n_1) + 1, n - a[::-1].index(n_2))
-        return
         
-    print("IMPOSSIBLE")
+        return f"{a.index(n_1) + 1} {n - a[::-1].index(n_2)}"
+        
+    return "IMPOSSIBLE"
 
-CSES1640()
+print(CSES1640())
