@@ -30,4 +30,5 @@ int main() {
             h.erase(ticket);
         }      
     }   
+    return 0;
 }
