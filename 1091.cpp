@@ -19,9 +19,6 @@ int main() {
     }
     for (int i = 0; i < m; i++) {
         std::cin >> t[i];
-    }
-
-    for (int i = 0; i < m; i++) {
         int ticket = std::prev(h.upper_bound(t[i]))->first;
         std::cout << ticket << "\n";
         h[ticket]--;
