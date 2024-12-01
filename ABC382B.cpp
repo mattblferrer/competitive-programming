@@ -6,33 +6,16 @@ void ABC382B() {
     std::string s;
     std::cin >> n >> d >> s;
     bool* cookies = new bool[n];
-
-    for (int i = 0; i < n; i++) {
-        if (s[i] == '@') {
-            cookies[i] = true;
-        }
-        else {
-            cookies[i] = false;
-        }
-    }
-
     int curr = n - 1;
+
     for (int i = 0; i < d; i++) {
-        while (!cookies[curr]) {
+        while (s[curr] == '.') {
             curr -= 1;
         }
-        cookies[curr] = false;
+        s[curr] = '.';
         curr -= 1;
     }
-    
-    for (int i = 0; i < n; i++) {
-        if (cookies[i]) {
-            std::cout << '@';
-        }
-        else {
-            std::cout << '.';
-        }
-    }
+    std::cout << s;
 }
 
 int main() { 
