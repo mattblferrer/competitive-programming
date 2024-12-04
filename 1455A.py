@@ -1,4 +1,4 @@
-def problem1455A() -> str:
+def problem1455A() -> int:
     n = input()
     return len(n)
 

@@ -1,4 +1,4 @@
-def problem1421A() -> str:
+def problem1421A() -> int:
     a, b = map(int, input().split())
     return ((a & b) ^ a) + ((a & b) ^ b)
  
