@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-int problem1850C() {
+int problem1829C() {
     int n, m_i;
     std::cin >> n;
     std::string skills;
@@ -35,7 +35,7 @@ int main() {
     int t;
     std::cin >> t;
     for (int i = 0; i < t; i++) {
-        std::cout << problem1850C() << std::endl;
+        std::cout << problem1829C() << std::endl;
     }
 
     return 0;
