@@ -13,21 +13,21 @@ void problem1742F() {
     }
     s[0] = t[0] = 1;
 
-    for (long long i = 0; i < q; i++) {
-        long long s_chars = 0;
-        long long t_chars = 0;
+    for (int i = 0; i < q; i++) {
+        int s_chars = 0;
+        int t_chars = 0;
         std::cin >> d >> k >> x;
         if (d == 1) {  // add to string s
-            for (long long j = 0; j < x.length(); j++) {
+            for (int j = 0; j < x.length(); j++) {
                 s[x[j] - 'a'] += k;
             }
         }
         if (d == 2) {  // add to string t
-            for (long long j = 0; j < x.length(); j++) {
+            for (int j = 0; j < x.length(); j++) {
                 t[x[j] - 'a'] += k;
             }
         }
-        for (long long j = 0; j < 26; j++) {
+        for (int j = 0; j < 26; j++) {
             if (s[j]) {
                 s_chars++;
             }
