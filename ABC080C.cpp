@@ -17,8 +17,21 @@ int ABC080C() {
             std::cin >> p[i][j];
         }
     }
-    // TODO: solve
-    return 0;
+    long long max_p = -999999999999;
+    for (int i = 1; i < 1024; i++) {  // all possibilities 2^10 except 0
+        long long curr_p = 0;
+        for (int j = 0; j < n; j++) {
+            int open = 0;
+            for (int k = 0; k < 10; k++) {
+                if (((i >> k) & 1) && f[j][k]) {  // check if both shops open
+                    open++;
+                }
+            }
+            curr_p += p[j][open];
+        }
+        max_p = std::max(max_p, curr_p);
+    }
+    return max_p;   
 }
 
 int main() {
