@@ -11,7 +11,21 @@ void problem22D() {
         std::cin >> a >> b;
         segments.push_back({std::min(a, b), std::max(a, b)});
     }
-    // TODO: solve
+    std::vector<int> coords;  // coordinates of nails
+    std::sort(segments.begin(), segments.end(), [](std::pair<int, int> a, 
+        std::pair<int, int> b) {
+            return a.second < b.second;
+        });
+    for (int i = 0; i < n; i++) {
+        if (coords.empty() || !(segments[i].first <= coords.back() 
+            && coords.back() <= segments[i].second)) {
+                coords.push_back(segments[i].second);
+        }
+    }
+    std::cout << coords.size() << "\n";
+    for (int c: coords) {
+        std::cout << c << " ";
+    }
 }
 
 int main() {
