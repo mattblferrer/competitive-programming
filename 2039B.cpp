@@ -4,8 +4,17 @@
 std::string problem2039B() {
     std::string p;
     std::cin >> p;
-    // TODO:
-
+    if (p.size() == 1) return "-1";
+    for (int i = 0; i < p.size() - 1; i++) {
+        if (p[i] == p[i + 1]) {
+            return p.substr(i, 2);
+        }
+    }
+    for (int i = 0; i < p.size() - 2; i++) {
+        if (p[i] != p[i + 1] && p[i + 1] != p[i + 2] && p[i] != p[i + 2]) {
+            return p.substr(i, 3);
+        } 
+    }
     return "-1";
 }
 
