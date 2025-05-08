@@ -4,19 +4,19 @@ int n, l, r, x, c_i;
 std::vector<int> c;
 
 long long ways(int ctr, std::vector<bool> choose) {
-    int max = 0;
-    int min = 9999999;
-    int sum = 0;
-    int prob = 0;
-    for (int i = 0; i < ctr; i++) {
-        if (choose[i]) {
-            max = std::max(max, c[i]);
-            min = std::min(min, c[i]);
-            sum += c[i];
-            prob++;
-        }
-    }
     if (ctr == n) {
+        int max = 0;
+        int min = 9999999;
+        int sum = 0;
+        int prob = 0;
+        for (int i = 0; i < n; i++) {
+            if (choose[i]) {
+                max = std::max(max, c[i]);
+                min = std::min(min, c[i]);
+                sum += c[i];
+                prob++;
+            }
+        }
         if (prob < 2) return 0;
         if (sum > r || sum < l) return 0;
         if ((max - min) < x) return 0;
