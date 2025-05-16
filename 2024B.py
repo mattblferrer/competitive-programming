@@ -10,15 +10,15 @@ def problem2024B() -> int:
         previous = a_i
         total_sums.append(total_sum)
 
-    left, right = 0, n - 1    
-    while left < right:  # binary search
+    left, right = -1, n    
+    while right - left > 1:  # binary search
         guess = (left + right) // 2
-        if total_sums[guess] < k:
-            left = guess + 1
-        else:
+        if total_sums[guess] >= k:
             right = guess
+        else:
+            left = guess
 
-    return k + left
+    return k + right
     
 t = int(input())
 for _ in range(t):

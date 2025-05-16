@@ -3,8 +3,8 @@
 long long problem689C() {
     long long m;
     std::cin >> m;
-    long long curr_m, curr_k, left = 0, right = pow(10, 16);
-    while (left < right) {
+    long long curr_m, curr_k, left = -1, right = pow(10, 16);
+    while (right - left > 1) {
         long long mid = (left + right) / 2;
         curr_m = 0;
         for (long long k = 2; k < 500000; k++) {
@@ -16,7 +16,7 @@ long long problem689C() {
             right = mid;
         }
         else {
-            left = mid + 1;
+            left = mid;
         }
     }
     curr_m = 0;
