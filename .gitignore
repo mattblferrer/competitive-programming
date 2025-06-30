@@ -159,7 +159,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# C++
 .json
 .vscode/
 a.out
-*.exe 
+*.exe
+
+# Competitive Programming Helper
+.cph/
