@@ -2,11 +2,10 @@
 
 void dfs(std::vector<std::vector<int>>& adj_list, std::vector<bool>& seen, 
     std::deque<int>& order, int u) {
-    if (seen[u]) return;
-    for (int v: adj_list[u]) {
-        dfs(adj_list, seen, order, v);
-    }
     seen[u] = true;
+    for (int v: adj_list[u]) {
+        if (!seen[v]) dfs(adj_list, seen, order, v);
+    }
     order.push_front(u);
 }
 
