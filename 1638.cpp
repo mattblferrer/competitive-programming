@@ -13,10 +13,9 @@ int CSES1638() {
         for (int j = 0; j < n; j++) {
             if (i == 0 && j == 0) continue;
             if (grid[i][j] == '*') continue;
-            if (i == 0) dp[i][j] = (grid[i][j - 1] == '.') * dp[i][j - 1];
-            else if (j == 0) dp[i][j] = (grid[i - 1][j] == '.') * dp[i - 1][j];
-            else dp[i][j] = ((grid[i][j - 1] == '.') * dp[i][j - 1] 
-                + (grid[i - 1][j] == '.') * dp[i - 1][j]) % mod;
+            if (i == 0) dp[i][j] = dp[i][j - 1];
+            else if (j == 0) dp[i][j] = dp[i - 1][j];
+            else dp[i][j] = (dp[i][j - 1] + dp[i - 1][j]) % mod;
         }
     }
     return dp[n - 1][n - 1];
