@@ -3,14 +3,14 @@
 std::string problem2128C() {
     int n;
     std::cin >> n;
-    std::vector<int> a(n), b(n);
+    std::vector<int> b(n);
     for (int i = 0; i < n; i++) {
         std::cin >> b[i];
     }
     int rm = b[0];
     for (int i = 0; i < n - 1; i++) {
         rm = std::min(rm, b[i]);
-        if (b[i] < b[i + 1] && rm * 2 <= b[i + 1]) return "NO";
+        if (rm * 2 <= b[i + 1]) return "NO";
     }
     return "YES";
 }

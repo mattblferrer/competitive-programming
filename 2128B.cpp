@@ -3,34 +3,29 @@
 void problem2128B() {
     int n, p_i;
     std::cin >> n;
-    std::deque<int> p, q;
+    std::deque<int> p;
     for (int i = 0; i < n; i++) {
         std::cin >> p_i;
         p.push_back(p_i);
     }
-    int s = n - 1;
     std::vector<char> ans(n);
     for (int i = 0; i < n; i++) {
         if (i % 2 == 0) {
             if (p.front() < p.back()) {
-                q.push_back(p.back());
                 p.pop_back();
                 ans[i] = 'R';
             }
             else {
-                q.push_back(p.front());
                 p.pop_front();
                 ans[i] = 'L';
             }
         }
         else {
             if (p.front() > p.back()) {
-                q.push_back(p.back());
                 p.pop_back();
                 ans[i] = 'R';
             }
             else {
-                q.push_back(p.front());
                 p.pop_front();
                 ans[i] = 'L';
             }
