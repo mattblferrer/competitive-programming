@@ -2,10 +2,9 @@
 
 long long binexp(long long a, long long b, long long mod) {
     long long ans = 1;
-    while (b > 0) {
-        if (b % 2 == 1) {
+    while (b) {
+        if (b % 2) {
             ans = (ans * a) % mod;
-            b--;
         }
         a = (a * a) % mod;  
         b >>= 1;
