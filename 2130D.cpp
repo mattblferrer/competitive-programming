@@ -1,14 +1,22 @@
 #include <bits/stdc++.h>
 
-int problem2130D() {
-    int n, INF = INT_MAX, ans = 0;
+long long problem2130D() {
+    long long n, ans = 0;
     std::cin >> n;
-    std::vector<int> p(n + 1), a(n + 1);
+    std::vector<int> p(n + 1);
     for (int i = 1; i <= n; i++) {
         std::cin >> p[i];
     }
-    // TODO: continue
-
+    for (int i = 1; i <= n; i++) {
+        int l = 0, r = 0;
+        for (int j = 1; j < i; j++) {
+            if (p[j] > p[i]) l++;
+        }
+        for (int j = i + 1; j <= n; j++) {
+            if (p[j] > p[i]) r++;
+        }
+        ans += std::min(l, r);
+    }
     return ans;
 }
 
