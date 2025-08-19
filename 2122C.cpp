@@ -3,12 +3,19 @@
 void problem2122C() {
     int n, x_i, y_i;
     std::cin >> n;
-    std::vector<std::vector<int>> coords(n);
+    std::vector<std::pair<int, int>> xsort(n), ysort(n);
     for (int i = 0; i < n; i++) {
         std::cin >> x_i >> y_i;
-        coords[i] = {x_i, y_i, i + 1};
+        xsort[i] = {x_i, y_i};
+        ysort[i] = {x_i, y_i};
     }
-    // TODO: solve
+    std::sort(xsort.begin(), xsort.end(), [](const auto& a, const auto& b) {
+        return a.first < b.first;
+    });
+    std::sort(ysort.begin(), ysort.end(), [](const auto& a, const auto& b) {
+        return a.second < b.second;
+    });
+    // TODO: upsolve
 }
 
 int main() {
