@@ -1,19 +1,19 @@
 #include <bits/stdc++.h>
 
-std::vector<int> parent;
-std::vector<int> size;
+std::vector<long long> parent;
+std::vector<long long> size;
 
-void make_set(int a) {
+void make_set(long long a) {
     parent[a] = a;
     size[a] = 1;
 }
 
-int find_set(int a) {
+long long find_set(long long a) {
     if (parent[a] == a) return a;
     return parent[a] = find_set(parent[a]);
 }
 
-bool union_sets(int a, int b) {
+bool union_sets(long long a, long long b) {
     a = find_set(a);
     b = find_set(b);
     if (a == b) return false;
@@ -23,6 +23,6 @@ bool union_sets(int a, int b) {
     return true;
 }
 
-bool is_connected(int a, int b) {
+bool is_connected(long long a, long long b) {
     return find_set(a) == find_set(b);
 }
