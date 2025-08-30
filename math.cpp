@@ -41,3 +41,23 @@ long long comb(long long n, long long k) {
     if (k == 0) return 1;
     return (n * comb(n - 1, k - 1)) / k;
 }
+
+bool is_prime(long long n) {
+    if (n % 2 == 0) return false;
+    for (long long i = 3; i <= sqrtl(n) + 1; i += 2) {
+        if (n % i == 0) return false;
+    }
+    return n > 1;
+}
+
+void sieve(std::vector<bool>& is_prime, long long n) {
+    is_prime.assign(n + 1, true);
+    is_prime[0] = is_prime[1] = false;
+    for (long long i = 2; i * i <= n; i++) {
+        if (is_prime[i]) {
+            for (long long j = i * i; j <= n; j += i) {
+                is_prime[j] = false;
+            }
+        }
+    }
+}
