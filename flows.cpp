@@ -59,8 +59,9 @@ void connect_u(long long u, long long v, long long w) {  // undirected
     capacity[v][u] = w;
 }
 
-void resize_flow(long long fs) {
-    adj.resize(fs);
-    capacity.resize(fs, std::vector<long long>(fs));
-    fg.resize(fs, std::vector<long long>(fs));
+void resize_flow(long long size) {
+    fs = size;
+    adj.resize(size);
+    capacity.resize(size, std::vector<long long>(size));
+    fg.resize(size, std::vector<long long>(size));
 }
