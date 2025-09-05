@@ -29,7 +29,7 @@ long long bfs(long long s, long long t, std::vector<long long>& parent) {
 
 long long max_flow(long long s, long long t) {
     long long flow = 0, new_flow;
-    std::vector<long long> parent(fs + 1);
+    std::vector<long long> parent(fs);
 
     while ((new_flow = bfs(s, t, parent))) {
         flow += new_flow;
@@ -44,4 +44,12 @@ long long max_flow(long long s, long long t) {
         }
     }
     return flow;
+}
+
+int main() {
+    adj.resize(fs);
+    capacity.resize(fs, std::vector<long long>(fs));
+    fg.resize(fs, std::vector<long long>(fs));
+
+    return 0;
 }
