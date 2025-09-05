@@ -46,6 +46,19 @@ long long max_flow(long long s, long long t) {
     return flow;
 }
 
+void connect_d(long long u, long long v, long long w) {  // directed
+    adj[u].insert(v);
+    adj[v].insert(u);
+    capacity[u][v] = w;
+}
+
+void connect_u(long long u, long long v, long long w) {  // undirected
+    adj[u].insert(v);
+    adj[v].insert(u);
+    capacity[u][v] = w;
+    capacity[v][u] = w;
+}
+
 int main() {
     adj.resize(fs);
     capacity.resize(fs, std::vector<long long>(fs));
