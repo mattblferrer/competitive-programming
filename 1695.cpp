@@ -6,6 +6,7 @@ const long long INF = 2e18;
 long long flow_size;
 std::vector<std::set<long long>> adj;
 std::vector<std::vector<long long>> capacity;
+std::vector<std::vector<long long>> flow_graph;
 
 long long bfs(long long s, long long t, std::vector<long long>& parent) {
     std::fill(parent.begin(), parent.end(), -1);
@@ -39,6 +40,8 @@ long long max_flow(long long s, long long t) {
             long long prev = parent[curr];
             capacity[prev][curr] -= new_flow;
             capacity[curr][prev] += new_flow;
+            flow_graph[prev][curr] += new_flow;
+            flow_graph[curr][prev] -= new_flow;
             curr = prev;
         }
     }
@@ -50,9 +53,11 @@ void CSES1695() {
     std::cin >> n >> m;
     adj.resize(n + 1);
     capacity.resize(n + 1);
+    flow_graph.resize(n + 1);
     flow_size = n;
     for (ll i = 1; i <= n; i++) {
         capacity[i].resize(n + 1);
+        flow_graph[i].resize(n + 1);
     }
     for (int i = 1; i <= m; i++) {
         std::cin >> a >> b;
@@ -80,7 +85,7 @@ void CSES1695() {
     }
     for (ll u: cut) {
         for (ll v: adj[u]) {
-            if (!cut.count(v)) std::cout << u << " " << v << "\n";
+            if (!cut.count(v) && flow_graph[u][v]) std::cout << u << " " << v << "\n";
         }
     }
 }
