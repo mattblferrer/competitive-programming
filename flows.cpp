@@ -4,6 +4,7 @@ const long long INF = 2e18;
 long long flow_size;
 std::vector<std::set<long long>> adj;
 std::vector<std::vector<long long>> capacity;
+std::vector<std::vector<long long>> flow_graph;
 
 long long bfs(long long s, long long t, std::vector<long long>& parent) {
     std::fill(parent.begin(), parent.end(), -1);
@@ -37,6 +38,8 @@ long long max_flow(long long s, long long t) {
             long long prev = parent[curr];
             capacity[prev][curr] -= new_flow;
             capacity[curr][prev] += new_flow;
+            flow_graph[prev][curr] += new_flow;
+            flow_graph[curr][prev] -= new_flow;
             curr = prev;
         }
     }
