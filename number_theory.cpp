@@ -36,12 +36,6 @@ long long modinv(long long a, long long mod) {
     return (x % mod + mod) % mod;
 }
 
-long long comb(long long n, long long k) {
-    if (k < 0) return 0;
-    if (k == 0) return 1;
-    return (n * comb(n - 1, k - 1)) / k;
-}
-
 bool is_prime(long long n) {
     if (n % 2 == 0) return false;
     for (long long i = 3; i <= sqrtl(n) + 1; i += 2) {
