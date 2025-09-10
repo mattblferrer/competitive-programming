@@ -1,3 +1,5 @@
+from math import sqrt
+
 # returns the convergents of sqrt(num)
 def convergent_terms(num: int, bound: int) -> tuple[list[int]]:
     sqrt_num = sqrt(num) % 1  # fractional part only
