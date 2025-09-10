@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -203,10 +201,7 @@ cython_debug/
 
 # debug information files
 *.dwo
-<<<<<<< HEAD
-=======
 
 # vscode
 *.json
 .vscode/
->>>>>>> b975e53ada6bb941f741d6c4a6f87a38a0bea27f
