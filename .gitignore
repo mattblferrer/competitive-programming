@@ -159,7 +159,6 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
->>>>>>> b975e53ada6bb941f741d6c4a6f87a38a0bea27f
 # Prerequisites
 *.d
 
