@@ -204,3 +204,6 @@ cython_debug/
 # vscode
 *.json
 .vscode/
+
+# competitive programming helper
+.cph/
