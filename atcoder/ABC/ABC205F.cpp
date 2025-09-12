@@ -71,10 +71,16 @@ void resize_flow(long long size) {
 ll ABC205F() {
     ll h, w, n, a, b, c, d;
     std::cin >> h >> w >> n;
+    resize_flow(1000);
+    for (ll i = 1; i <= h; i++) connect_d(0, i, 1);
     for (ll i = 1; i <= n; i++) {
         std::cin >> a >> b >> c >> d;
+        for (ll j = a; j <= c; j++) connect_d(j, 100 + i, 1);
+        connect_d(100 + i, 200 + i, 1);
+        for (ll j = b; j <= d; j++) connect_d(200 + i, 300 + j, 1);
     }
-    // TODO: solve
+    for (ll i = 1; i <= w; i++) connect_d(300 + i, 999, 1);
+    return max_flow(0, 999);
 }
 
 int main() {
