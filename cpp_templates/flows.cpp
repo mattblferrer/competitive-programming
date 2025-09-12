@@ -49,14 +49,14 @@ long long max_flow(long long s, long long t) {
 void connect_d(long long u, long long v, long long w) {  // directed
     adj[u].insert(v);
     adj[v].insert(u);
-    capacity[u][v] = w;
+    capacity[u][v] += w;
 }
 
 void connect_u(long long u, long long v, long long w) {  // undirected
     adj[u].insert(v);
     adj[v].insert(u);
-    capacity[u][v] = w;
-    capacity[v][u] = w;
+    capacity[u][v] += w;
+    capacity[v][u] += w;
 }
 
 void resize_flow(long long size) {
