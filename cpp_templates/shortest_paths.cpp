@@ -3,14 +3,15 @@ using ll = long long;
 using pll = std::pair<long long, long long>;
 const long long INF = 2e18;
 
-std::vector<ll> dijkstra(ll n, std::vector<std::vector<pll>> adj_list) {
+void dijkstra(ll start, std::vector<std::vector<pll>> adj_list, 
+    std::vector<ll>& dist, std::vector<ll>& path) {
     int n = adj_list.size();
-    std::vector<ll> dist(n, INF);
-    std::vector<ll> path(n, -1);
+    dist.resize(n, INF);
+    path.resize(n, -1);
     std::priority_queue<pll, std::vector<pll>, std::greater<pll>> q;
 
-    dist[0] = 0;  // starting vertex
-    q.push({0, 0});
+    dist[start] = 0;  // starting vertex
+    q.push({0, start});
     while (!q.empty()) {
         pll u = q.top();
         ll d_f = u.first;
@@ -29,5 +30,4 @@ std::vector<ll> dijkstra(ll n, std::vector<std::vector<pll>> adj_list) {
             }
         }
     }
-    return dist;
 }
