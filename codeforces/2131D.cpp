@@ -1,29 +1,34 @@
 #include <bits/stdc++.h>
 
 int problem2131D() {
-    int n, u, v, INF = INT_MAX, ans = 0;
+    int n, u, v, ans = 0;
     std::cin >> n;
-    std::vector<std::set<int>> adj_list(n + 1);
+    std::vector<int> deg(n);
+    std::vector<std::vector<int>> adj_list(n);
     for (int i = 0; i < n - 1; i++) {
         std::cin >> u >> v;
-        adj_list[u].insert(v);
-        adj_list[v].insert(u);
+        u--; v--;
+        adj_list[u].push_back(v);   
+        adj_list[v].push_back(u);
+        deg[u]++;
+        deg[v]++;
     }
-    // bfs to find distances
-    std::vector<int> dist(n + 1, INF);
-    std::queue<int> q;
-    dist[1] = 0;
-    q.push(1);
-    while (!q.empty()) {
-        u = q.front();
-        q.pop();
-        for (int v: adj_list[u]) {
-            if (dist[v] != INF) continue;
-            dist[v] = dist[u] + 1;
-            q.push(v);
+    if (n <= 3) return 0;
+
+    // choose root as vertex i with max leaves with depth 1 (degree 1)
+    int deg_1 = 0;
+    for (int i = 0; i < n; i++) {
+        if (deg[i] == 1) deg_1++;
+    }
+    int opt = 0;
+    for (int i = 0; i < n; i++) {
+        int curr = 0;
+        for (int j: adj_list[i]) {
+            if (deg[j] == 1) curr++;
         }
+        opt = std::max(opt, curr);
     }
-    // TODO: complete algorithm
+    ans = deg_1 - opt;
     return ans;
 }
 
