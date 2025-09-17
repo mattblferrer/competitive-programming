@@ -69,15 +69,24 @@ void resize_flow(long long size) {
 }
 
 ll ARC085E() {
-    ll n;
+    ll n, sum = 0;
     std::cin >> n;
-    std::vector<ll> a(n);
-    for (ll i = 0; i < n; i++) {
+    std::vector<ll> a(n + 1);
+    for (int i = 1; i <= n; i++) {
         std::cin >> a[i];
+        if (a[i] > 0) sum += a[i];
     }
-    ll ans = 0;
-    // TODO: solve
-
+    resize_flow(n + 2);
+    ll source = 0, sink = n + 1;
+    for (int i = 1; i <= n; i++) {
+        if (a[i] <= 0) connect_d(source, i, -a[i]);
+        if (a[i] > 0) connect_d(i, sink, a[i]);
+        for (int j = 2; i * j <= n; j++) {
+            connect_d(i, i * j, INF);
+        }
+    }
+    
+    ll ans = sum - max_flow(source, sink);
     return ans;
 }
 
