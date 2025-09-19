@@ -133,6 +133,7 @@ class BigInt {
         a.check_sign(s);
         int n = s.size();
         for (int i = n - 1; i >= a.sign; i--) a.d.push_back(s[i] - '0');
+        while (a.size() > 1 && a.d.back() == 0) a.d.pop_back();
         return std::cin;
     }
     friend std::ostream &operator<<(std::ostream& out, const BigInt& a) {
