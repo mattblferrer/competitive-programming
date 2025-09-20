@@ -1,5 +1,5 @@
 from functools import cache
-from sympy.ntheory.modular import crt
+from sympy.ntheory.modular import crt # type: ignore
 
 
 def prime_factorize(num: int) -> set[int]:

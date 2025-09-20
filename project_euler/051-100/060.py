@@ -32,7 +32,7 @@ def conc_prime_set(prime_set: list) -> list:
     return [int(str(p1) + str(p2)) for p1, p2 in permutations(prime_set, 2)]
 
 
-def prime_x_greater_y_gen(prime_list: list) -> int:
+def prime_x_greater_y_gen(prime_list: list):
     """generator that generates primes x, y, x < y"""
     for i, x in enumerate(prime_list[:-1]):
         for y in prime_list[i + 1:]:

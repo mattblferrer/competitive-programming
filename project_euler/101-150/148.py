@@ -10,7 +10,7 @@ def triangular(ind: int) -> int:
     return ind * (ind + 1) // 2
 
 
-def num_to_base(num: int, b: int) -> int:
+def num_to_base(num: int, b: int):
     """converts number to base b"""
     while num > 0:
         num, d = divmod(num, b)

@@ -1,5 +1,5 @@
 from math import isqrt
-from sympy.ntheory.modular import crt
+from sympy.ntheory.modular import crt # type: ignore
 
 
 def soe(n: int) -> list[bool]:

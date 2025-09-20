@@ -1,4 +1,4 @@
-from sympy.ntheory.residue_ntheory import quadratic_congruence
+from sympy.ntheory.residue_ntheory import quadratic_congruence # type: ignore
 
 
 def legendre(a: int, p: int) -> int:

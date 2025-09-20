@@ -1,6 +1,6 @@
 from math import sqrt
-from numba import njit
-import numpy as np
+from numba import njit # type: ignore
+import numpy as np # type: ignore
 
 
 def main():

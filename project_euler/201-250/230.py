@@ -1,5 +1,5 @@
 # returns the Fibonacci sequence as a generator
-def fibonacci_generator() -> int:
+def fibonacci_generator():
     a, b = 0, 1
 
     while True:

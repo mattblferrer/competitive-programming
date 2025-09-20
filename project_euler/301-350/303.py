@@ -1,5 +1,5 @@
 from math import log10
-import numpy as np
+import numpy as np # type: ignore
 
 
 def main():

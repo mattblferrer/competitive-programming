@@ -2,7 +2,7 @@ from itertools import product
 
 
 # yields all the rolls of x dice with y sides and their total sum
-def dice_generator(x: int, y: int) -> tuple:
+def dice_generator(x: int, y: int):
     dice = product(range(1, y+1), repeat=x)
     for roll in dice:
         yield roll, sum(roll)

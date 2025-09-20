@@ -2,7 +2,7 @@ from collections import deque
 
 
 # returns each term of a lagged fibonacci generator
-def lagged_fib_gen() -> int:
+def lagged_fib_gen():
     terms = deque([])
     i = 0  # starting num
     while True: 
