@@ -1,4 +1,11 @@
 #include <bits/stdc++.h>
+using ll = long long;
+using ld = long double;
+using pll = std::pair<long long, long long>;
+using namespace std;
+#define M_PI 3.14159265358979323846
+const long long INF = 2e18;
+const long long MOD = 998244353;
 
 class Matrix {
     public:
@@ -49,11 +56,25 @@ Matrix multiply(Matrix a, Matrix b, long long mod) {
 Matrix power(Matrix a, long long b, long long mod) {
     Matrix ans = Matrix(a.mat.size());
     while (b) {
-        if (b % 2) {
-            ans = multiply(ans, a, mod);
-        }
+        if (b % 2) ans = multiply(ans, a, mod);
         a = multiply(a, a, mod);
         b >>= 1;
     }
     return ans;
+}
+
+void solve() {
+    ll n, k;
+    cin >> n >> k;
+    Matrix a = matrix_input(n, n);
+    cout << power(a, k, MOD);
+} 
+
+int main() {
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(NULL);
+    std::cout << setprecision(20);
+
+    solve();
+    return 0;
 }
