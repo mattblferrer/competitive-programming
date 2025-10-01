@@ -1,11 +1,11 @@
 #include <bits/stdc++.h>
 
 std::vector<long long> parent;
-std::vector<long long> size;
+std::vector<long long> sz;
 
 void make_set(long long a) {
     parent[a] = a;
-    size[a] = 1;
+    sz[a] = 1;
 }
 
 long long find_set(long long a) {
@@ -17,9 +17,9 @@ bool union_sets(long long a, long long b) {
     a = find_set(a);
     b = find_set(b);
     if (a == b) return false;
-    if (size[a] < size[b]) std::swap(a, b);
+    if (sz[a] < sz[b]) std::swap(a, b);
     parent[b] = a;
-    size[a] += size[b];
+    sz[a] += sz[b];
     return true;
 }
 
