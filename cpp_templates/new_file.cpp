@@ -1,21 +1,21 @@
 #include <bits/stdc++.h>
+using namespace std;
 using ll = long long;
 using ld = long double;
-using pll = std::pair<long long, long long>;
-using namespace std;
+using pll = pair<ll, ll>;
 #define M_PI 3.14159265358979323846
-const long long INF = 2e18;
-const long long MOD = 1000000007;
+const ll INF = 2e18;
+const ll MOD = 1000000007;
 
 void solve() {
     
 } 
 
 int main() {
-    std::ios_base::sync_with_stdio(false);
-    std::cin.tie(NULL);
-    std::cout << setprecision(20);
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout << setprecision(20);
 
-    int t; std::cin >> t; while (t--) solve();
+    int t; cin >> t; while (t--) solve();
     return 0;
 }
