@@ -16,3 +16,4 @@
 |105943| Пригласительный этап ВсОШ по информатике, 2025 |
 |106084| 2025 ICPC Asia Taiwan Online Programming Contest | 
 |106094| SVU-HIAST CPC 2025 | 
+|106100| International MathCoding Narxoz open olympiad 2025 |
