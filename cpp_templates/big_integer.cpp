@@ -1,11 +1,15 @@
 #include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using ld = long double;
+using pll = pair<ll, ll>;
 
 class BigInt {
     public:
-    std::vector<signed char> d;  // digits
+    vector<signed char> d;  // digits
     bool sign = false;  // false = pos, true = neg
 
-    BigInt(long long a = 0) {
+    BigInt(ll a = 0) {
         if (a < 0) {
             sign = true;
             a = -a;
@@ -15,15 +19,15 @@ class BigInt {
             a /= 10;
         }
     }
-    BigInt(std::string& s) {
-        std::vector<signed char> d;
+    BigInt(string& s) {
+        vector<signed char> d;
         check_sign(s);
         int n = s.size();
         for (int i = n - 1; i >= sign; i--) d.push_back(s[i] - '0');    
     }   
     BigInt(const char* s) {
-        std::vector<signed char> d;
-        std::string sc = s;
+        vector<signed char> d;
+        string sc = s;
         check_sign(sc); 
         int n = sc.size();
         for (int i = n - 1; i >= sign; i--) d.push_back(s[i] - '0');    
@@ -31,7 +35,7 @@ class BigInt {
     int size() const {
         return d.size();
     }
-    void check_sign(std::string& s) {
+    void check_sign(string& s) {
         if (s.front() == '-') sign = true;
     }
     static BigInt abs(const BigInt& a) {
@@ -40,7 +44,7 @@ class BigInt {
         return c;
     }
     static BigInt add_abs(BigInt& a, const BigInt& b) {
-        int n = std::max(a.size(), b.size());
+        int n = max(a.size(), b.size());
         while (a.size() != n + 1) a.d.push_back(0);
         for (int i = 0; i < b.size(); i++) a.d[i] += b.d[i];
         for (int i = 0; i < n; i++) {
@@ -53,7 +57,7 @@ class BigInt {
         return a;
     }
     static BigInt sub_abs(BigInt& a, const BigInt& b) {
-        int n = std::max(a.size(), b.size());
+        int n = max(a.size(), b.size());
         for (int i = 0; i < b.size(); i++) a.d[i] -= b.d[i];
         for (int i = 0; i < n - 1; i++) {
             if (a.d[i] < 0) {
@@ -127,25 +131,25 @@ class BigInt {
     int operator[](const int idx) const {
         return (int)d[d.size() - idx - 1];
     }
-    friend std::istream &operator>>(std::istream& in, BigInt& a) {
-        std::string s;
+    friend istream &operator>>(istream& in, BigInt& a) {
+        string s;
         in >> s;
         a.check_sign(s);
         int n = s.size();
         for (int i = n - 1; i >= a.sign; i--) a.d.push_back(s[i] - '0');
         while (a.size() > 1 && a.d.back() == 0) a.d.pop_back();
-        return std::cin;
+        return cin;
     }
-    friend std::ostream &operator<<(std::ostream& out, const BigInt& a) {
+    friend ostream &operator<<(ostream& out, const BigInt& a) {
         int n = a.d.size();
         if (n == 0) {
-            std::cout << "0";
-            return std::cout;
+            cout << "0";
+            return cout;
         }
-        if (a.sign) std::cout << '-';
+        if (a.sign) cout << '-';
         for (int i = n - 1; i >= 0; i--) {
-            std::cout << (int)a.d[i];
+            cout << (int)a.d[i];
         }
-        return std::cout;
+        return cout;
     }
 };

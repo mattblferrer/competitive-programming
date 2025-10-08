@@ -1,7 +1,11 @@
 #include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using ld = long double;
+using pll = pair<ll, ll>;
 
-void topo_sort(std::vector<std::vector<int>>& adj_list, std::vector<bool>& seen, 
-    std::vector<int>& order, std::vector<bool>& curr, bool& cycle, int u) {
+void topo_sort(vector<vector<int>>& adj_list, vector<bool>& seen, 
+    vector<int>& order, vector<bool>& curr, bool& cycle, int u) {
     if (seen[u]) return;
     if (curr[u]) {
         cycle = true;

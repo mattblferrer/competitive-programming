@@ -1,11 +1,15 @@
 #include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using ld = long double;
+using pll = pair<ll, ll>;
 
 class HexBigInt {
     public:
-    std::vector<signed char> d;  // digits
+    vector<signed char> d;  // digits
     bool sign = false;  // false = pos, true = neg
 
-    HexBigInt(long long a = 0) {
+    HexBigInt(ll a = 0) {
         if (a < 0) {
             sign = true;
             a = -a;
@@ -15,8 +19,8 @@ class HexBigInt {
             a /= 16;
         }
     }
-    HexBigInt(std::string& s) {
-        std::vector<signed char> d;
+    HexBigInt(string& s) {
+        vector<signed char> d;
         check_sign(s);
         int n = s.size();
         for (int i = n - 1; i >= sign; i--) {
@@ -26,8 +30,8 @@ class HexBigInt {
         }
     }   
     HexBigInt(const char* s) {
-        std::vector<signed char> d;
-        std::string sc = s;
+        vector<signed char> d;
+        string sc = s;
         check_sign(sc); 
         int n = sc.size();
         for (int i = n - 1; i >= sign; i--) {
@@ -39,7 +43,7 @@ class HexBigInt {
     int size() const {
         return d.size();
     }
-    void check_sign(std::string& s) {
+    void check_sign(string& s) {
         if (s.front() == '-') sign = true;
     }
     static HexBigInt abs(const HexBigInt& a) {
@@ -48,7 +52,7 @@ class HexBigInt {
         return c;
     }
     static HexBigInt add_abs(HexBigInt& a, const HexBigInt& b) {
-        int n = std::max(a.size(), b.size());
+        int n = max(a.size(), b.size());
         while (a.size() != n + 1) a.d.push_back(0);
         for (int i = 0; i < b.size(); i++) a.d[i] += b.d[i];
         for (int i = 0; i < n; i++) {
@@ -61,7 +65,7 @@ class HexBigInt {
         return a;
     }
     static HexBigInt sub_abs(HexBigInt& a, const HexBigInt& b) {
-        int n = std::max(a.size(), b.size());
+        int n = max(a.size(), b.size());
         for (int i = 0; i < b.size(); i++) a.d[i] -= b.d[i];
         for (int i = 0; i < n - 1; i++) {
             if (a.d[i] < 0) {
@@ -135,8 +139,8 @@ class HexBigInt {
     int operator[](const int idx) const {
         return (int)d[d.size() - idx - 1];
     }
-    friend std::istream &operator>>(std::istream& in, HexBigInt& a) {
-        std::string s;
+    friend istream &operator>>(istream& in, HexBigInt& a) {
+        string s;
         in >> s;
         a.check_sign(s);
         int n = s.size();
@@ -146,20 +150,20 @@ class HexBigInt {
             else a.d.push_back(s[i] - 'A' + 10);
         }
         while (a.size() > 1 && a.d.back() == 0) a.d.pop_back();
-        return std::cin;
+        return cin;
     }
-    friend std::ostream &operator<<(std::ostream& out, const HexBigInt& a) {
+    friend ostream &operator<<(ostream& out, const HexBigInt& a) {
         int n = a.d.size();
         if (n == 0) {
-            std::cout << "0";
-            return std::cout;
+            cout << "0";
+            return cout;
         }
-        if (a.sign) std::cout << '-';
+        if (a.sign) cout << '-';
         for (int i = n - 1; i >= 0; i--) {
             signed char ch = (int)a.d[i];
-            if (ch < 10) std::cout << ch;
-            else std::cout << (ch - 10 + 'A');
+            if (ch < 10) cout << ch;
+            else cout << (ch - 10 + 'A');
         }
-        return std::cout;
+        return cout;
     }
 };

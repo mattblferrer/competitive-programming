@@ -1,14 +1,16 @@
 #include <bits/stdc++.h>
+using namespace std;
 using ll = long long;
-using pll = std::pair<long long, long long>;
-const long long INF = 2e18;
+using ld = long double;
+using pll = pair<ll, ll>;
+const ll INF = 2e18;
 
-void dijkstra(ll start, std::vector<std::vector<pll>> adj_list, 
-    std::vector<ll>& dist, std::vector<ll>& path) {
+void dijkstra(ll start, vector<vector<pll>> adj_list, 
+    vector<ll>& dist, vector<ll>& path) {
     int n = adj_list.size();
     dist.resize(n, INF);
     path.resize(n, -1);
-    std::priority_queue<pll, std::vector<pll>, std::greater<pll>> q;
+    priority_queue<pll, vector<pll>, greater<pll>> q;
 
     dist[start] = 0;  // starting vertex
     q.push({0, start});

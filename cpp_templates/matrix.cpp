@@ -1,38 +1,42 @@
 #include <bits/stdc++.h>
+using namespace std;
+using ll = long long;
+using ld = long double;
+using pll = pair<ll, ll>;
 
 class Matrix {
     public:
-    std::vector<std::vector<long long>> mat;
+    vector<vector<ll>> mat;
 
     Matrix(int n) {
-        mat.resize(n, std::vector<long long>(n));
+        mat.resize(n, vector<ll>(n));
         for (int i = 0; i < n; i++) mat[i][i] = 1;
     }
     Matrix(int n, int m) {
-        mat.resize(n, std::vector<long long>(m));
+        mat.resize(n, vector<ll>(m));
     }
-    Matrix(std::vector<std::vector<long long>> in) {
+    Matrix(vector<vector<ll>> in) {
         mat = in;
     }
-    friend std::ostream& operator<<(std::ostream& out, const Matrix& a) {
+    friend ostream& operator<<(ostream& out, const Matrix& a) {
         int n = a.mat.size(), m = a.mat[0].size();
         for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) std::cout << a.mat[i][j] << " ";
-            std::cout << "\n";
+            for (int j = 0; j < m; j++) cout << a.mat[i][j] << " ";
+            cout << "\n";
         }
-        return std::cout;
+        return cout;
     }
 };
 
 Matrix matrix_input(int n, int m) {
     Matrix a(n, m);
     for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) std::cin >> a.mat[i][j];
+        for (int j = 0; j < m; j++) cin >> a.mat[i][j];
     }   
     return a;
 }
 
-Matrix multiply(Matrix a, Matrix b, long long mod) {
+Matrix multiply(Matrix a, Matrix b, ll mod) {
     int n1 = a.mat.size(), m1 = a.mat[0].size();
     int n2 = b.mat.size(), m2 = b.mat[0].size();
     Matrix c(n1, m2);
@@ -46,7 +50,7 @@ Matrix multiply(Matrix a, Matrix b, long long mod) {
     return c;
 }
 
-Matrix power(Matrix a, long long b, long long mod) {
+Matrix power(Matrix a, ll b, ll mod) {
     Matrix ans = Matrix(a.mat.size());
     while (b) {
         if (b % 2) {
