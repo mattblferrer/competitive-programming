@@ -3,9 +3,9 @@ using namespace std;
 using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
-#define ms_PI 3.14159265358979323846
+#define M_PI 3.14159265358979323846
 const ll INF = 2e18;
-const ll msOD = 1000000007;
+const ll MOD = 1000000007;
 
 void solve() {
     int n; 
