@@ -1,5 +1,6 @@
 | ID | Contest Name |
 |---|---|
+|100886| 2015-2016 Petrozavodsk Winter Training Camp, Saratov SU Contest |
 |101853| ACM International Collegiate Programming Contest, JUST Collegiate Programming Contest (2018) |
 |102644| Matrix Exponentiation |
 |102697| CodeRams Practice Problem Archive |
