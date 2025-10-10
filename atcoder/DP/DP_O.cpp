@@ -8,15 +8,28 @@ const long long INF = 2e18;
 const long long MOD = 1000000007;
 
 void solve() {
-    int n;
+    ll n;
     cin >> n;
-    vector<vector<int>> a(n, vector<int>(n));
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
+    vector<vector<ll>> a(n, vector<ll>(n));
+    for (ll i = 0; i < n; i++) {
+        for (ll j = 0; j < n; j++) {
             cin >> a[i][j];
         }
     }
-    // TODO: solve
+    vector<ll> dp(1 << n);
+    dp[0] = 1;
+    for (ll i = 0; i < (1 << n); i++) {
+        ll cnt = __builtin_popcountll(i);
+        if (dp[i] == 0) continue;
+        for (ll j = 0; j < n; j++) {
+            if (1 & (i >> j)) continue;
+            if (!a[cnt][j]) continue;
+            ll next = i | (1 << j);
+            dp[next] += dp[i];
+            if (dp[next] >= MOD) dp[next] -= MOD;
+        }
+    }
+    cout << dp[(1 << n) - 1] << "\n";
 } 
 
 int main() {
