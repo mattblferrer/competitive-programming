@@ -13,6 +13,7 @@
 |105562| 2024-2025 ICPC Northwestern European Regional Programming Contest (NWERC 2024) | 
 |105633| The 2024 ICPC Asia Yokohama Regional Contest | 
 |105677| 2024-2025 ICPC Southwestern European Regional Contest (SWERC 2024) |
+|105838| The 14th Huazhong Agricultural University Programming Contest |
 |105847| CPC External Problemset |
 |105943| Пригласительный этап ВсОШ по информатике, 2025 |
 |106084| 2025 ICPC Asia Taiwan Online Programming Contest | 
