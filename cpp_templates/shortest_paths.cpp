@@ -16,6 +16,25 @@ void bellman_ford(ll start, ll n, vector<vector<ll>> edges,
     }
 }
 
+vector<vector<ll>> floyd_warshall(vector<vector<ll>> adj) {
+    ll n = adj.size();
+    vector<vector<ll>> dist(n, vector<ll>(n, INF));
+    for (ll i = 0; i < n; i++) {
+        for (ll j = 0; j < n; j++) {
+            if (i == j) dist[i][j] = 0;
+            else if (adj[i][j]) dist[i][j] = adj[i][j];
+        }
+    }
+    for (ll k = 0; k < n; k++) {
+        for (ll i = 0; i < n; i++) {
+            for (ll j = 0; j < n; j++) {
+                dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]);
+            }
+        }
+    }
+    return dist;
+}
+
 void dijkstra(ll start, vector<vector<pll>> adj_list, 
     vector<ll>& dist, vector<ll>& path) {
     int n = adj_list.size();
