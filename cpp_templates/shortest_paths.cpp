@@ -5,6 +5,17 @@ using ld = long double;
 using pll = pair<ll, ll>;
 const ll INF = 2e18;
 
+void bellman_ford(ll start, ll n, vector<vector<ll>> edges,
+    vector<ll>& dist) {
+    dist.resize(n, INF);
+    dist[start] = 0;
+    for (ll i = 0; i < n - 1; i++) {
+        for (auto e: edges) {
+            dist[e[1]] = min(dist[e[1]], dist[e[0]] + e[2]);
+        }
+    }
+}
+
 void dijkstra(ll start, vector<vector<pll>> adj_list, 
     vector<ll>& dist, vector<ll>& path) {
     int n = adj_list.size();
