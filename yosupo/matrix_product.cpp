@@ -39,13 +39,13 @@ Matrix matrix_input(int n, int m) {
     return a;
 }
 
-Matrix multiply(Matrix a, Matrix b, long long mod) {
+Matrix multiply(Matrix a, Matrix b, ll mod) {
     int n1 = a.mat.size(), m1 = a.mat[0].size();
     int n2 = b.mat.size(), m2 = b.mat[0].size();
     Matrix c(n1, m2);
     for (int i = 0; i < n1; i++) {
-        for (int j = 0; j < m2; j++) {
-            for (int k = 0; k < m1; k++) {
+        for (int k = 0; k < m1; k++) {
+            for (int j = 0; j < m2; j++) {
                 c.mat[i][j] = (c.mat[i][j] + a.mat[i][k] * b.mat[k][j]) % mod;
             }
         }
