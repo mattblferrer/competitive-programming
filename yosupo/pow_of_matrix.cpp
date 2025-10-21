@@ -39,7 +39,7 @@ Matrix matrix_input(int n, int m) {
     return a;
 }
 
-Matrix multiply(Matrix a, Matrix b, ll mod) {
+Matrix multiply(const Matrix a, const Matrix b, ll mod) {
     int n1 = a.mat.size(), m1 = a.mat[0].size();
     int n2 = b.mat.size(), m2 = b.mat[0].size();
     Matrix c(n1, m2);
