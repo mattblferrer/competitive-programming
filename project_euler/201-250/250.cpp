@@ -20,17 +20,18 @@ ll binexp(ll a, ll b, ll mod) {
 }
 
 void solve() {
-    vector<vector<ll>> dp(250251, vector<ll>(250));
+    vector<vector<ll>> dp(2, vector<ll>(250));
     dp[1][1] = 1;
 
     for (ll i = 2; i <= 250250; i++) {
         ll curr_mod = binexp(i, i, 250);
-        dp[i][curr_mod]++;
+        for (ll j = 0; j < 250; j++) dp[i % 2][j] = 0;
+        dp[i % 2][curr_mod]++;
         for (ll j = 0; j < 250; j++) {
-            dp[i][j] += (dp[i - 1][(j + 250 - curr_mod) % 250] + dp[i - 1][j]) % MOD;
+            dp[i % 2][j] = (dp[i % 2][j] + dp[(i - 1) % 2][(j + 250 - curr_mod) % 250] + dp[(i - 1) % 2][j]) % MOD;
         }
     }
-    cout << dp[250250][0];
+    cout << dp[0][0];
 } 
 
 int main() {
