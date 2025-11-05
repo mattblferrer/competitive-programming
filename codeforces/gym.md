@@ -1,6 +1,7 @@
 | ID | Contest Name |
 |---|---|
 |100886| 2015-2016 Petrozavodsk Winter Training Camp, Saratov SU Contest |
+|101021| Interactive Problem Training Contest |
 |101853| ACM International Collegiate Programming Contest, JUST Collegiate Programming Contest (2018) |
 |102001| 2018 ICPC Asia Jakarta Regional Contest |
 |102644| Matrix Exponentiation |
