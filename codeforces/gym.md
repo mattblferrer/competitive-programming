@@ -4,6 +4,7 @@
 |101021| Interactive Problem Training Contest |
 |101853| ACM International Collegiate Programming Contest, JUST Collegiate Programming Contest (2018) |
 |102001| 2018 ICPC Asia Jakarta Regional Contest |
+|102267| The 2019 University of Jordan Collegiate Programming Contest |
 |102644| Matrix Exponentiation |
 |102697| CodeRams Practice Problem Archive |
 |102861| 2020-2021 ACM-ICPC Brazil Subregional Programming Contest |
