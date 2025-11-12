@@ -9,6 +9,7 @@
 |102644| Matrix Exponentiation |
 |102697| CodeRams Practice Problem Archive |
 |102861| 2020-2021 ACM-ICPC Brazil Subregional Programming Contest |
+|102942| Noobs Round #2 (Div. 4) by Rudro25 |
 |104118| 2022 ICPC Asia-Manila Regional Contest |
 |104921| Easy_Training |
 |105093| 2024 UP ACM Algolympics Final Round |
