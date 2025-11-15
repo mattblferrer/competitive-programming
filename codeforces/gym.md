@@ -7,6 +7,7 @@
 |102001| 2018 ICPC Asia Jakarta Regional Contest |
 |102267| The 2019 University of Jordan Collegiate Programming Contest |
 |102397| Asu Coding Cup 4 |
+|102556| 2020 Ateneo de Manila University DISCS PrO HS Division |
 |102644| Matrix Exponentiation |
 |102697| CodeRams Practice Problem Archive |
 |102861| 2020-2021 ACM-ICPC Brazil Subregional Programming Contest |
