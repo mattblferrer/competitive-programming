@@ -1,0 +1,1 @@
+print("".join(chr(sum(int(v[i])*(8**(len(v)-i-1)) for i in range(len(v)))) for v in input().split(' ')))
