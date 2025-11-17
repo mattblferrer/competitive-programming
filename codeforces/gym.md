@@ -17,6 +17,7 @@
 |104921| Easy_Training | 6/6 |
 |105093| 2024 UP ACM Algolympics Final Round | 7/13 |
 |105327| 2024-2025 ICPC Brazil Subregional Programming Contest | 4/12 |
+|105494| 2024-2025 ICPC NERC, Kyrgyzstan Qualification Contest | 7/9 |
 |105505| 2024-2025 ICPC Latin American Regional Programming Contest | 5/12 |
 |105562| 2024-2025 ICPC Northwestern European Regional Programming Contest (NWERC 2024) | 8/13 |
 |105633| The 2024 ICPC Asia Yokohama Regional Contest | 4/12 |
