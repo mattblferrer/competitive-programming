@@ -9,7 +9,7 @@
 |102397| Asu Coding Cup 4 | 10/10 |
 |102556| 2020 Ateneo de Manila University DISCS PrO HS Division | 5/9 |
 |102644| Matrix Exponentiation | 1/9 |
-|102697| CodeRams Practice Problem Archive | 78/201 |
+|102697| CodeRams Practice Problem Archive | 80/201 |
 |102861| 2020-2021 ACM-ICPC Brazil Subregional Programming Contest | 6/15 |
 |102942| Noobs Round #2 (Div. 4) by Rudro25 | 4/6 |
 |102951| USACO Guide Problem Submission | 2/6 |
