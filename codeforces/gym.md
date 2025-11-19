@@ -4,7 +4,9 @@
 |101021| Interactive Problem Training Contest | 1/1 |
 |101102| 2016 ACM Amman Collegiate Programming Contest | 3/12 |
 |101853| ACM International Collegiate Programming Contest, JUST Collegiate Programming Contest (2018) | 10/11 |
+|101883| Amazalgo 2018 Practice Contest | 3/3 |
 |102001| 2018 ICPC Asia Jakarta Regional Contest | 5/12 |
+|102212| Amazalgo Uni 2019 Practice Contest | 3/3 |
 |102267| The 2019 University of Jordan Collegiate Programming Contest | 5/12 |
 |102397| Asu Coding Cup 4 | 10/10 |
 |102556| 2020 Ateneo de Manila University DISCS PrO HS Division | 5/9 |
