@@ -28,7 +28,7 @@
 |105838| The 14th Huazhong Agricultural University Programming Contest | 2/13 |
 |105847| CPC External Problemset | 1/1 |
 |105943| Пригласительный этап ВсОШ по информатике, 2025 | 2/5 |
-|106084| 2025 ICPC Asia Taiwan Online Programming Contest | 2/12 |
+|106084| 2025 ICPC Asia Taiwan Online Programming Contest | 3/12 |
 |106094| SVU-HIAST CPC 2025 | 5/14 |
 |106100| International MathCoding Narxoz open olympiad 2025 | 4/10 |
 |106169| 2025-2026 ICPC NERC, Kyrgyzstan Regional Contest | 7/10 | 
