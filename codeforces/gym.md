@@ -15,6 +15,7 @@
 |102861| 2020-2021 ACM-ICPC Brazil Subregional Programming Contest | 6/15 |
 |102942| Noobs Round #2 (Div. 4) by Rudro25 | 4/6 |
 |102951| USACO Guide Problem Submission | 2/6 |
+|103029| Quick (fast) contest #1 | 3/4 |
 |104118| 2022 ICPC Asia-Manila Regional Contest | 5/12 |
 |104921| Easy_Training | 6/6 |
 |105093| 2024 UP ACM Algolympics Final Round | 7/13 |
