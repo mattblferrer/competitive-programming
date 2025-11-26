@@ -3,7 +3,7 @@
 |---|---|---|
 | Atcoder | https://atcoder.jp/users/mattferrer | 176 |
 | Baekjoon Online Judge | https://www.acmicpc.net/user/mattferrer | 4 |
-| Codeforces | https://codeforces.com/profile/mattferrer | 1053 |
+| Codeforces | https://codeforces.com/profile/mattferrer | 1150 |
 | CSES | https://cses.fi/user/283245 | 56 |
 | Hackerrank | https://www.hackerrank.com/profile/mattferrer | 114 |
 | Kattis | https://open.kattis.com/users/matt-ferrer | 36 |
@@ -13,9 +13,9 @@
 | TLX | https://tlx.toki.id/ | 7 |
 | VNOI | https://oj.vnoi.info/ | 6 |
 | Yosupo Library Checker | https://judge.yosupo.jp/ | 12 |
-| **Total** | | 2356 |
+| **Total** | | 2453 |
 
-Solve counts updated as of November 2025
+Solve counts updated as of November 27, 2025
 
 # AtCoder
   - All code submissions submitted by the user [mattferrer](https://atcoder.jp/users/mattferrer) on AtCoder (Python, C++20).
