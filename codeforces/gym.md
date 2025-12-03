@@ -33,3 +33,4 @@
 |106100| International MathCoding Narxoz open olympiad 2025 | 4/10 |
 |106169| 2025-2026 ICPC NERC, Kyrgyzstan Regional Contest | 7/10 | 
 |106179| ICPC India Online Prelims (2025 - 2026) | 1/6 |
+|654383| 2025 PseudoCodeOver ☆ | 2/10 |
