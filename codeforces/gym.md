@@ -35,3 +35,4 @@
 |106179| ICPC India Online Prelims (2025 - 2026) | 1/6 |
 |106262| 2025 ICPC Asia Manila Regional | 2/13 |
 |654383| 2025 PseudoCodeOver ☆ | 2/10 |
+|655318| Abakoda Christmas Extravaganza | 2/37 |
