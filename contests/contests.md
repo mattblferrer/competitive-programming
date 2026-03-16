@@ -7,3 +7,4 @@ The **contests** folder lists the contests I have actively participated in (not 
 | **team_selection_2025_algorithms** | ADMU ProgVar Team Selection 2025 - Algorithms |https://open.kattis.com/contests/e38hd3|
 | **team_selection_2025_ds** | ADMU ProgVar Team Selection 2025 - Data Structures |https://open.kattis.com/contests/khomwh|
 | **team_selection_2025_math** | ADMU ProgVar Team Selection 2025 - Math |https://open.kattis.com/contests/ix8bp7|
+| **algolympics_2026_elim** | UP ACM Algolympics 2026 Online Elimination Round |https://codeforces.com/group/fDKsZH3HKS/contest/678501|
