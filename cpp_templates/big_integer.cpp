@@ -6,7 +6,7 @@ using pll = pair<ll, ll>;
 
 class BigInt {
     public:
-    vector<signed char> d;  // digits
+    string d;  // digits
     bool sign = false;  // false = pos, true = neg
 
     BigInt(ll a = 0) {
@@ -20,13 +20,11 @@ class BigInt {
         }
     }
     BigInt(string& s) {
-        vector<signed char> d;
         check_sign(s);
         int n = s.size();
         for (int i = n - 1; i >= sign; i--) d.push_back(s[i] - '0');    
     }   
     BigInt(const char* s) {
-        vector<signed char> d;
         string sc = s;
         check_sign(sc); 
         int n = sc.size();

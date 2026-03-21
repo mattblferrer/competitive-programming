@@ -6,7 +6,7 @@ using pll = pair<ll, ll>;
 
 class HexBigInt {
     public:
-    vector<signed char> d;  // digits
+    string d;  // digits
     bool sign = false;  // false = pos, true = neg
 
     HexBigInt(ll a = 0) {
@@ -20,7 +20,6 @@ class HexBigInt {
         }
     }
     HexBigInt(string& s) {
-        vector<signed char> d;
         check_sign(s);
         int n = s.size();
         for (int i = n - 1; i >= sign; i--) {
@@ -30,7 +29,6 @@ class HexBigInt {
         }
     }   
     HexBigInt(const char* s) {
-        vector<signed char> d;
         string sc = s;
         check_sign(sc); 
         int n = sc.size();
