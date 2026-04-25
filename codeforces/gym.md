@@ -28,7 +28,7 @@
 |105838| The 14th Huazhong Agricultural University Programming Contest | 2/13 |
 |105847| CPC External Problemset | 1/1 |
 |105943| Пригласительный этап ВсОШ по информатике, 2025 | 2/5 |
-|106073| The 2025 ICPC South America - Brazil First Phase | 5/13 |
+|106073| The 2025 ICPC South America - Brazil First Phase | 6/13 |
 |106084| 2025 ICPC Asia Taiwan Online Programming Contest | 3/12 |
 |106094| SVU-HIAST CPC 2025 | 5/14 |
 |106100| International MathCoding Narxoz open olympiad 2025 | 4/10 |
