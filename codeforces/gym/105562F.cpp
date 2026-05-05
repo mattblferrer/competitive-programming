@@ -50,13 +50,13 @@ void problem105562F() {
         std::cin >> c[i];
     }
 
-     // find index of nearest larger value
+    // find index of nearest larger value
     std::vector<int> l_idx(n + 1);
     std::deque<thing> things;
     for (ll i = n; i > 0; i--)
     {
         while (!things.empty() && c[i] > things.front().val) things.pop_front();
-        if (!things.empty() && things.front().val > l_idx[i]) 
+        if (!things.empty() && things.front().val > l_idx[i])
             l_idx[i] = things.front().idx;
         else l_idx[i] = -1;
         things.push_front({c[i], i});
@@ -77,13 +77,13 @@ void problem105562F() {
                 l = find_set(l);
                 amt[l] += over;
             }
-        } 
+        }
         else if (t == '?') {
             std::cin >> l;
-            std::cout << amt[l] << "\n"; 
+            std::cout << amt[l] << "\n";
         }
     }
-} 
+}
 
 int main() {
     std::ios_base::sync_with_stdio(false);

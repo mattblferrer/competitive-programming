@@ -17,7 +17,7 @@ int main() {
     sort(A.begin(), A.end());
     sort(B.begin(), B.end());
 
-    auto check = [&] (int k) -> bool {
+    auto check = [&](int k) -> bool {
         int i = 0, j = 0;
         int count = (i < k ? Y : X);
         for (j; j < M; j++) {
@@ -32,7 +32,7 @@ int main() {
             count--;
         }
         return true;
-    };
+        };
 
     if (!check(0)) {
         cout << "impossible";
@@ -41,18 +41,20 @@ int main() {
 
     int L = 0, R = N;
 
-    while (L < R-1) {
+    while (L < R - 1) {
         int M = (L + R) / 2;
         // cout << L << " " << R << endl;
         if (check(M)) {
             L = M;
-        } else {
-            R = M-1;
+        }
+        else {
+            R = M - 1;
         }
     }
     if (check(R)) {
         cout << R;
-    } else
+    }
+    else
         cout << L;
     return 0;
 }

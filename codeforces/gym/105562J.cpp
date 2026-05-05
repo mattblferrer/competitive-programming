@@ -28,7 +28,7 @@ int main() {
     }
     sort(cranes.begin(), cranes.end(), [](crane a, crane b) {
         return a.h > b.h;
-    });
+        });
     for (ll i = 0; i < n; i++) {
         crane curr = cranes[i];
         ll jib = curr.h;
@@ -40,7 +40,7 @@ int main() {
     }
     sort(cranes.begin(), cranes.end(), [](crane a, crane b) {
         return a.i < b.i;
-    });
+        });
     for (ll i = 0; i < n; i++) {
         cout << cranes[i].j << "\n";
     }

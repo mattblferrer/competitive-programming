@@ -20,7 +20,7 @@ int main() {
     for (int i = 0; i < n; i++) {
         string st = "";
         bool cap = false;
-        for (char c: names[i]) {
+        for (char c : names[i]) {
             if (c >= 'A' && c <= 'Z') cap = true;
             if (cap) st += c;
         }

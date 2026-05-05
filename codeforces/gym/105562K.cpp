@@ -10,7 +10,7 @@ struct store {
 
 const long long INF = 2e18;
 
-void dijkstra(ll start, std::vector<std::vector<pll>> adj_list, 
+void dijkstra(ll start, std::vector<std::vector<pll>> adj_list,
     std::vector<ll>& dist, std::vector<ll>& path) {
     int n = adj_list.size();
     dist.resize(n, INF);
@@ -26,10 +26,10 @@ void dijkstra(ll start, std::vector<std::vector<pll>> adj_list,
         q.pop();
 
         if (d_f != dist[f]) continue;
-        for (auto edge: adj_list[f]) {
+        for (auto edge : adj_list[f]) {
             ll length = edge.first;
             ll v = edge.second;
-            
+
             if (dist[f] + length < dist[v]) {
                 dist[v] = dist[f] + length;
                 path[v] = f;
@@ -56,7 +56,7 @@ void solve() {
         prob[u - 1] = p;
         if (p == 1) possible = true;
     }
-    if (!possible) { 
+    if (!possible) {
         cout << "impossible";
         return;
     }
@@ -66,19 +66,19 @@ void solve() {
     vector<store> stores;
     for (int i = 0; i < n; i++) {
         if (prob[i] > 0) stores.push_back({start[i] + end[i], i, prob[i]});
-    }   
+    }
     sort(stores.begin(), stores.end(), [](store a, store b) {
         return a.dist < b.dist;
-    });
+        });
 
     long double ans = 0, prev = 1;
-    for (store s: stores) {
+    for (store s : stores) {
         ans += s.p * prev * s.dist;
         prev *= (1 - s.p);
     }
     cout << setprecision(10) << ans;
     return;
-} 
+}
 
 int main() {
     std::ios_base::sync_with_stdio(false);

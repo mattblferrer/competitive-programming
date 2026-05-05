@@ -14,7 +14,7 @@ void problem105562H() {
     std::cout << "? " << n - x << " 1\n" << std::flush;
     std::cin >> y;
     std::cout << "! " << x << " " << y << "\n" << std::flush;
-} 
+}
 
 int main() {
     std::ios_base::sync_with_stdio(false);

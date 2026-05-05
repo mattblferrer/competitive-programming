@@ -2,7 +2,7 @@
 using ll = long long;
 using pll = std::pair<long long, long long>;
 using namespace std;
-bool valid (ll n, ll m, ll x, ll y)
+bool valid(ll n, ll m, ll x, ll y)
 {
     return x >= 0 && x < n && y >= 0 && y < m;
 }
@@ -44,12 +44,12 @@ ll dfs(set<ll>& visited, vector<vector<char>>& graph, vector<vector<ll>>& adj, l
             cout << results[0];
             return 0;
         default:
-            return (ll) ((ll) op - (ll) '0');
+            return (ll)((ll)op - (ll)'0');
             break;
     }
     return 0;
-    
-} 
+
+}
 
 vector<vector<ll>> translations = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
 void solve() {
@@ -58,7 +58,7 @@ void solve() {
     vector<vector<char>> grid(n, vector<char>(m, 0));
     for (ll i = 0; i < n; i++) for (ll j = 0; j < m; j++) cin >> grid[i][j];
 
-    ll total_size = n*m;
+    ll total_size = n * m;
     vector<vector<ll>> adj(total_size);
     ll prller_index = -1;
     for (ll i = 0; i < n; i++)
