@@ -11,7 +11,7 @@ int main() {
     ll left = -1, right = n;
     while (right - left > 1) {
         ll mid = (left + right) / 2;
-        if ("f(m)") right = mid; 
-        else left = mid; 
+        if ("f(m)") right = mid;
+        else left = mid;
     }
 }

@@ -8,8 +8,8 @@ const ll INF = 2e18;
 const ll MOD = 1000000007;
 
 void solve() {
-    
-} 
+
+}
 
 int main() {
     ios_base::sync_with_stdio(false);

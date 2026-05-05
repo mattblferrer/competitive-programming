@@ -5,7 +5,7 @@ using ld = long double;
 using pll = pair<ll, ll>;
 
 class HexBigInt {
-    public:
+public:
     string d;  // digits
     bool sign = false;  // false = pos, true = neg
 
@@ -27,17 +27,17 @@ class HexBigInt {
             if (ch < 10) d.push_back(s[i] - '0');
             else d.push_back(s[i] - 'A' + 10);
         }
-    }   
+    }
     HexBigInt(const char* s) {
         string sc = s;
-        check_sign(sc); 
+        check_sign(sc);
         int n = sc.size();
         for (int i = n - 1; i >= sign; i--) {
             signed char ch = s[i] - '0';
             if (ch < 10) d.push_back(s[i] - '0');
-            else d.push_back(s[i] - 'A' + 10);   
+            else d.push_back(s[i] - 'A' + 10);
         }
-    }   
+    }
     int size() const {
         return d.size();
     }
@@ -86,7 +86,7 @@ class HexBigInt {
     friend bool operator==(const HexBigInt& a, const HexBigInt& b) {
         return a.d == b.d;
     }
-    friend bool operator<(const HexBigInt& a,const HexBigInt& b){
+    friend bool operator<(const HexBigInt& a, const HexBigInt& b) {
         if (a.sign != b.sign) return a.sign > b.sign;
         int n = a.size(), m = b.size();
         if (n != m) return n < m;
@@ -95,13 +95,13 @@ class HexBigInt {
         }
         return false;
     }
-    friend bool operator>(const HexBigInt& a,const HexBigInt& b){
+    friend bool operator>(const HexBigInt& a, const HexBigInt& b) {
         return b < a;
     }
-    friend bool operator>=(const HexBigInt& a,const HexBigInt& b){
+    friend bool operator>=(const HexBigInt& a, const HexBigInt& b) {
         return !(a < b);
     }
-    friend bool operator<=(const HexBigInt& a,const HexBigInt& b){
+    friend bool operator<=(const HexBigInt& a, const HexBigInt& b) {
         return !(a > b);
     }
     friend HexBigInt& operator+=(HexBigInt& a, HexBigInt& b) {
@@ -137,7 +137,7 @@ class HexBigInt {
     int operator[](const int idx) const {
         return (int)d[d.size() - idx - 1];
     }
-    friend istream &operator>>(istream& in, HexBigInt& a) {
+    friend istream& operator>>(istream& in, HexBigInt& a) {
         string s;
         in >> s;
         a.check_sign(s);
@@ -150,7 +150,7 @@ class HexBigInt {
         while (a.size() > 1 && a.d.back() == 0) a.d.pop_back();
         return cin;
     }
-    friend ostream &operator<<(ostream& out, const HexBigInt& a) {
+    friend ostream& operator<<(ostream& out, const HexBigInt& a) {
         int n = a.d.size();
         if (n == 0) {
             cout << "0";

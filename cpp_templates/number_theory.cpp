@@ -10,7 +10,7 @@ ll binexp(ll a, ll b, ll mod) {
         if (b % 2) {
             ans = (ans * a) % mod;
         }
-        a = (a * a) % mod;  
+        a = (a * a) % mod;
         b >>= 1;
     }
     return ans;

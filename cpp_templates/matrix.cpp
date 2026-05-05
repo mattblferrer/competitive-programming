@@ -5,7 +5,7 @@ using ld = long double;
 using pll = pair<ll, ll>;
 
 class Matrix {
-    public:
+public:
     vector<vector<ll>> mat;
 
     Matrix(int n) {
@@ -32,7 +32,7 @@ Matrix matrix_input(int n, int m) {
     Matrix a(n, m);
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) cin >> a.mat[i][j];
-    }   
+    }
     return a;
 }
 

@@ -17,10 +17,10 @@ struct flow {
         queue<pll> q;
         q.push({s, INF});
 
-        while (!q.empty()) { 
+        while (!q.empty()) {
             ll curr = q.front().first, f = q.front().second;
             q.pop();
-            for (ll next: adj[curr]) {
+            for (ll next : adj[curr]) {
                 if (parent[next] == -1 && cap[curr][next]) {
                     parent[next] = curr;
                     ll nf = min(f, cap[curr][next]);

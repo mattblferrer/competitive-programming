@@ -5,7 +5,7 @@ using ld = long double;
 using pll = pair<ll, ll>;
 
 class BigInt {
-    public:
+public:
     string d;  // digits
     bool sign = false;  // false = pos, true = neg
 
@@ -22,14 +22,14 @@ class BigInt {
     BigInt(string& s) {
         check_sign(s);
         int n = s.size();
-        for (int i = n - 1; i >= sign; i--) d.push_back(s[i] - '0');    
-    }   
+        for (int i = n - 1; i >= sign; i--) d.push_back(s[i] - '0');
+    }
     BigInt(const char* s) {
         string sc = s;
-        check_sign(sc); 
+        check_sign(sc);
         int n = sc.size();
-        for (int i = n - 1; i >= sign; i--) d.push_back(s[i] - '0');    
-    }   
+        for (int i = n - 1; i >= sign; i--) d.push_back(s[i] - '0');
+    }
     int size() const {
         return d.size();
     }
@@ -78,7 +78,7 @@ class BigInt {
     friend bool operator==(const BigInt& a, const BigInt& b) {
         return a.d == b.d;
     }
-    friend bool operator<(const BigInt& a,const BigInt& b){
+    friend bool operator<(const BigInt& a, const BigInt& b) {
         if (a.sign != b.sign) return a.sign > b.sign;
         int n = a.size(), m = b.size();
         if (n != m) return n < m;
@@ -87,13 +87,13 @@ class BigInt {
         }
         return false;
     }
-    friend bool operator>(const BigInt& a,const BigInt& b){
+    friend bool operator>(const BigInt& a, const BigInt& b) {
         return b < a;
     }
-    friend bool operator>=(const BigInt& a,const BigInt& b){
+    friend bool operator>=(const BigInt& a, const BigInt& b) {
         return !(a < b);
     }
-    friend bool operator<=(const BigInt& a,const BigInt& b){
+    friend bool operator<=(const BigInt& a, const BigInt& b) {
         return !(a > b);
     }
     friend BigInt& operator+=(BigInt& a, BigInt& b) {
@@ -129,7 +129,7 @@ class BigInt {
     int operator[](const int idx) const {
         return (int)d[d.size() - idx - 1];
     }
-    friend istream &operator>>(istream& in, BigInt& a) {
+    friend istream& operator>>(istream& in, BigInt& a) {
         string s;
         in >> s;
         a.check_sign(s);
@@ -138,7 +138,7 @@ class BigInt {
         while (a.size() > 1 && a.d.back() == 0) a.d.pop_back();
         return cin;
     }
-    friend ostream &operator<<(ostream& out, const BigInt& a) {
+    friend ostream& operator<<(ostream& out, const BigInt& a) {
         int n = a.d.size();
         if (n == 0) {
             cout << "0";
