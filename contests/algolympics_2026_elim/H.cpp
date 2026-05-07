@@ -16,7 +16,7 @@ ll binexp(ll a, ll b, ll mod) {
         if (b % 2) {
             ans = (ans * a) % mod;
         }
-        a = (a * a) % mod;  
+        a = (a * a) % mod;
         b >>= 1;
     }
     return ans;
@@ -36,7 +36,7 @@ void precompute() {
 void solve() {
     ll n, a;
     cin >> n >> a;
-    vector<ll> secret(n); 
+    vector<ll> secret(n);
     for (ll i = 0; i < n; i++) cin >> secret[i];
     string s;
     cin >> s;
@@ -57,7 +57,7 @@ void solve() {
     bool valid = true;
     ll first_g;
     if (g == 0) first_g = n;
-    else first_g = g_pos.front(); 
+    else first_g = g_pos.front();
     for (ll i = 0; i < first_g; i++) {
         if (s[i] == 'Y') {
             cout << "0\n";
@@ -101,11 +101,11 @@ void solve() {
         }
     }
     ll ans = 0;
-    for (ll x: dp) {
+    for (ll x : dp) {
         ans = (ans + x) % MOD;
     }
     cout << (ans * wf) % MOD << "\n";
-} 
+}
 
 int main() {
     ios_base::sync_with_stdio(false);

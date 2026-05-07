@@ -42,16 +42,16 @@ vector<pll> find_straight_flush(vector<pll> cards) {
     for (ll i = 0; i < 7; i++) {
         suits[cards[i].second].push_back(cards[i].first);
     }
-    for (const auto& pair: suits) {
+    for (const auto& pair : suits) {
         if (pair.second.size() >= 5) {
             vector<ll> ranks = pair.second;
             sort(ranks.begin(), ranks.end());
             for (ll start = ranks.size() - 5; start >= 0; start--) {
                 bool straight = true;
                 for (ll i = start; i < start + 4; i++) {
-                    if (ranks[i] != ranks[i + 1] - 1) { 
-                        straight = false; 
-                        break; 
+                    if (ranks[i] != ranks[i + 1] - 1) {
+                        straight = false;
+                        break;
                     }
                 }
                 if (straight) {
@@ -59,10 +59,10 @@ vector<pll> find_straight_flush(vector<pll> cards) {
                     for (ll i = start; i < start + 5; i++) {
                         out.push_back({ranks[i], pair.first});
                     }
-                    sort(out.begin(), out.end(),[](pll a, pll b) {
+                    sort(out.begin(), out.end(), [](pll a, pll b) {
                         if (a.first == b.first) return a.second < b.second;
                         else return a.first < b.first;
-                    });
+                        });
                     return out;
                 }
             }
@@ -77,7 +77,7 @@ vector<pll> find_four_kind(vector<pll> cards) {
         ranks[cards[i].first]++;
     }
     vector<pll> out;
-    for (const auto& pair: ranks) {
+    for (const auto& pair : ranks) {
         if (pair.second == 4) {
             for (ll i = 0; i < 4; i++) {
                 out.push_back({pair.first, i});
@@ -87,10 +87,10 @@ vector<pll> find_four_kind(vector<pll> cards) {
                     out.push_back(cards[i]);
                 }
                 if (out.size() == 5) {
-                    sort(out.begin(), out.end(),[](pll a, pll b) {
+                    sort(out.begin(), out.end(), [](pll a, pll b) {
                         if (a.first == b.first) return a.second < b.second;
                         else return a.first < b.first;
-                    });
+                        });
                     return out;
                 }
             }
@@ -105,7 +105,7 @@ vector<pll> find_full_house(vector<pll> cards) {
     for (ll i = 0; i < 7; i++) {
         ranks[cards[i].first].push_back(cards[i].second);
     }
-    for (const auto& pair: ranks) {
+    for (const auto& pair : ranks) {
         if (pair.second.size() == 3) three.push_back(pair.first);
         if (pair.second.size() == 2) two.push_back(pair.first);
     }
@@ -130,10 +130,10 @@ vector<pll> find_full_house(vector<pll> cards) {
             out.push_back({two.back(), ranks[two.back()][i]});
         }
     }
-    sort(out.begin(), out.end(),[](pll a, pll b) {
+    sort(out.begin(), out.end(), [](pll a, pll b) {
         if (a.first == b.first) return a.second < b.second;
         else return a.first < b.first;
-    });
+        });
     return out;
 }
 
@@ -143,17 +143,17 @@ vector<pll> find_flush(vector<pll> cards) {
         suits[cards[i].second]++;
     }
     vector<pll> out;
-    for (const auto& pair: suits) {
+    for (const auto& pair : suits) {
         if (pair.second >= 5) {
             for (ll i = 6; i >= 0; i--) {
                 if (cards[i].second == pair.first) {
                     out.push_back(cards[i]);
                 }
                 if (out.size() == 5) {
-                    sort(out.begin(), out.end(),[](pll a, pll b) {
+                    sort(out.begin(), out.end(), [](pll a, pll b) {
                         if (a.first == b.first) return a.second < b.second;
                         else return a.first < b.first;
-                    });
+                        });
                     return out;
                 }
             }
@@ -168,7 +168,7 @@ vector<pll> find_straight(vector<pll> cards) {
         ranks.insert(cards[i].first);
     }
     vector<ll> ranks_vec;
-    for (ll rank: ranks) {
+    for (ll rank : ranks) {
         ranks_vec.push_back(rank);
     }
     if (ranks_vec.size() < 5) return {};
@@ -177,7 +177,7 @@ vector<pll> find_straight(vector<pll> cards) {
         for (ll i = start; i < start + 4; i++) {
             if (ranks_vec[i] != ranks_vec[i + 1] - 1) straight = false;
         }
-        if (straight) { 
+        if (straight) {
             vector<pll> out;
             for (ll i = start; i < start + 5; i++) {
                 for (ll k = 6; k >= 0; k--) {
@@ -187,29 +187,29 @@ vector<pll> find_straight(vector<pll> cards) {
                     }
                 }
             }
-            sort(out.begin(), out.end(),[](pll a, pll b) {
+            sort(out.begin(), out.end(), [](pll a, pll b) {
                 if (a.first == b.first) return a.second < b.second;
                 else return a.first < b.first;
-            });
+                });
             return out;
         }
-    } 
+    }
     return {};
 }
 
-vector<pll> find_three_kind(vector<pll> cards) { 
+vector<pll> find_three_kind(vector<pll> cards) {
     map<ll, vector<ll>> ranks;
     vector<ll> threes;
     for (ll i = 0; i < 7; i++) {
         ranks[cards[i].first].push_back(cards[i].second);
     }
-    for (const auto& pair: ranks) {
+    for (const auto& pair : ranks) {
         if (pair.second.size() == 3) threes.push_back(pair.first);
     }
     if (threes.size() < 1) return {};
 
     vector<pll> out;
-    for (const auto& pair: ranks) {
+    for (const auto& pair : ranks) {
         if (pair.second.size() == 3) {
             for (ll i = 0; i < 3; i++) {
                 out.push_back({pair.first, ranks[pair.first][i]});
@@ -217,10 +217,10 @@ vector<pll> find_three_kind(vector<pll> cards) {
             for (ll i = 6; i >= 0; i--) {
                 if (cards[i].first != pair.first) out.push_back(cards[i]);
                 if (out.size() == 5) {
-                    sort(out.begin(), out.end(),[](pll a, pll b) {
+                    sort(out.begin(), out.end(), [](pll a, pll b) {
                         if (a.first == b.first) return a.second < b.second;
                         else return a.first < b.first;
-                    });
+                        });
                     return out;
                 }
             }
@@ -229,13 +229,13 @@ vector<pll> find_three_kind(vector<pll> cards) {
     return {};
 }
 
-vector<pll> find_two_pair(vector<pll> cards) { 
+vector<pll> find_two_pair(vector<pll> cards) {
     map<ll, vector<ll>> ranks;
     vector<ll> pairs;
     for (ll i = 0; i < 7; i++) {
         ranks[cards[i].first].push_back(cards[i].second);
     }
-    for (const auto& pair: ranks) {
+    for (const auto& pair : ranks) {
         if (pair.second.size() == 2) pairs.push_back(pair.first);
     }
     if (pairs.size() < 2) return {};
@@ -252,23 +252,23 @@ vector<pll> find_two_pair(vector<pll> cards) {
             out.push_back(cards[i]);
         }
         if (out.size() == 5) {
-            sort(out.begin(), out.end(),[](pll a, pll b) {
+            sort(out.begin(), out.end(), [](pll a, pll b) {
                 if (a.first == b.first) return a.second < b.second;
                 else return a.first < b.first;
-            });
+                });
             return out;
         }
     }
     return {};
 }
 
-vector<pll> find_one_pair(vector<pll> cards) { 
+vector<pll> find_one_pair(vector<pll> cards) {
     map<ll, vector<ll>> ranks;
     vector<ll> pairs;
     for (ll i = 0; i < 7; i++) {
         ranks[cards[i].first].push_back(cards[i].second);
     }
-    for (const auto& pair: ranks) {
+    for (const auto& pair : ranks) {
         if (pair.second.size() == 2) pairs.push_back(pair.first);
     }
     if (pairs.size() < 1) return {};
@@ -288,10 +288,10 @@ vector<pll> find_one_pair(vector<pll> cards) {
             ctr++;
         }
         if (ctr == 3) {
-            sort(out.begin(), out.end(),[](pll a, pll b) {
+            sort(out.begin(), out.end(), [](pll a, pll b) {
                 if (a.first == b.first) return a.second < b.second;
                 else return a.first < b.first;
-            });
+                });
             return out;
         }
     }
@@ -330,11 +330,11 @@ bool tie_fh(pair<ll, vector<pll>> pair_a, pair<ll, vector<pll>> pair_b) {
         suits_b[cards_b[i].first].push_back(cards_b[i].second);
     }
     ll three_a, two_a, three_b, two_b;
-    for (const auto& pair: suits_a) {
+    for (const auto& pair : suits_a) {
         if (pair.second.size() == 3) three_a = pair.first;
         else two_a = pair.first;
     }
-    for (const auto& pair: suits_b) {
+    for (const auto& pair : suits_b) {
         if (pair.second.size() == 3) three_b = pair.first;
         else two_b = pair.first;
     }
@@ -433,7 +433,7 @@ void solve() {
             vince_pairs.push_back({available[i], available[j]});
         }
     }
-    
+
     // get 7 card set for players 1, 2, 3
     vector<pll> river;
     for (ll i = 6; i < 11; i++) river.push_back(card_rank[i]);
@@ -450,10 +450,10 @@ void solve() {
         curr_cards.push_back(vince_pairs[i].second);
 
         // sort cards in correct order ascending
-        sort(curr_cards.begin(), curr_cards.end(),[](pll a, pll b) {
+        sort(curr_cards.begin(), curr_cards.end(), [](pll a, pll b) {
             if (a.first == b.first) return a.second < b.second;
             else return a.first < b.first;
-        });
+            });
         cards_vince.push_back(curr_cards);
     }
 
@@ -487,7 +487,7 @@ void solve() {
         if (card_types[i].size() > 0) highest_type = i;
     }
     vector<pair<ll, vector<pll>>> winners;
-    for (const auto& pair: card_types[highest_type]) {
+    for (const auto& pair : card_types[highest_type]) {
         winners.push_back(pair);
     }
     if ((highest_type == 8) || (highest_type == 4)) {
@@ -507,13 +507,13 @@ void solve() {
     if (winner == 4) cout << "PASS\n";
     else cout << "ALL IN\n";
     print_cards(winner_cards);
-} 
+}
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout << setprecision(20);
-    
+
     solve();
     return 0;
 }
