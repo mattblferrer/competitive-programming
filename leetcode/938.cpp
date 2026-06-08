@@ -1,6 +1,3 @@
-#include <bits/stdc++.h>
-using namespace std;
-
 /**
  * Definition for a binary tree node.
  * struct TreeNode {
@@ -15,10 +12,9 @@ using namespace std;
 class Solution {
 public:
     int rangeSumBST(TreeNode* root, int low, int high) {
+        if (root == nullptr) return 0;
         int sum = 0;
         if ((low <= root->val) && (root->val <= high)) sum += root->val;
-        if (root->left != nullptr) sum += rangeSumBST(root->left, low, high);
-        if (root->right != nullptr) sum += rangeSumBST(root->right, low, high);
-        return sum;
+        return sum + rangeSumBST(root->left, low, high) + rangeSumBST(root->right, low, high);
     }
 };
