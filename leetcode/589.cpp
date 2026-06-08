@@ -20,13 +20,16 @@ public:
 
 class Solution {
 public:
-    vector<int> preorder(Node* root) {
-        if (root == nullptr) return {};
-        vector<int> ans = {root->val};
+    vector<int> ans;
+    void helper(Node* root) {
+        if (root == nullptr) return;
+        ans.push_back(root->val);
         for (auto child : root->children) {
-            vector<int> c = preorder(child);
-            ans.insert(ans.end(), c.begin(), c.end());
+            helper(child);
         }
+    }
+    vector<int> preorder(Node* root) {
+        helper(root);
         return ans;
     }
 };

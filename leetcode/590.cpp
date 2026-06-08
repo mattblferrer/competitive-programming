@@ -20,14 +20,16 @@ public:
 
 class Solution {
 public:
-    vector<int> postorder(Node* root) {
-        if (root == nullptr) return {};
-        vector<int> ans;
+    vector<int> ans;
+    void helper(Node* root) {
+        if (root == nullptr) return;
         for (auto child : root->children) {
-            vector<int> c = postorder(child);
-            ans.insert(ans.end(), c.begin(), c.end());
+            helper(child);
         }
         ans.push_back(root->val);
+    }
+    vector<int> postorder(Node* root) {
+        helper(root);
         return ans;
     }
 };
