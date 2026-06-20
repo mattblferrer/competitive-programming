@@ -5,6 +5,9 @@ using ll = long long;
 using ld = long double;
 
 int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
     int n, m;
     cin >> n >> m;
     map<int, set<int>> spies_x;
@@ -33,35 +36,39 @@ int main() {
         int xi = loc[ti].first, yi = loc[ti].second;
         vector<int> curr;
         if (dir == 'N') {
-            while (*prev(spies_x[xi].end()) > yi) {
-                int y = *prev(spies_x[xi].end());
+            int y = *(spies_x[xi].rbegin());
+            while (y > yi) {
                 spies_x[xi].erase(y);
                 if (!elim[team[{xi, y}]]) curr.push_back(team[{xi, y}]);
                 elim[team[{xi, y}]] = true;
+                y = *(spies_x[xi].rbegin());
             }
         }
         else if (dir == 'S') {
-            while (*(spies_x[xi].begin()) < yi) {
-                int y = *(spies_x[xi].begin());
+            int y = *(spies_x[xi].begin());
+            while (y < yi) {
                 spies_x[xi].erase(y);
                 if (!elim[team[{xi, y}]]) curr.push_back(team[{xi, y}]);
                 elim[team[{xi, y}]] = true;
+                y = *(spies_x[xi].begin());
             }
         }
         else if (dir == 'E') {
-            while (*prev(spies_y[yi].end()) > xi) {
-                int x = *prev(spies_y[yi].end());
+            int x = *(spies_y[yi].rbegin());
+            while (x > xi) {
                 spies_y[yi].erase(x);
                 if (!elim[team[{x, yi}]]) curr.push_back(team[{x, yi}]);
                 elim[team[{x, yi}]] = true;
+                x = *(spies_y[yi].rbegin());
             }
         }
         else if (dir == 'W') {
-            while (*(spies_y[yi].begin()) < xi) {
-                int x = *(spies_y[yi].begin());
+            int x = *(spies_y[yi].begin());
+            while (x < xi) {
                 spies_y[yi].erase(x);
                 if (!elim[team[{x, yi}]]) curr.push_back(team[{x, yi}]);
                 elim[team[{x, yi}]] = true;
+                x = *(spies_y[yi].begin());
             }
         }
         cout << curr.size() << " ";
