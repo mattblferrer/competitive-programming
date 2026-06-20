@@ -3,12 +3,11 @@ using namespace std;
 using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
-using vll = vector<ll>;
 
 struct segtree {
     ll i, j, val, temp_val = 0;
     segtree *l, *r;
-    segtree(vll &ar, int _i, int _j): i(_i), j(_j) {
+    segtree(vector<ll> &ar, int _i, int _j): i(_i), j(_j) {
         if (i == j) {
             val = ar[i];
             l = r = NULL;
