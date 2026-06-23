@@ -20,7 +20,7 @@ ll modinv_p(ll a, ll p) {
     return binexp(a, p - 2, p);
 }
 
-ll extended_euclidean(ll a, ll b, ll& x, ll& y) {
+ll extended_euclidean(ll a, ll b, ll &x, ll &y) {
     if (b == 0) {
         x = 1;
         y = 0;
@@ -80,7 +80,7 @@ bool is_prime(ll n) {
     return n > 1;
 }
 
-void sieve(vector<bool>& is_prime, ll n) {
+void sieve(vector<bool> &is_prime, ll n) {
     is_prime.assign(n + 1, true);
     is_prime[0] = is_prime[1] = false;
     for (ll i = 2; i * i <= n; i++) {
@@ -90,4 +90,23 @@ void sieve(vector<bool>& is_prime, ll n) {
             }
         }
     }
+}
+
+ll sum_of_divisors(ll n, ll mod) {
+    ll ans = 1;
+    for (int i = 2; (ll)(i * i) <= n; i++) {
+        if (n % i != 0) continue;
+        int e = 0;
+        while (n % i == 0) {
+            e++; n /= i;
+        }
+        ll sum = 0, pow = 1;
+        while (e > 0) {
+            sum = (sum + pow) % mod;
+            pow = (pow * i) % mod;
+        }
+        ans = (ans * sum) % mod;
+    }
+    if (n > 1) ans *= (1 + n);
+    return ans;
 }
