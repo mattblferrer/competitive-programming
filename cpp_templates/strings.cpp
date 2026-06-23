@@ -41,3 +41,29 @@ struct KMP {
         return ans;
     }
 };
+
+struct booth {
+    int *f;
+    string s;
+    booth(string &s) {
+        this->s = s;
+    }
+    int run() {
+        s.append(s);
+        int n = s.length(), i, j, k = 0;
+        memset(f, -1, sizeof(int) * n);
+        for (j = 1; j < n; j++) {
+            i = f[j - k - 1];
+            while (i != -1 && s[j] != s[k + i + 1]) {
+                if (s[j] < s[k + i + 1]) k = j - i - 1;
+                i = f[i];
+            }
+            if (i == -1 && s[j] != s[k + i + 1]) {
+                if (s[j] < s[k + i + 1]) k = j;
+                f[j - k] = -1;
+            }
+            else f[j - k] = i + 1;
+        }
+        return k;
+    }
+};
