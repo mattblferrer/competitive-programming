@@ -47,6 +47,7 @@ struct booth {
     string s;
     booth(string &s) {
         this->s = s;
+        this->f = new int[2 * s.length()];
     }
     int run() {
         s.append(s);
