@@ -1,14 +1,15 @@
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
+const ll MOD = 1'000'000'007;
 
 struct mint {
-    long long val, MOD;
+    long long val, M;
 
-    mint(long long v = 0, long long MOD) {
-        this->MOD = MOD;
-        val = v % MOD;
-        if (val < 0) val += MOD;
+    mint(long long v = 0, const long long m = MOD) {
+        this->M = m;
+        val = v % M;
+        if (val < 0) val += M;
     }
     static long long power(long long base, long long exp, long long mod) {
         base %= mod;
@@ -21,17 +22,17 @@ struct mint {
         }
         return result;
     }
-    mint inverse() const { return mint(power(val, MOD - 2, MOD)); }
+    mint inverse() const { return mint(power(val, M - 2, M)); }
     mint operator+(const mint &other) const { return mint(val + other.val); }
     mint operator-(const mint &other) const { return mint(val - other.val); }
-    mint operator*(const mint &other) const { return mint((__int128)val * other.val % MOD); }
+    mint operator*(const mint &other) const { return mint((__int128)val * other.val % M); }
     mint operator/(const mint &other) const { return *this * other.inverse(); }
     mint &operator+=(const mint &other) { *this = *this + other; return *this; }
     mint &operator-=(const mint &other) { *this = *this - other; return *this; }
     mint &operator*=(const mint &other) { *this = *this * other; return *this; }
     mint &operator/=(const mint &other) { *this = *this / other; return *this; }
     mint &operator++() {
-        val = (val + 1) % MOD;
+        val = (val + 1) % M;
         return *this;
     }
     mint operator++(int) {
@@ -40,7 +41,7 @@ struct mint {
         return tmp;
     }
     mint &operator--() {
-        val = (val - 1 + MOD) % MOD;
+        val = (val - 1 + M) % M;
         return *this;
     }
     mint operator--(int) {
@@ -51,7 +52,7 @@ struct mint {
     bool operator==(const mint &other) const { return val == other.val; }
     bool operator!=(const mint &other) const { return val != other.val; }
     mint pow(long long exp) const {
-        return mint(power(val, exp, MOD));
+        return mint(power(val, exp, M));
     }
     friend ostream &operator<<(ostream &os, const mint &m) {
         os << m.val;
