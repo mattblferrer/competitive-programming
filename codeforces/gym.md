@@ -38,6 +38,7 @@
 | 106157 | 2025 United Kingdom and Ireland Programming Contest (UKIEPC 2025)                            | 10/13       |
 | 106169 | 2025-2026 ICPC NERC, Kyrgyzstan Regional Contest                                             | 7/10        |
 | 106179 | ICPC India Online Prelims (2025 - 2026)                                                      | 1/6         |
+| 106193 | 2025-2026 ICPC NERC (NEERC), North-Western Russia Regional Contest (Northern Subregionals)   | 5/12        |
 | 106262 | 2025 ICPC Asia Manila Regional                                                               | 2/13        |
-| 654383 | 2025 PseudoCodeOver ☆                                                                        | 2/10        |
+| 654383 | 2025 PseudoCodeOver                                                                          | 2/10        |
 | 655318 | Abakoda Christmas Extravaganza                                                               | 10/70       |
