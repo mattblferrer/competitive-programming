@@ -3,61 +3,62 @@ using namespace std;
 using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
+const ll MOD = 1'000'000'007;
 
-class Matrix {
-public:
-    vector<vector<ll>> mat;
+struct Matrix {
+    int n, m; // n rows, m cols
+    vector<vector<ll>> a;
 
-    Matrix(int n) {
-        mat.resize(n, vector<ll>(n));
-        for (int i = 0; i < n; i++) mat[i][i] = 1;
-    }
-    Matrix(int n, int m) {
-        mat.resize(n, vector<ll>(m));
-    }
-    Matrix(vector<vector<ll>> in) {
-        mat = in;
-    }
-    friend ostream& operator<<(ostream& out, const Matrix& a) {
-        int n = a.mat.size(), m = a.mat[0].size();
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) cout << a.mat[i][j] << " ";
-            cout << "\n";
+    Matrix(int n, int m, bool identity = false): n(n), m(m) {
+        a.assign(n, vector<ll>(m, 0));
+        if (identity) {
+            for (int i = 0; i < min(n, m); i++) a[i][i] = 1;
         }
-        return cout;
     }
-};
 
-Matrix matrix_input(int n, int m) {
-    Matrix a(n, m);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) cin >> a.mat[i][j];
+    Matrix(vector<vector<ll>> vals) {
+        a = vals;
+        n = a.size();
+        m = n ? a[0].size() : 0;
     }
-    return a;
-}
 
-Matrix multiply(const Matrix a, const Matrix b, ll mod) {
-    int n1 = a.mat.size(), m1 = a.mat[0].size();
-    int n2 = b.mat.size(), m2 = b.mat[0].size();
-    Matrix c(n1, m2);
-    for (int i = 0; i < n1; i++) {
-        for (int k = 0; k < m1; k++) {
-            for (int j = 0; j < m2; j++) {
-                c.mat[i][j] = (c.mat[i][j] + a.mat[i][k] * b.mat[k][j]) % mod;
+    vector<ll> &operator[](int i) { return a[i]; }
+    const vector<ll> &operator[](int i) const { return a[i]; }
+
+    // Matrix multiplication (this * other), dims must match: this.m == other.n
+    Matrix operator*(const Matrix &other) const {
+        assert(m == other.n);
+        Matrix res(n, other.m);
+        for (int i = 0; i < n; i++) {
+            for (int k = 0; k < m; k++) {
+                if (!a[i][k]) continue; // small optimization for sparse rows
+                ll aik = a[i][k];
+                for (int j = 0; j < other.m; j++) {
+                    res.a[i][j] = (res.a[i][j] + aik * other.a[k][j]) % MOD;
+                }
+            }
+        }
+        return res;
+    }
+
+    // Matrix exponentiation (only valid for square matrices)
+    Matrix pow(ll p) const {
+        assert(n == m);
+        Matrix result(n, n, true); // identity
+        Matrix base = *this;
+        while (p > 0) {
+            if (p & 1) result = result * base;
+            base = base * base;
+            p >>= 1;
+        }
+        return result;
+    }
+
+    void print() const {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                cout << a[i][j] << " \n"[j == m - 1];
             }
         }
     }
-    return c;
-}
-
-Matrix power(Matrix a, ll b, ll mod) {
-    Matrix ans = Matrix(a.mat.size());
-    while (b) {
-        if (b % 2) {
-            ans = multiply(ans, a, mod);
-        }
-        a = multiply(a, a, mod);
-        b >>= 1;
-    }
-    return ans;
-}
+};
