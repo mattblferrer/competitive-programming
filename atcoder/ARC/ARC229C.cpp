@@ -27,8 +27,6 @@ void solve() {
     }
 
     if (even.size() >= odd.size()) {
-        reverse(even.begin(), even.end());
-
         for (ll i = 0; i < odd.size(); i++) {
             na[2 * i + 1] = even[i];
             na[2 * i + 2] = odd[i];
@@ -38,8 +36,6 @@ void solve() {
         }
     }
     else {
-        reverse(odd.begin(), odd.end());
-
         for (ll i = 0; i < even.size(); i++) {
             na[2 * i + 1] = odd[i];
             na[2 * i + 2] = even[i];
