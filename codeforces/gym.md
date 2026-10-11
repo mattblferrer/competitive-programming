@@ -35,6 +35,7 @@
 | 106084 | 2025 ICPC Asia Taiwan Online Programming Contest                                             | 3/12        |
 | 106094 | SVU-HIAST CPC 2025                                                                           | 5/14        |
 | 106100 | International MathCoding Narxoz open olympiad 2025                                           | 4/10        |
+| 106124 | 2025-2026 ICPC Nordic Collegiate Programming Contest (NCPC 2025)                             | 7/11        |
 | 106129 | 2025-2026 ICPC German Collegiate Programming Contest (GCPC 2025)                             | 9/13        |
 | 106144 | 2025-2026 ICPC, NERC, Southern and Volga Russian Regional Contest                            | 8/13        |
 | 106157 | 2025 United Kingdom and Ireland Programming Contest (UKIEPC 2025)                            | 10/13       |
