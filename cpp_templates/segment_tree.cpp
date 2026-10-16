@@ -5,112 +5,186 @@ using ld = long double;
 using pll = pair<ll, ll>;
 
 
-struct point_segtree {
+// Iterative, point-update
+struct Monoid {
+    using T = long long;
+    static T id() { return 0; }
+    static T op(const T &a, const T &b) { return a + b; }
+};
+
+template <class M>
+struct SegTree {
+    using T = typename M::T;
     int n;
-    ll *vals;
-    point_segtree(vector<ll> &ar, int n) {
-        this->n = n;
-        vals = new ll[2 * n];
-        for (int i = 0; i < n; ++i) vals[i + n] = ar[i];
-        for (int i = n - 1; i > 0; --i) vals[i] = vals[i << 1] + vals[i << 1 | 1];
+    vector<T> t;
+
+    SegTree(int n = 0): n(n), t(2 * n, M::id()) {}
+
+    SegTree(const vector<T> &a): n(a.size()), t(2 * a.size(), M::id()) {
+        for (int i = 0; i < n; i++) t[n + i] = a[i];
+        for (int i = n - 1; i > 0; i--) t[i] = M::op(t[2 * i], t[2 * i + 1]);
     }
-    void update(int i, ll v) {
-        for (vals[i += n] += v; i > 1; i >>= 1)
-            vals[i >> 1] = vals[i] + vals[i ^ 1];
+
+    void set(int p, T v) {
+        for (t[p += n] = v; p > 1; p >>= 1)
+            t[p >> 1] = M::op(t[p & ~1], t[p | 1]);
     }
-    ll query(int l, int r) {
-        ll res = 0;
-        for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1) {
-            if (l & 1) res += vals[l++];
-            if (r & 1) res += vals[--r];
+
+    T get(int p) const { return t[p + n]; }
+
+    T query(int l, int r) const {
+        T L = M::id(), R = M::id();
+        for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) L = M::op(L, t[l++]);
+            if (r & 1) R = M::op(t[--r], R);
+        }
+        return M::op(L, R);
+    }
+};
+
+// Recursive, range-update
+struct Spec {
+    using T = pair<long long, long long>;
+    using F = long long;
+    static T id() { return {0, 0}; }
+    static T op(const T &a, const T &b) { return {a.first + b.first, a.second + b.second}; }
+    static F fid() { return 0; }
+    static T apply(const F &f, const T &x) { return {x.first + f * x.second, x.second}; }
+    static F compose(const F &f, const F &g) { return f + g; }
+};
+
+template <class S>
+struct LazySegTree {
+    using T = typename S::T;
+    using F = typename S::F;
+    int n, sz, lg;
+    vector<T> d;
+    vector<F> lz;
+
+    LazySegTree(int n = 0): LazySegTree(vector<T>(n, S::id())) {}
+
+    LazySegTree(const vector<T> &a): n(a.size()) {
+        sz = 1; lg = 0;
+        while (sz < n) sz <<= 1, lg++;
+        d.assign(2 * sz, S::id());
+        lz.assign(sz, S::fid());
+        for (int i = 0; i < n; i++) d[sz + i] = a[i];
+        for (int i = sz - 1; i >= 1; i--) pull(i);
+    }
+
+    void pull(int k) { d[k] = S::op(d[2 * k], d[2 * k + 1]); }
+
+    void all_apply(int k, const F &f) {
+        d[k] = S::apply(f, d[k]);
+        if (k < sz) lz[k] = S::compose(f, lz[k]);
+    }
+
+    void push(int k) {
+        all_apply(2 * k, lz[k]);
+        all_apply(2 * k + 1, lz[k]);
+        lz[k] = S::fid();
+    }
+
+    void set(int p, T v) {
+        p += sz;
+        for (int i = lg; i >= 1; i--) push(p >> i);
+        d[p] = v;
+        for (int i = 1; i <= lg; i++) pull(p >> i);
+    }
+
+    T get(int p) {
+        p += sz;
+        for (int i = lg; i >= 1; i--) push(p >> i);
+        return d[p];
+    }
+
+    T query(int l, int r) {
+        if (l >= r) return S::id();
+        l += sz; r += sz;
+        for (int i = lg; i >= 1; i--) {
+            if (((l >> i) << i) != l) push(l >> i);
+            if (((r >> i) << i) != r) push((r - 1) >> i);
+        }
+        T L = S::id(), R = S::id();
+        for (; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) L = S::op(L, d[l++]);
+            if (r & 1) R = S::op(d[--r], R);
+        }
+        return S::op(L, R);
+    }
+
+    void update(int l, int r, const F &f) {
+        if (l >= r) return;
+        l += sz; r += sz;
+        for (int i = lg; i >= 1; i--) {
+            if (((l >> i) << i) != l) push(l >> i);
+            if (((r >> i) << i) != r) push((r - 1) >> i);
+        }
+        int l2 = l, r2 = r;
+        for (; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) all_apply(l++, f);
+            if (r & 1) all_apply(--r, f);
+        }
+        l = l2; r = r2;
+        for (int i = 1; i <= lg; i++) {
+            if (((l >> i) << i) != l) pull(l >> i);
+            if (((r >> i) << i) != r) pull((r - 1) >> i);
+        }
+    }
+};
+
+// Iterative, 2D point-update
+struct Monoid {
+    using T = long long;
+    static T id() { return 0; }
+    static T op(const T &a, const T &b) { return a + b; }
+};
+
+template <class M>
+struct SegTree2D {
+    using T = typename M::T;
+    int n, m;
+    vector<vector<T>> t;
+
+    SegTree2D(int n = 0, int m = 0): n(n), m(m), t(2 * n, vector<T>(2 * m, M::id())) {}
+
+    SegTree2D(const vector<vector<T>> &a): SegTree2D(a.size(), a.empty() ? 0 : a[0].size()) {
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < m; j++) t[n + i][m + j] = a[i][j];
+        for (int i = n; i < 2 * n; i++)
+            for (int j = m - 1; j > 0; j--) t[i][j] = M::op(t[i][2 * j], t[i][2 * j + 1]);
+        for (int i = n - 1; i > 0; i--)
+            for (int j = 1; j < 2 * m; j++) t[i][j] = M::op(t[2 * i][j], t[2 * i + 1][j]);
+    }
+
+    void set(int x, int y, T v) {
+        x += n; y += m;
+        t[x][y] = v;
+        for (int j = y; j > 1; j >>= 1) t[x][j >> 1] = M::op(t[x][j & ~1], t[x][j | 1]);
+        for (int i = x; i > 1; i >>= 1) {
+            t[i >> 1][y] = M::op(t[i & ~1][y], t[i | 1][y]);
+            for (int j = y; j > 1; j >>= 1)
+                t[i >> 1][j >> 1] = M::op(t[i >> 1][j & ~1], t[i >> 1][j | 1]);
+        }
+    }
+
+    T get(int x, int y) const { return t[x + n][y + m]; }
+
+    T row_query(int i, int l, int r) const {
+        T res = M::id();
+        for (l += m, r += m; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) res = M::op(res, t[i][l++]);
+            if (r & 1) res = M::op(res, t[i][--r]);
         }
         return res;
     }
-};
 
-struct range_segtree {
-    ll i, j, val, temp_val = 0;
-    range_segtree *l, *r;
-    range_segtree(vector<ll> &ar, int _i, int _j): i(_i), j(_j) {
-        if (i == j) {
-            val = ar[i];
-            l = r = NULL;
+    T query(int r1, int c1, int r2, int c2) const {
+        T res = M::id();
+        for (int i = r1 + n, k = r2 + 1 + n; i < k; i >>= 1, k >>= 1) {
+            if (i & 1) res = M::op(res, row_query(i++, c1, c2 + 1));
+            if (k & 1) res = M::op(res, row_query(--k, c1, c2 + 1));
         }
-        else {
-            int k = (i + j) >> 1;
-            l = new range_segtree(ar, i, k);
-            r = new range_segtree(ar, k + 1, j);
-            val = l->val + r->val;
-        }
-    }
-    void visit() {
-        if (temp_val) {
-            val += (j - i + 1) * temp_val;
-            if (l) {
-                l->temp_val += temp_val;
-                r->temp_val += temp_val;
-            }
-            temp_val = 0;
-        }
-    }
-    void increase(int _i, int _j, ll _inc) {
-        visit();
-        if (_i <= i && j <= _j) {
-            temp_val += _inc;
-            visit();
-        }
-        else if (_j < i or j < _i) {
-            // do nothing
-        }
-        else {
-            l->increase(_i, _j, _inc);
-            r->increase(_i, _j, _inc);
-            val = l->val + r->val;
-        }
-    }
-    ll query(int _i, int _j) {
-        visit();
-        if (_i <= i and j <= _j) return val;
-        else if (_j < i || j < _i) return 0;
-        else return l->query(_i, _j) + r->query(_i, _j);
-    }
-};
-
-struct segtree_2d {
-    int n, m;
-    ll **ar;
-    segtree_2d(int n, int m) {
-        this->n = n;
-        this->m = m;
-        ar = new ll * [2 * n];
-        for (int i = 0; i < 2 * n; ++i) {
-            ar[i] = new ll[2 * m];
-            for (int j = 0; j < 2 * m; ++j) ar[i][j] = 0;
-        }
-    }
-    void update(int r, int c, ll v) {
-        ar[r + n][c + m] = v;
-        for (int i = r + n; i > 0; i >>= 1) {
-            for (int j = c + m; j > 0; j >>= 1) {
-                ar[i >> 1][j] = ar[i][j] + ar[i ^ 1][j];
-                ar[i][j >> 1] = ar[i][j] + ar[i][j ^ 1];
-            }
-        }
-    }
-    ll query(int r1, int r2, int c1, int c2) {
-        ll s = 0;
-        if (~r2) {
-            for (int a = r1 + n, b = r2 + n + 1; a < b; a >>= 1, b >>= 1) {
-                if (a & 1) s += query(a++, -1, c1, c2);
-                if (b & 1) s += query(--b, -1, c1, c2);
-            }
-        }
-        else {
-            for (int a = c1 + m, b = c2 + m + 1; a < b; a >>= 1, b >>= 1) {
-                if (a & 1) s += ar[r1][a++];
-                if (b & 1) s += ar[r1][--b];
-            }
-        }
-        return s;
+        return res;
     }
 };
