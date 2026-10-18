@@ -7,53 +7,99 @@ using pll = pair<ll, ll>;
 const ll INF = 2e18;
 const ll MOD = 1'000'000'007;
 
-struct range_segtree {
-    ll i, j, val, temp_a = 0, temp_d = 0;
-    range_segtree *l, *r;
-    range_segtree(vector<ll> &ar, int _i, int _j): i(_i), j(_j) {
-        if (i == j) {
-            val = ar[i];
-            l = r = NULL;
-        }
-        else {
-            int k = (i + j) >> 1;
-            l = new range_segtree(ar, i, k);
-            r = new range_segtree(ar, k + 1, j);
-            val = l->val + r->val;
-        }
+struct Spec {
+    struct T {
+        ll sum, length, idx;
+    };
+    struct F {
+        ll a, d;
+    };
+    static T id() { return {0, 0, 0}; }
+    static T op(const T &a, const T &b) { return {a.sum + b.sum, a.length + b.length, a.idx + b.idx}; }
+    static F fid() { return {0, 0}; }
+    static T apply(const F &f, const T &x) {
+        return {x.sum + f.a * x.length + f.d * x.idx, x.length, x.idx};
     }
-    void visit() {
-        if (temp_a || temp_d) {
-            ll len = j - i + 1;
-            val += temp_a * len + temp_d * ((i + j) * len / 2);
-            if (l) {
-                l->temp_a += temp_a; l->temp_d += temp_d;
-                r->temp_a += temp_a; r->temp_d += temp_d;
-            }
-            temp_a = temp_d = 0;
-        }
+    static F compose(const F &f, const F &g) { return {f.a + g.a, f.d + g.d}; }
+};
+
+template <class S>
+struct LazySegTree {
+    using T = typename S::T;
+    using F = typename S::F;
+    int n, sz, lg;
+    vector<T> d;
+    vector<F> lz;
+
+    LazySegTree(int n = 0): LazySegTree(vector<T>(n, S::id())) {}
+
+    LazySegTree(const vector<T> &a): n(a.size()) {
+        sz = 1; lg = 0;
+        while (sz < n) sz <<= 1, lg++;
+        d.assign(2 * sz, S::id());
+        lz.assign(sz, S::fid());
+        for (int i = 0; i < n; i++) d[sz + i] = a[i];
+        for (int i = sz - 1; i >= 1; i--) pull(i);
     }
-    void increase(int _i, int _j, ll a, ll d) {
-        visit();
-        if (_i <= i && j <= _j) {
-            temp_a += a - d * _i;
-            temp_d += d;
-            visit();
-        }
-        else if (_j < i or j < _i) {
-            // do nothing
-        }
-        else {
-            l->increase(_i, _j, a, d);
-            r->increase(_i, _j, a, d);
-            val = l->val + r->val;
-        }
+
+    void pull(int k) { d[k] = S::op(d[2 * k], d[2 * k + 1]); }
+
+    void all_apply(int k, const F &f) {
+        d[k] = S::apply(f, d[k]);
+        if (k < sz) lz[k] = S::compose(f, lz[k]);
     }
-    ll query(int _i, int _j) {
-        visit();
-        if (_i <= i and j <= _j) return val;
-        else if (_j < i || j < _i) return 0;
-        else return l->query(_i, _j) + r->query(_i, _j);
+
+    void push(int k) {
+        all_apply(2 * k, lz[k]);
+        all_apply(2 * k + 1, lz[k]);
+        lz[k] = S::fid();
+    }
+
+    void set(int p, T v) {
+        p += sz;
+        for (int i = lg; i >= 1; i--) push(p >> i);
+        d[p] = v;
+        for (int i = 1; i <= lg; i++) pull(p >> i);
+    }
+
+    T get(int p) {
+        p += sz;
+        for (int i = lg; i >= 1; i--) push(p >> i);
+        return d[p];
+    }
+
+    T query(int l, int r) {
+        if (l >= r) return S::id();
+        l += sz; r += sz;
+        for (int i = lg; i >= 1; i--) {
+            if (((l >> i) << i) != l) push(l >> i);
+            if (((r >> i) << i) != r) push((r - 1) >> i);
+        }
+        T L = S::id(), R = S::id();
+        for (; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) L = S::op(L, d[l++]);
+            if (r & 1) R = S::op(d[--r], R);
+        }
+        return S::op(L, R);
+    }
+
+    void update(int l, int r, const F &f) {
+        if (l >= r) return;
+        l += sz; r += sz;
+        for (int i = lg; i >= 1; i--) {
+            if (((l >> i) << i) != l) push(l >> i);
+            if (((r >> i) << i) != r) push((r - 1) >> i);
+        }
+        int l2 = l, r2 = r;
+        for (; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) all_apply(l++, f);
+            if (r & 1) all_apply(--r, f);
+        }
+        l = l2; r = r2;
+        for (int i = 1; i <= lg; i++) {
+            if (((l >> i) << i) != l) pull(l >> i);
+            if (((r >> i) << i) != r) pull((r - 1) >> i);
+        }
     }
 };
 
@@ -62,13 +108,16 @@ void solve() {
     cin >> n >> q;
     vector<ll> t(n);
     for (ll i = 0; i < n; i++) cin >> t[i];
-    range_segtree tree(t, 0, n - 1);
+
+    LazySegTree<Spec> tree(n);
+    for (ll i = 0; i < n; i++) tree.set(i, {t[i], 1, i});
+
     for (ll i = 0; i < q; i++) {
         ll type, a, b;
         cin >> type >> a >> b;
         a--; b--;
-        if (type == 1) tree.increase(a, b, 1, 1);
-        else if (type == 2) cout << tree.query(a, b) << "\n";
+        if (type == 1) tree.update(a, b + 1, {1 - a, 1});
+        else if (type == 2) cout << tree.query(a, b + 1).sum << "\n";
     }
 }
 

@@ -7,78 +7,104 @@ using pll = pair<ll, ll>;
 const ll INF = 2e18;
 const ll MOD = 1000000007;
 
-struct range_segtree {
-    ll i, j, val, inc_val = 0, set_val = LLONG_MIN;
-    range_segtree *l, *r;
-    range_segtree(vector<ll> &ar, int _i, int _j): i(_i), j(_j) {
-        if (i == j) {
-            val = ar[i];
-            l = r = NULL;
-        }
-        else {
-            int k = (i + j) >> 1;
-            l = new range_segtree(ar, i, k);
-            r = new range_segtree(ar, k + 1, j);
-            val = l->val + r->val;
-        }
+struct Spec {
+    struct T {
+        ll sum, length;
+    };
+    struct F {
+        bool type;  // false = add, true = set
+        ll add, set;
+    };
+    static T id() { return {0, 0}; }
+    static T op(const T &a, const T &b) { return {a.sum + b.sum, a.length + b.length}; }
+    static F fid() { return {false, 0, 0}; }
+    static T apply(const F &f, const T &x) {
+        if (f.type) return {(f.set + f.add) * x.length, x.length};
+        else return {x.sum + f.add * x.length, x.length};
     }
-    void visit() {
-        if (inc_val) {
-            val += (j - i + 1) * inc_val;
-            if (l) {
-                if (l->set_val != LLONG_MIN) l->set_val += inc_val;
-                else l->inc_val += inc_val;
-                if (r->set_val != LLONG_MIN) r->set_val += inc_val;
-                else r->inc_val += inc_val;
-            }
-            inc_val = 0;
-        }
-        if (set_val != LLONG_MIN) {
-            val = (j - i + 1) * set_val;
-            if (l) {
-                l->set_val = set_val;
-                l->inc_val = 0;
-                r->set_val = set_val;
-                r->inc_val = 0;
-            }
-            set_val = LLONG_MIN;
-        }
+    static F compose(const F &f, const F &g) {
+        if (f.type) return f;
+        else return {g.type, f.add + g.add, g.set};
     }
-    void increase(int _i, int _j, ll _inc) {
-        visit();
-        if (_i <= i && j <= _j) {
-            inc_val += _inc;
-            visit();
-        }
-        else if (_j < i or j < _i) {
-            // do nothing
-        }
-        else {
-            l->increase(_i, _j, _inc);
-            r->increase(_i, _j, _inc);
-            val = l->val + r->val;
-        }
+};
+
+template <class S>
+struct LazySegTree {
+    using T = typename S::T;
+    using F = typename S::F;
+    int n, sz, lg;
+    vector<T> d;
+    vector<F> lz;
+
+    LazySegTree(int n = 0): LazySegTree(vector<T>(n, S::id())) {}
+
+    LazySegTree(const vector<T> &a): n(a.size()) {
+        sz = 1; lg = 0;
+        while (sz < n) sz <<= 1, lg++;
+        d.assign(2 * sz, S::id());
+        lz.assign(sz, S::fid());
+        for (int i = 0; i < n; i++) d[sz + i] = a[i];
+        for (int i = sz - 1; i >= 1; i--) pull(i);
     }
-    void set(int _i, int _j, ll v) {
-        visit();
-        if (_i <= i && j <= _j) {
-            set_val = v;
-            visit();
-        }
-        else if (_j < i or j < _i) {
-            // do nothing
-        }
-        else {
-            l->set(_i, _j, v);
-            r->set(_i, _j, v);
-            val = l->val + r->val;
-        }
+
+    void pull(int k) { d[k] = S::op(d[2 * k], d[2 * k + 1]); }
+
+    void all_apply(int k, const F &f) {
+        d[k] = S::apply(f, d[k]);
+        if (k < sz) lz[k] = S::compose(f, lz[k]);
     }
-    ll query(int _i, int _j) {
-        visit();
-        if (_i <= i and j <= _j) return val;
-        else if (_j < i || j < _i) return 0;
-        else return l->query(_i, _j) + r->query(_i, _j);
+
+    void push(int k) {
+        all_apply(2 * k, lz[k]);
+        all_apply(2 * k + 1, lz[k]);
+        lz[k] = S::fid();
+    }
+
+    void set(int p, T v) {
+        p += sz;
+        for (int i = lg; i >= 1; i--) push(p >> i);
+        d[p] = v;
+        for (int i = 1; i <= lg; i++) pull(p >> i);
+    }
+
+    T get(int p) {
+        p += sz;
+        for (int i = lg; i >= 1; i--) push(p >> i);
+        return d[p];
+    }
+
+    T query(int l, int r) {
+        if (l >= r) return S::id();
+        l += sz; r += sz;
+        for (int i = lg; i >= 1; i--) {
+            if (((l >> i) << i) != l) push(l >> i);
+            if (((r >> i) << i) != r) push((r - 1) >> i);
+        }
+        T L = S::id(), R = S::id();
+        for (; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) L = S::op(L, d[l++]);
+            if (r & 1) R = S::op(d[--r], R);
+        }
+        return S::op(L, R);
+    }
+
+    void update(int l, int r, const F &f) {
+        if (l >= r) return;
+        l += sz; r += sz;
+        for (int i = lg; i >= 1; i--) {
+            if (((l >> i) << i) != l) push(l >> i);
+            if (((r >> i) << i) != r) push((r - 1) >> i);
+        }
+        int l2 = l, r2 = r;
+        for (; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) all_apply(l++, f);
+            if (r & 1) all_apply(--r, f);
+        }
+        l = l2; r = r2;
+        for (int i = 1; i <= lg; i++) {
+            if (((l >> i) << i) != l) pull(l >> i);
+            if (((r >> i) << i) != r) pull((r - 1) >> i);
+        }
     }
 };
 
@@ -87,24 +113,27 @@ void solve() {
     cin >> n >> q;
     vector<ll> t(n + 1);
     for (ll i = 1; i <= n; i++) cin >> t[i];
-    range_segtree tree(t, 1, n + 1);
+
+    LazySegTree<Spec> tree(n + 1);
+    for (ll i = 1; i <= n; i++) tree.set(i, {t[i], 1});
+
     for (ll i = 0; i < q; i++) {
         ll type;
         cin >> type;
         if (type == 1) {
             ll a, b, x;
             cin >> a >> b >> x;
-            tree.increase(a, b, x);
+            tree.update(a, b + 1, {false, x, 0});
         }
         else if (type == 2) {
             ll a, b, x;
             cin >> a >> b >> x;
-            tree.set(a, b, x);
+            tree.update(a, b + 1, {true, 0, x});
         }
         else if (type == 3) {
             ll a, b;
             cin >> a >> b;
-            cout << tree.query(a, b) << "\n";
+            cout << tree.query(a, b + 1).sum << "\n";
         }
     }
 }

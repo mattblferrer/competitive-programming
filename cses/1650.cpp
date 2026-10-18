@@ -7,26 +7,39 @@ using pll = pair<ll, ll>;
 const ll INF = 2e18;
 const ll MOD = 1000000007;
 
-struct point_segtree {
+struct Monoid {
+    using T = long long;
+    static T id() { return 0; }
+    static T op(const T &a, const T &b) { return a ^ b; }
+};
+
+template <class M>
+struct SegTree {
+    using T = typename M::T;
     int n;
-    ll *vals;
-    point_segtree(vector<ll> &ar, int n) {
-        this->n = n;
-        vals = new ll[2 * n];
-        for (int i = 0; i < n; ++i) vals[i + n] = ar[i];
-        for (int i = n - 1; i > 0; --i) vals[i] = vals[i << 1] ^ vals[(i << 1) | 1];
+    vector<T> t;
+
+    SegTree(int n = 0): n(n), t(2 * n, M::id()) {}
+
+    SegTree(const vector<T> &a): n(a.size()), t(2 * a.size(), M::id()) {
+        for (int i = 0; i < n; i++) t[n + i] = a[i];
+        for (int i = n - 1; i > 0; i--) t[i] = M::op(t[2 * i], t[2 * i + 1]);
     }
-    void update(int i, ll v) {
-        for (vals[i += n] = v; i > 1; i >>= 1)
-            vals[i >> 1] = vals[i] ^ vals[i ^ 1];
+
+    void set(int p, T v) {
+        for (t[p += n] = v; p > 1; p >>= 1)
+            t[p >> 1] = M::op(t[p & ~1], t[p | 1]);
     }
-    ll query(int l, int r) {
-        ll res = 0;
-        for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1) {
-            if (l & 1) res ^= vals[l++];
-            if (r & 1) res ^= vals[--r];
+
+    T get(int p) const { return t[p + n]; }
+
+    T query(int l, int r) const {
+        T L = M::id(), R = M::id();
+        for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) L = M::op(L, t[l++]);
+            if (r & 1) R = M::op(t[--r], R);
         }
-        return res;
+        return M::op(L, R);
     }
 };
 
@@ -35,11 +48,11 @@ void solve() {
     cin >> n >> q;
     vector<ll> x(n + 1);
     for (ll i = 1; i <= n; i++) cin >> x[i];
-    point_segtree tree(x, n + 1);
+    SegTree<Monoid> tree(x);
     for (ll i = 0; i < q; i++) {
         ll a, b;
         cin >> a >> b;
-        cout << tree.query(a, b) << "\n";
+        cout << tree.query(a, b + 1) << "\n";
     }
 }
 
