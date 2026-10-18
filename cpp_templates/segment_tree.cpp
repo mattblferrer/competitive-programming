@@ -5,9 +5,9 @@ using ld = long double;
 using pll = pair<ll, ll>;
 
 
-// Iterative, point-update
+// Iterative, point-update [a, b)
 struct Monoid {
-    using T = long long;
+    using T = ll;
     static T id() { return 0; }
     static T op(const T &a, const T &b) { return a + b; }
 };
@@ -42,10 +42,10 @@ struct SegTree {
     }
 };
 
-// Recursive, range-update
+// Recursive, range-update [a, b)
 struct Spec {
-    using T = pair<long long, long long>;
-    using F = long long;
+    using T = pll;
+    using F = ll;
     static T id() { return {0, 0}; }
     static T op(const T &a, const T &b) { return {a.first + b.first, a.second + b.second}; }
     static F fid() { return 0; }
@@ -133,9 +133,9 @@ struct LazySegTree {
     }
 };
 
-// Iterative, 2D point-update
+// Iterative, 2D point-update [a, b]
 struct Monoid {
-    using T = long long;
+    using T = ll;
     static T id() { return 0; }
     static T op(const T &a, const T &b) { return a + b; }
 };
