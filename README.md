@@ -1,33 +1,33 @@
-# Links
+## Links
 
-| Online Judge           | Link                                          | Solve Count |
-| ---------------------- | --------------------------------------------- | ----------- |
-| Atcoder                | https://atcoder.jp/users/mattferrer           | 225         |
-| Baekjoon Online Judge  | https://www.acmicpc.net/user/mattferrer       | 4           |
-| Codeforces             | https://codeforces.com/profile/mattferrer     | 1351        |
-| CSES                   | https://cses.fi/user/283245                   | 71          |
-| Hackerrank             | https://www.hackerrank.com/profile/mattferrer | 114         |
-| Kattis                 | https://open.kattis.com/users/matt-ferrer     | 40          |
-| Leetcode               | https://leetcode.com/u/mattblferrer/          | 926         |
-| Project Euler          | https://projecteuler.net/archives             | 224         |
-| Sphere                 | https://www.spoj.com/                         | 1           |
-| TLX                    | https://tlx.toki.id/                          | 7           |
-| VNOI                   | https://oj.vnoi.info/                         | 6           |
-| Yosupo Library Checker | https://judge.yosupo.jp/                      | 15          |
-| **Total**              |                                               | 2984        |
+| Online Judge           | Link                                            | Solve Count |
+| ---------------------- | ----------------------------------------------- | ----------- |
+| Atcoder                | <https://atcoder.jp/users/mattferrer>           | 321         |
+| Baekjoon Online Judge  | <https://www.acmicpc.net/user/mattferrer>       | 4           |
+| Codeforces             | <https://codeforces.com/profile/mattferrer>     | 1520        |
+| CSES                   | <https://cses.fi/user/283245>                   | 75          |
+| Hackerrank             | <https://www.hackerrank.com/profile/mattferrer> | 114         |
+| Kattis                 | <https://open.kattis.com/users/matt-ferrer>     | 40          |
+| Leetcode               | <https://leetcode.com/u/mattblferrer/>          | 961         |
+| Project Euler          | <https://projecteuler.net/archives>             | 224         |
+| Sphere                 | <https://www.spoj.com/>                         | 1           |
+| TLX                    | <https://tlx.toki.id/>                          | 12          |
+| VNOI                   | <https://oj.vnoi.info/>                         | 6           |
+| Yosupo Library Checker | <https://judge.yosupo.jp/>                      | 15          |
+| **Total**              |                                                 | 3293        |
 
-Solve counts updated as of August 7, 2026
+Solve counts updated as of October 25, 2026
 
-# AtCoder
+## AtCoder
 
 - All code submissions submitted by the user [mattferrer](https://atcoder.jp/users/mattferrer) on AtCoder (Python, C++20).
 
-# Codeforces
+## Codeforces
 
 - Ongoing repository of all of the accepted code submitted to codeforces by the user [mattferrer](https://codeforces.com/profile/mattferrer) (Python, C++20, C++23).
 - Includes Div.1 - Div.4 contests + ICPC and Codeforces Gym contests.
 
-# Project Euler
+## Project Euler
 
 - My solutions to the problems of Project Euler (Python)
 - Link to problems: https://projecteuler.net/
