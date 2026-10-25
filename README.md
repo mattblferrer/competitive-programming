@@ -1,3 +1,5 @@
+# Competitive Programming
+
 ## Links
 
 | Online Judge           | Link                                            | Solve Count |
@@ -30,4 +32,4 @@ Solve counts updated as of October 25, 2026
 ## Project Euler
 
 - My solutions to the problems of Project Euler (Python)
-- Link to problems: https://projecteuler.net/
+- Link to problems: <https://projecteuler.net/>
