@@ -9,6 +9,7 @@ const ll NTT_MOD = 998'244'353, NTT_ROOT = 3;
 // in-place FFT (inverse FFT if invert, including the 1/n scaling); a.size() must be a power of 2, O(n log n)
 void fft(vector<cd> &a, bool invert = false) {
     int n = a.size();
+    assert(n > 0 && (n & (n - 1)) == 0);
     static vector<cd> rt(2, 1);  // rt[k + j] = e^(i * pi * j / k) for each power of 2 k, 0 <= j < k
     for (static int k = 2; k < n; k *= 2) {
         rt.resize(n);
@@ -68,6 +69,7 @@ ll binexp(ll a, ll b, ll mod) {
 // in-place NTT mod 998244353 (inverse if invert); a.size() must be a power of 2 up to 2^23, O(n log n)
 void ntt(vector<ll> &a, bool invert = false) {
     int n = a.size();
+    assert(n > 0 && (n & (n - 1)) == 0);
     for (int i = 1, j = 0; i < n; i++) {  // bit-reversal permutation
         int bit = n >> 1;
         for (; j & bit; bit >>= 1) j ^= bit;
