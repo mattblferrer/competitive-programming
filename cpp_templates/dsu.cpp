@@ -4,13 +4,16 @@ using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
 
-struct dsu {
+// disjoint set union with path compression and union by size
+//   DSU(n)               n singleton sets {0}, ..., {n - 1}, O(n)
+//   find_set(a)          representative of a's set, O(alpha(n)) amortized
+//   union_sets(a, b)     merge the sets of a and b; false if already in the same set, O(alpha(n))
+//   is_connected(a, b)   whether a and b are in the same set, O(alpha(n))
+struct DSU {
     vector<int> parent, sz;
 
-    dsu(int a) {
-        parent.resize(a);
-        sz.resize(a, 1);
-        for (int i = 0; i < a; i++) parent[i] = i;
+    DSU(int n): parent(n), sz(n, 1) {
+        iota(parent.begin(), parent.end(), 0);
     }
 
     int find_set(int a) {

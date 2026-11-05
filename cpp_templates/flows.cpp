@@ -5,69 +5,77 @@ using ld = long double;
 using pll = pair<ll, ll>;
 const ll INF = 2e18;
 
-struct flow {
-    ll fs;  // flow size
-    vector<set<ll>> adj;  // adjacency of every vertex i
-    vector<vector<ll>> cap;  // residual capacity
-    vector<vector<ll>> fg;  // flow graph (actual)
+// Dinic's algorithm, O(V^2 E)
+// after max_flow: e[id].f is the flow on edge id (returned by connect_*),
+// and level[v] != -1 means v is on the source side of a min cut
+//   Flow(n)                  empty network on n vertices (0-indexed), O(n)
+//   resize_flow(n)           reset to an empty network on n vertices, O(n)
+//   connect_d(u, v, w, rw)   add directed edge u -> v with capacity w (reverse capacity rw), returns edge id, O(1)
+//   connect_u(u, v, w)       add undirected edge u - v with capacity w, returns edge id, O(1)
+//   bfs(s, t)                build the level graph from s; true if t is reachable, O(V + E)
+//   dfs(u, t, pushed)        find one augmenting path in the level graph and push flow along it, returns amount pushed
+//   max_flow(s, t)           max flow from s to t, O(V^2 E) (O(E sqrt V) on unit-capacity graphs)
+struct Flow {
+    struct Edge { int to; ll cap, f; };
+    vector<Edge> e;  // e[id ^ 1] is the reverse edge of e[id]
+    vector<vector<int>> adj;  // edge ids leaving each vertex
+    vector<int> level, ptr;
 
-    ll bfs(ll s, ll t, vector<ll>& parent) {
-        fill(parent.begin(), parent.end(), -1);
-        parent[s] = s;
-        queue<pll> q;
-        q.push({s, INF});
+    Flow(int n = 0) { resize_flow(n); }
 
+    void resize_flow(int n) {
+        e.clear();
+        adj.assign(n, {});
+        level.resize(n);
+        ptr.resize(n);
+    }
+
+    int connect_d(int u, int v, ll w, ll rw = 0) {
+        adj[u].push_back(e.size()); e.push_back({v, w, 0});
+        adj[v].push_back(e.size()); e.push_back({u, rw, 0});
+        return e.size() - 2;
+    }
+
+    int connect_u(int u, int v, ll w) { return connect_d(u, v, w, w); }
+
+    bool bfs(int s, int t) {
+        fill(level.begin(), level.end(), -1);
+        level[s] = 0;
+        queue<int> q;
+        q.push(s);
         while (!q.empty()) {
-            ll curr = q.front().first, f = q.front().second;
-            q.pop();
-            for (ll next : adj[curr]) {
-                if (parent[next] == -1 && cap[curr][next]) {
-                    parent[next] = curr;
-                    ll nf = min(f, cap[curr][next]);
-                    if (next == t) return nf;
-                    q.push({next, nf});
+            int u = q.front(); q.pop();
+            for (int id : adj[u]) {
+                if (e[id].cap > e[id].f && level[e[id].to] == -1) {
+                    level[e[id].to] = level[u] + 1;
+                    q.push(e[id].to);
                 }
+            }
+        }
+        return level[t] != -1;
+    }
+
+    ll dfs(int u, int t, ll pushed) {
+        if (u == t || !pushed) return pushed;
+        for (int &i = ptr[u]; i < (int)adj[u].size(); i++) {
+            Edge &ed = e[adj[u][i]];
+            if (level[ed.to] != level[u] + 1 || ed.cap == ed.f) continue;
+            ll got = dfs(ed.to, t, min(pushed, ed.cap - ed.f));
+            if (got) {
+                ed.f += got;
+                e[adj[u][i] ^ 1].f -= got;
+                return got;
             }
         }
         return 0;
     }
 
-    ll max_flow(ll s, ll t) {
-        ll f = 0, nf;
-        vector<ll> parent(fs);
-
-        while ((nf = bfs(s, t, parent))) {
-            f += nf;
-            ll curr = t;
-            while (curr != s) {
-                ll prev = parent[curr];
-                cap[prev][curr] -= nf;
-                cap[curr][prev] += nf;
-                fg[prev][curr] += nf;
-                fg[curr][prev] -= nf;
-                curr = prev;
-            }
+    ll max_flow(int s, int t) {
+        ll f = 0;
+        while (bfs(s, t)) {
+            fill(ptr.begin(), ptr.end(), 0);
+            while (ll pushed = dfs(s, t, INF)) f += pushed;
         }
         return f;
-    }
-
-    void connect_d(ll u, ll v, ll w) {  // directed
-        adj[u].insert(v);
-        adj[v].insert(u);
-        cap[u][v] += w;
-    }
-
-    void connect_u(ll u, ll v, ll w) {  // undirected
-        adj[u].insert(v);
-        adj[v].insert(u);
-        cap[u][v] += w;
-        cap[v][u] += w;
-    }
-
-    void resize_flow(ll sz) {
-        fs = sz;
-        adj.resize(sz);
-        cap.resize(sz, vector<ll>(sz));
-        fg.resize(sz, vector<ll>(sz));
     }
 };

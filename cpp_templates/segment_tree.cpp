@@ -4,14 +4,20 @@ using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
 
-
-// Iterative, point-update [a, b)
+// iterative segment tree, point update, query on [l, r)
+// example monoid (sum): id() is the identity, op must be associative
 struct Monoid {
     using T = ll;
     static T id() { return 0; }
     static T op(const T &a, const T &b) { return a + b; }
 };
 
+// SegTree<M>: works with any monoid M shaped like Monoid above
+//   SegTree(n)    n identity elements, O(n)
+//   SegTree(a)    build from a, O(n)
+//   set(p, v)     a[p] = v, O(log n)
+//   get(p)        a[p], O(1)
+//   query(l, r)   op over [l, r), O(log n)
 template <class M>
 struct SegTree {
     using T = typename M::T;
@@ -42,7 +48,9 @@ struct SegTree {
     }
 };
 
-// Recursive, range-update [a, b)
+// lazy segment tree (iterative), range update and query on [l, r)
+// example: range add, range sum; T = {sum, length}, F = amount added
+// build from leaves {x, 1}, since the default leaves {0, 0} have length 0
 struct Spec {
     using T = pll;
     using F = ll;
@@ -53,6 +61,16 @@ struct Spec {
     static F compose(const F &f, const F &g) { return f + g; }
 };
 
+// LazySegTree<S>: works with any S shaped like Spec above
+//   LazySegTree(n)    n identity elements, O(n)
+//   LazySegTree(a)    build from a, O(n)
+//   pull(k)           recompute node k from its children, O(1)
+//   all_apply(k, f)   apply f to node k and record it as a pending tag, O(1)
+//   push(k)           push node k's pending tag down to its children, O(1)
+//   set(p, v)         a[p] = v, O(log n)
+//   get(p)            a[p], O(log n)
+//   query(l, r)       op over [l, r), O(log n)
+//   update(l, r, f)   apply f to every element in [l, r), O(log n)
 template <class S>
 struct LazySegTree {
     using T = typename S::T;
@@ -133,13 +151,13 @@ struct LazySegTree {
     }
 };
 
-// Iterative, 2D point-update [a, b]
-struct Monoid {
-    using T = ll;
-    static T id() { return 0; }
-    static T op(const T &a, const T &b) { return a + b; }
-};
-
+// 2D segment tree (iterative), point update, query on [r1, r2] x [c1, c2] (uses Monoid above)
+//   SegTree2D(n, m)         n x m grid of identity elements, O(nm)
+//   SegTree2D(a)            build from grid a, O(nm)
+//   set(x, y, v)            a[x][y] = v, O(log n log m)
+//   get(x, y)               a[x][y], O(1)
+//   row_query(i, l, r)      op over columns [l, r) of tree row i, O(log m)
+//   query(r1, c1, r2, c2)   op over the rectangle [r1, r2] x [c1, c2] (inclusive), O(log n log m)
 template <class M>
 struct SegTree2D {
     using T = typename M::T;

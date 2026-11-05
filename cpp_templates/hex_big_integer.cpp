@@ -4,9 +4,25 @@ using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
 
-class HexBigInt {
-public:
-    string d;  // digits
+// arbitrary-precision signed hex integer (addition and subtraction)
+// n below = number of hex digits
+//   HexBigInt(a)           construct from long long, O(log a)
+//   HexBigInt(s)           construct from a hex string, O(len)
+//   read(s)                parse a hex string with optional '-', case-insensitive, O(len)
+//   trim()                 remove leading zeros and make 0 non-negative, O(n)
+//   size()                 number of hex digits (0 for zero), O(1)
+//   abs_val()              absolute value, O(n)
+//   abs_less(a, b)         |a| < |b|, O(n)
+//   add_abs(a, b)          |a| + |b| with the sign of a, O(n)
+//   sub_abs(a, b)          |a| - |b| with the sign of a; requires |a| >= |b|, O(n)
+//   <, >, <=, >=, ==, !=   comparisons, O(n)
+//   -x                     negation, O(n)
+//   +, -, +=, -=           signed addition and subtraction, O(n)
+//   x[idx]                 idx-th most significant digit, O(1)
+//   cin >> x               read a hex number from a stream, O(len)
+//   cout << x              write in hex to a stream, O(n)
+struct HexBigInt {
+    vector<int> d;  // hex digits, little-endian; zero is stored as empty d
     bool sign = false;  // false = pos, true = neg
 
     HexBigInt(ll a = 0) {
@@ -19,39 +35,40 @@ public:
             a /= 16;
         }
     }
-    HexBigInt(string& s) {
-        check_sign(s);
-        int n = s.size();
-        for (int i = n - 1; i >= sign; i--) {
-            signed char ch = s[i] - '0';
-            if (ch < 10) d.push_back(s[i] - '0');
-            else d.push_back(s[i] - 'A' + 10);
+    HexBigInt(const string &s) { read(s); }
+    HexBigInt(const char *s) { read(s); }
+
+    void read(const string &s) {
+        d.clear();
+        sign = !s.empty() && s[0] == '-';
+        for (int i = (int)s.size() - 1; i >= (int)sign; i--) {
+            char c = toupper(s[i]);
+            d.push_back(isdigit(c) ? c - '0' : c - 'A' + 10);
         }
+        trim();
     }
-    HexBigInt(const char* s) {
-        string sc = s;
-        check_sign(sc);
-        int n = sc.size();
-        for (int i = n - 1; i >= sign; i--) {
-            signed char ch = s[i] - '0';
-            if (ch < 10) d.push_back(s[i] - '0');
-            else d.push_back(s[i] - 'A' + 10);
-        }
+    void trim() {
+        while (!d.empty() && d.back() == 0) d.pop_back();
+        if (d.empty()) sign = false;
     }
     int size() const {
         return d.size();
     }
-    void check_sign(string& s) {
-        if (s.front() == '-') sign = true;
-    }
-    static HexBigInt abs(const HexBigInt& a) {
-        HexBigInt c = a;
+    HexBigInt abs_val() const {
+        HexBigInt c = *this;
         c.sign = false;
         return c;
     }
-    static HexBigInt add_abs(HexBigInt& a, const HexBigInt& b) {
+    static bool abs_less(const HexBigInt &a, const HexBigInt &b) {
+        if (a.size() != b.size()) return a.size() < b.size();
+        for (int i = a.size() - 1; i >= 0; i--) {
+            if (a.d[i] != b.d[i]) return a.d[i] < b.d[i];
+        }
+        return false;
+    }
+    static HexBigInt add_abs(HexBigInt a, const HexBigInt &b) {
         int n = max(a.size(), b.size());
-        while (a.size() != n + 1) a.d.push_back(0);
+        a.d.resize(n + 1, 0);
         for (int i = 0; i < b.size(); i++) a.d[i] += b.d[i];
         for (int i = 0; i < n; i++) {
             if (a.d[i] > 15) {
@@ -59,109 +76,74 @@ public:
                 a.d[i + 1]++;
             }
         }
-        while (a.size() > 1 && a.d.back() == 0) a.d.pop_back();
+        a.trim();
         return a;
     }
-    static HexBigInt sub_abs(HexBigInt& a, const HexBigInt& b) {
-        int n = max(a.size(), b.size());
+    static HexBigInt sub_abs(HexBigInt a, const HexBigInt &b) {
         for (int i = 0; i < b.size(); i++) a.d[i] -= b.d[i];
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 0; i < a.size() - 1; i++) {
             if (a.d[i] < 0) {
                 a.d[i] += 16;
                 a.d[i + 1]--;
             }
         }
-        while (a.size() > 1 && a.d.back() == 0) a.d.pop_back();
+        a.trim();
         return a;
     }
 
-    HexBigInt& operator=(const HexBigInt& a) {
-        d.resize(a.size());
-        for (int i = 0; i < a.size(); i++) {
-            d[i] = a.d[i];
-        }
-        sign = a.sign;
-        return *this;
+    friend bool operator==(const HexBigInt &a, const HexBigInt &b) {
+        return a.sign == b.sign && a.d == b.d;
     }
-    friend bool operator==(const HexBigInt& a, const HexBigInt& b) {
-        return a.d == b.d;
+    friend bool operator!=(const HexBigInt &a, const HexBigInt &b) {
+        return !(a == b);
     }
-    friend bool operator<(const HexBigInt& a, const HexBigInt& b) {
-        if (a.sign != b.sign) return a.sign > b.sign;
-        int n = a.size(), m = b.size();
-        if (n != m) return n < m;
-        for (int i = n - 1; i >= 0; i--) {
-            if (a.d[i] != b.d[i]) return a.d[i] < b.d[i];
-        }
-        return false;
+    friend bool operator<(const HexBigInt &a, const HexBigInt &b) {
+        if (a.sign != b.sign) return a.sign;
+        return a.sign ? abs_less(b, a) : abs_less(a, b);
     }
-    friend bool operator>(const HexBigInt& a, const HexBigInt& b) {
+    friend bool operator>(const HexBigInt &a, const HexBigInt &b) {
         return b < a;
     }
-    friend bool operator>=(const HexBigInt& a, const HexBigInt& b) {
+    friend bool operator>=(const HexBigInt &a, const HexBigInt &b) {
         return !(a < b);
     }
-    friend bool operator<=(const HexBigInt& a, const HexBigInt& b) {
+    friend bool operator<=(const HexBigInt &a, const HexBigInt &b) {
         return !(a > b);
     }
-    friend HexBigInt& operator+=(HexBigInt& a, HexBigInt& b) {
-        if (a.sign == b.sign) a = add_abs(a, b);
-        else if (abs(a) == abs(b)) a = HexBigInt(0LL);
-        else if (abs(a) <= abs(b)) {
-            a = sub_abs(b, a);
-            a.sign = b.sign;
-        }
-        else a = sub_abs(a, b);
-        return a;
-    }
-    friend HexBigInt& operator-=(HexBigInt& a, HexBigInt& b) {
-        if (a.sign != b.sign) a = add_abs(a, b);
-        else if (abs(a) == abs(b)) a = HexBigInt(0LL);
-        else if (abs(a) <= abs(b)) {
-            a = sub_abs(b, a);
-            a.sign = b.sign;
-        }
-        else a = sub_abs(a, b);
-        return a;
-    }
-    friend HexBigInt operator+(HexBigInt& a, HexBigInt& b) {
-        HexBigInt c = a;
-        c += b;
+    HexBigInt operator-() const {
+        HexBigInt c = *this;
+        if (!c.d.empty()) c.sign = !c.sign;
         return c;
     }
-    friend HexBigInt operator-(HexBigInt& a, HexBigInt& b) {
-        HexBigInt c = a;
-        c -= b;
-        return c;
+    friend HexBigInt operator+(const HexBigInt &a, const HexBigInt &b) {
+        if (a.sign == b.sign) return add_abs(a, b);
+        if (abs_less(a, b)) return sub_abs(b, a);
+        return sub_abs(a, b);
+    }
+    friend HexBigInt operator-(const HexBigInt &a, const HexBigInt &b) {
+        return a + (-b);
+    }
+    friend HexBigInt &operator+=(HexBigInt &a, const HexBigInt &b) {
+        return a = a + b;
+    }
+    friend HexBigInt &operator-=(HexBigInt &a, const HexBigInt &b) {
+        return a = a - b;
     }
     int operator[](const int idx) const {
-        return (int)d[d.size() - idx - 1];
+        return d[d.size() - idx - 1];
     }
-    friend istream& operator>>(istream& in, HexBigInt& a) {
+    friend istream &operator>>(istream &in, HexBigInt &a) {
         string s;
         in >> s;
-        a.check_sign(s);
-        int n = s.size();
-        for (int i = n - 1; i >= a.sign; i--) {
-            signed char ch = s[i] - '0';
-            if (ch < 10) a.d.push_back(s[i] - '0');
-            else a.d.push_back(s[i] - 'A' + 10);
-        }
-        while (a.size() > 1 && a.d.back() == 0) a.d.pop_back();
-        return cin;
+        a.read(s);
+        return in;
     }
-    friend ostream& operator<<(ostream& out, const HexBigInt& a) {
-        int n = a.d.size();
-        if (n == 0) {
-            cout << "0";
-            return cout;
+    friend ostream &operator<<(ostream &out, const HexBigInt &a) {
+        if (a.d.empty()) return out << '0';
+        if (a.sign) out << '-';
+        for (int i = a.size() - 1; i >= 0; i--) {
+            out << "0123456789ABCDEF"[a.d[i]];
         }
-        if (a.sign) cout << '-';
-        for (int i = n - 1; i >= 0; i--) {
-            signed char ch = (int)a.d[i];
-            if (ch < 10) cout << ch;
-            else cout << (ch - 10 + 'A');
-        }
-        return cout;
+        return out;
     }
 };

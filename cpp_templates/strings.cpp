@@ -4,55 +4,40 @@ using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
 
-struct KMP {
-    vector<int> par;
-    int n;
-    string s, f;
-    KMP(string &s, string &f) {
-        this->n = s.size(); this->s = s; this->f = f;
-        if (f.size() > s.size()) return;
-
-        par.resize(max(n, 2), 0);
-        par[0] = -1, par[1] = 0;
-        int i = 2, j = 0;
-        while (i <= f.size()) {
-            if (f[i - 1] == f[j]) par[i++] = ++j;
-            else if (j > 0) j = par[j];
-            else par[i++] = 0;
-        }
+// prefix function, O(n): pi[i] = length of the longest proper prefix of s[0..i] that is also a suffix
+vector<int> prefix_function(const string &s) {
+    int n = s.size();
+    vector<int> pi(n);
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        while (j > 0 && s[i] != s[j]) j = pi[j - 1];
+        if (s[i] == s[j]) j++;
+        pi[i] = j;
     }
-    vector<int> run() {
-        if (f.size() > s.size()) return {};
+    return pi;
+}
 
-        int i = 0, j = 0; vector<int> ans;
-        while (i + j < s.size()) {
-            if (s[i + j] == f[j]) {
-                if (++j == f.size()) {
-                    ans.push_back(i);
-                    i += j - par[j];
-                    if (j > 0) j = par[j];
-                }
-            }
-            else {
-                i += j - par[j];
-                if (j > 0) j = par[j];
-            }
-        }
-        return ans;
+// start indices of all occurrences of f in s, O(|s| + |f|)
+vector<int> kmp(const string &s, const string &f) {
+    if (f.empty()) return {};
+    int m = f.size();
+    vector<int> pi = prefix_function(f + '\0' + s), ans;  // '\0' must not appear in f
+    for (int i = 2 * m; i < (int)pi.size(); i++) {
+        if (pi[i] == m) ans.push_back(i - 2 * m);
     }
-};
+    return ans;
+}
 
-struct booth {
-    int *f;
+// Booth's algorithm for the lexicographically smallest rotation in O(n)
+//   Booth(s)   stores s, O(n)
+//   run()      start index of the lexicographically smallest rotation of s, O(n)
+struct Booth {
     string s;
-    booth(string &s) {
-        this->s = s;
-        this->f = new int[2 * s.length()];
-    }
+    Booth(const string &s): s(s) {}
     int run() {
-        s.append(s);
+        string s = this->s + this->s;
         int n = s.length(), i, j, k = 0;
-        memset(f, -1, sizeof(int) * n);
+        vector<int> f(n, -1);
         for (j = 1; j < n; j++) {
             i = f[j - k - 1];
             while (i != -1 && s[j] != s[k + i + 1]) {

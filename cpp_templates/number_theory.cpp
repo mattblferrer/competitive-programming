@@ -4,8 +4,10 @@ using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
 
+// a^b mod mod, O(log b)
 ll binexp(ll a, ll b, ll mod) {
     ll ans = 1;
+    a %= mod;
     while (b) {
         if (b % 2) {
             ans = (ans * a) % mod;
@@ -16,10 +18,12 @@ ll binexp(ll a, ll b, ll mod) {
     return ans;
 }
 
+// inverse of a mod prime p (Fermat), O(log p)
 ll modinv_p(ll a, ll p) {
     return binexp(a, p - 2, p);
 }
 
+// returns g = gcd(a, b) and sets x, y so that ax + by = g, O(log min(a, b))
 ll extended_euclidean(ll a, ll b, ll &x, ll &y) {
     if (b == 0) {
         x = 1;
@@ -31,15 +35,15 @@ ll extended_euclidean(ll a, ll b, ll &x, ll &y) {
     return gcd;
 }
 
+// inverse of a mod any modulus, -1 if gcd(a, mod) != 1, O(log mod)
 ll modinv(ll a, ll mod) {
     ll x, y;
     ll gcd = extended_euclidean(a, mod, x, y);
-    if (gcd != 1) {
-        return -1;  // doesn't exist
-    }
+    if (gcd != 1) return -1;  // doesn't exist
     return (x % mod + mod) % mod;
 }
 
+// smallest x >= 0 with a^x = b (mod m), -1 if none; baby-step giant-step, O(sqrt(m))
 ll discrete_log(ll a, ll b, ll m) {
     a %= m, b %= m;
     ll k = 1LL, add = 0LL, g;
@@ -71,6 +75,7 @@ ll discrete_log(ll a, ll b, ll m) {
     return -1;
 }
 
+// trial-division primality test, O(sqrt(n))
 bool is_prime(ll n) {
     if (n == 2) return true;
     if (n % 2 == 0) return false;
@@ -80,49 +85,51 @@ bool is_prime(ll n) {
     return n > 1;
 }
 
-void sieve(vector<bool> &is_prime, ll n) {
-    is_prime.assign(n + 1, true);
-    is_prime[0] = is_prime[1] = false;
+// Sieve of Eratosthenes: prime[i] for 0 <= i <= n, O(n log log n)
+void sieve(vector<bool> &prime, ll n) {
+    prime.assign(n + 1, true);
+    prime[0] = prime[1] = false;
     for (ll i = 2; i * i <= n; i++) {
-        if (is_prime[i]) {
+        if (prime[i]) {
             for (ll j = i * i; j <= n; j += i) {
-                is_prime[j] = false;
+                prime[j] = false;
             }
         }
     }
 }
 
+// sum of the divisors of n, mod mod, O(sqrt(n))
 ll sum_of_divisors(ll n, ll mod) {
     ll ans = 1;
-    for (int i = 2; (ll)(i * i) <= n; i++) {
+    for (ll i = 2; i * i <= n; i++) {
         if (n % i != 0) continue;
-        int e = 0;
+        ll sum = 1, pow = 1;  // 1 + i + i^2 + ... + i^e
         while (n % i == 0) {
-            e++; n /= i;
-        }
-        ll sum = 0, pow = 1;
-        while (e > 0) {
-            sum = (sum + pow) % mod;
+            n /= i;
             pow = (pow * i) % mod;
+            sum = (sum + pow) % mod;
         }
         ans = (ans * sum) % mod;
     }
-    if (n > 1) ans *= (1 + n);
-    return ans;
+    if (n > 1) ans = (ans * ((1 + n) % mod)) % mod;
+    return ans % mod;
 }
 
+// smallest primitive root mod prime m, O(sqrt(m) + g log^2 m) where g is the answer (small in practice)
 ll primitive_root(ll m) {
     if (m == 2) return 1;
-    std::vector<ll> div;
-    for (ll i = 1; i * i <= m - 1; i++) {
-        if ((m - 1) % i == 0) {
-            if (i < m) div.push_back(i);
-            if (m / i < m) div.push_back(m / i);
+    vector<ll> fact;  // distinct prime factors of m - 1
+    ll phi = m - 1, n = phi;
+    for (ll i = 2; i * i <= n; i++) {
+        if (n % i == 0) {
+            fact.push_back(i);
+            while (n % i == 0) n /= i;
         }
     }
+    if (n > 1) fact.push_back(n);
     for (ll x = 2; x < m; ++x) {
         bool ok = true;
-        for (ll d : div) if (binexp(x, d, m) == 1) {
+        for (ll p : fact) if (binexp(x, phi / p, m) == 1) {
             ok = false; break;
         }
         if (ok) return x;

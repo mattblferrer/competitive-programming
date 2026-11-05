@@ -5,6 +5,13 @@ using ld = long double;
 using pll = pair<ll, ll>;
 const ll MOD = 1'000'000'007;
 
+// dense matrix with entries mod MOD
+//   Matrix(n, m, identity)   n x m zero matrix (identity if requested), O(nm)
+//   Matrix(vals)             from a 2D vector, O(nm)
+//   a[i]                     row access, O(1)
+//   a * b                    product this * other mod MOD; requires this.m == other.n, O(n * m * other.m)
+//   pow(p)                   this^p for a square matrix, O(n^3 log p)
+//   print()                  print the matrix, one row per line, O(nm)
 struct Matrix {
     int n, m; // n rows, m cols
     vector<vector<ll>> a;
@@ -16,16 +23,11 @@ struct Matrix {
         }
     }
 
-    Matrix(vector<vector<ll>> vals) {
-        a = vals;
-        n = a.size();
-        m = n ? a[0].size() : 0;
-    }
+    Matrix(const vector<vector<ll>> &vals): n(vals.size()), m(vals.empty() ? 0 : vals[0].size()), a(vals) {}
 
     vector<ll> &operator[](int i) { return a[i]; }
     const vector<ll> &operator[](int i) const { return a[i]; }
 
-    // Matrix multiplication (this * other), dims must match: this.m == other.n
     Matrix operator*(const Matrix &other) const {
         assert(m == other.n);
         Matrix res(n, other.m);
@@ -41,7 +43,6 @@ struct Matrix {
         return res;
     }
 
-    // Matrix exponentiation (only valid for square matrices)
     Matrix pow(ll p) const {
         assert(n == m);
         Matrix result(n, n, true); // identity
