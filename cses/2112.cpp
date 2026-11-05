@@ -80,8 +80,8 @@ void solve() {
     reverse(t_vec.begin(), t_vec.end());
 
     vector<ll> ans = multiply(s_vec, t_vec);
-    for (ll i = n - 2; i >= 0; i--) {
-        cout << ans[i] << " ";
+    for (ll i = 1; i <= n - 1; i++) {
+        cout << ans[n - 1 + i] << " ";
     }
 }
 
