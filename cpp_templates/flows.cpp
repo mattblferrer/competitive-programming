@@ -79,3 +79,33 @@ struct Flow {
         return f;
     }
 };
+
+// all-pairs max flow on an undirected graph (Gomory-Hu tree), uses Flow above
+// build g with connect_u; the flows stored in g are reset
+//   GomoryHu(g)      build the tree with n - 1 max flows, O(V^3 E)
+//   query(s, t)      max flow between s and t, O(V)
+struct GomoryHu {
+    int n;
+    vector<int> dep, par;
+    vector<ll> w;  // w[v] = capacity of the tree edge from v to par[v]
+
+    GomoryHu(Flow &g): n(g.adj.size()), dep(n, 0), par(n, 0), w(n, 0) {
+        for (int u = 1; u < n; u++) {
+            for (auto &ed : g.e) ed.f = 0;
+            w[u] = g.max_flow(u, par[u]);
+            for (int v = u + 1; v < n; v++)
+                if (g.level[v] != -1 && par[v] == par[u]) par[v] = u;
+            dep[u] = dep[par[u]] + 1;
+        }
+    }
+
+    ll query(int s, int t) const {
+        ll ans = INF;
+        while (s != t) {
+            if (dep[s] < dep[t]) swap(s, t);
+            ans = min(ans, w[s]);
+            s = par[s];
+        }
+        return ans;
+    }
+};

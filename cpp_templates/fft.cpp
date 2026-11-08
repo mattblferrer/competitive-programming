@@ -126,3 +126,25 @@ struct NTT {
         return a;
     }
 };
+
+// product of polynomials a and b mod any modulus below 2^31, using three NTT primes and CRT, O((n + m) log(n + m))
+// exact while (n + m) <= 2^23 and min(n, m) * mod^2 < 7.8e25
+vector<ll> convolution_any_mod(vector<ll> a, vector<ll> b, ll mod) {
+    if (a.empty() || b.empty()) return {};
+    const ll M1 = 998'244'353, M2 = 469'762'049, M3 = 167'772'161;
+    for (ll &x : a) x = (x % mod + mod) % mod;
+    for (ll &x : b) x = (x % mod + mod) % mod;
+    vector<ll> r1 = NTT<M1, 3>::multiply(a, b);
+    vector<ll> r2 = NTT<M2, 3>::multiply(a, b);
+    vector<ll> r3 = NTT<M3, 3>::multiply(a, b);
+    const ll inv1_2 = binexp(M1, M2 - 2, M2), inv12_3 = binexp(M1 * M2 % M3, M3 - 2, M3), m12 = M1 % mod * (M2 % mod) % mod;
+    vector<ll> res(r1.size());
+    for (int i = 0; i < (int)r1.size(); i++) {  // Garner: value = x1 + x2 * M1 + x3 * M1 * M2
+        ll x1 = r1[i];
+        ll x2 = (r2[i] - x1 % M2 + M2) % M2 * inv1_2 % M2;
+        ll x3 = (r3[i] - (x1 + x2 * M1) % M3 + M3) % M3 * inv12_3 % M3;
+        res[i] = (x1 + x2 % mod * (M1 % mod)) % mod;
+        res[i] = (res[i] + x3 * m12) % mod;
+    }
+    return res;
+}

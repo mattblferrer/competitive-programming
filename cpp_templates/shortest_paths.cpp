@@ -106,3 +106,23 @@ struct Dijkstra {
         return !(dist[end] >= INF);
     }
 };
+
+// shortest paths from s when every edge weight is 0 or 1 (0-1 BFS), INF if unreachable, O(V + E)
+// adj[u] holds {v, w}
+vector<ll> zero_one_bfs(const vector<vector<pair<int, int>>> &adj, int s) {
+    vector<ll> dist(adj.size(), INF);
+    deque<int> q;
+    dist[s] = 0;
+    q.push_back(s);
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop_front();
+        for (auto [v, w] : adj[u]) {
+            if (dist[u] + w >= dist[v]) continue;
+            dist[v] = dist[u] + w;
+            if (w) q.push_back(v);
+            else q.push_front(v);
+        }
+    }
+    return dist;
+}
