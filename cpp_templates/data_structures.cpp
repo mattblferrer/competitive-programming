@@ -363,24 +363,26 @@ struct OfflineDynamic {
     }
 };
 
-// implicit treap: an array supporting insert/erase at any position with range add and range sum (0-indexed)
+// implicit treap: an array supporting insert/erase at any position with range add, range reverse and range sum (0-indexed)
 //   insert(p, v)      insert v so that it becomes a[p], O(log n) expected
 //   erase(p)          remove a[p], O(log n) expected
 //   get(p)            a[p], O(log n) expected
 //   query(l, r)       sum of a[l..r), O(log n) expected
 //   update(l, r, v)   a[l..r) += v, O(log n) expected
+//   reverse(l, r)     reverse a[l..r), O(log n) expected
 //   size()            current length, O(1)
 struct ImplicitTreap {
     struct Node {
         ll val, sum, add;
         unsigned pri;
         int sz, l, r;
+        bool rev;  // v's own children are already swapped; rev means its children still need flipping
     };
     vector<Node> t;  // t[0] is the null node
     int root = 0;
     mt19937 gen{(unsigned)chrono::steady_clock::now().time_since_epoch().count()};
 
-    ImplicitTreap(): t(1, Node{0, 0, 0, 0, 0, 0, 0}) {}
+    ImplicitTreap(): t(1, Node{0, 0, 0, 0, 0, 0, 0, false}) {}
 
     void apply(int v, ll d) {
         if (!v) return;
@@ -389,10 +391,21 @@ struct ImplicitTreap {
         t[v].sum += d * t[v].sz;
     }
 
+    void flip(int v) {
+        if (!v) return;
+        swap(t[v].l, t[v].r);
+        t[v].rev = !t[v].rev;
+    }
+
     void push(int v) {
         apply(t[v].l, t[v].add);
         apply(t[v].r, t[v].add);
         t[v].add = 0;
+        if (t[v].rev) {
+            flip(t[v].l);
+            flip(t[v].r);
+            t[v].rev = false;
+        }
     }
 
     void pull(int v) {
@@ -432,7 +445,7 @@ struct ImplicitTreap {
     }
 
     void insert(int p, ll v) {
-        t.push_back({v, v, 0, gen(), 1, 0, 0});
+        t.push_back({v, v, 0, gen(), 1, 0, 0, false});
         int a, b, id = t.size() - 1;
         split(root, p, a, b);
         root = merge(merge(a, id), b);
@@ -461,6 +474,14 @@ struct ImplicitTreap {
         split(root, r, a, c);
         split(a, l, a, b);
         apply(b, v);
+        root = merge(merge(a, b), c);
+    }
+
+    void reverse(int l, int r) {
+        int a, b, c;
+        split(root, r, a, c);
+        split(a, l, a, b);
+        flip(b);
         root = merge(merge(a, b), c);
     }
 
