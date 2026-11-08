@@ -398,9 +398,11 @@ struct ImplicitTreap {
     }
 
     void push(int v) {
-        apply(t[v].l, t[v].add);
-        apply(t[v].r, t[v].add);
-        t[v].add = 0;
+        if (t[v].add) {
+            apply(t[v].l, t[v].add);
+            apply(t[v].r, t[v].add);
+            t[v].add = 0;
+        }
         if (t[v].rev) {
             flip(t[v].l);
             flip(t[v].r);
@@ -458,7 +460,21 @@ struct ImplicitTreap {
         root = merge(a, c);
     }
 
-    ll get(int p) { return query(p, p + 1); }
+    ll get(int p) {
+        int v = root;
+        while (true) {
+            push(v);
+            int left = t[t[v].l].sz;
+            if (p < left) {
+                v = t[v].l;
+            } else if (p == left) {
+                return t[v].val;
+            } else {
+                p -= left + 1;
+                v = t[v].r;
+            }
+        }
+    }
 
     ll query(int l, int r) {
         int a, b, c;
