@@ -317,29 +317,6 @@ ld simpson(F f, ld a, ld b, int steps = 1000000) {
     return s * h / 3;
 }
 
-// smallest x in [lo, hi] minimizing f, O(log(hi - lo)) calls to f; f must fall, then rise, and may only be flat at its minimum
-// to maximize, pass a function returning -f(x)
-template <class F>
-ll ternary_search_int(ll lo, ll hi, F f) {
-    while (lo < hi) {
-        ll m = lo + (hi - lo) / 2;
-        if (f(m) <= f(m + 1)) hi = m;
-        else lo = m + 1;
-    }
-    return lo;
-}
-
-// x in [lo, hi] minimizing a real function that falls and then rises, O(iters) calls to f
-template <class F>
-ld ternary_search_real(ld lo, ld hi, F f, int iters = 200) {
-    for (int i = 0; i < iters; i++) {
-        ld m1 = lo + (hi - lo) / 3, m2 = hi - (hi - lo) / 3;
-        if (f(m1) <= f(m2)) hi = m2;
-        else lo = m1;
-    }
-    return (lo + hi) / 2;
-}
-
 // exact cover with dancing links (Algorithm X): choose rows so every column is covered exactly once; exponential in the worst case
 //   DLX(cols)          empty matrix with columns 0..cols-1, O(cols)
 //   add_row(id, cs)    add a row covering the distinct columns cs; id is what solutions report, O(|cs|)

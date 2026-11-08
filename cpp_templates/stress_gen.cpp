@@ -1,4 +1,4 @@
-// random input generator for stress.sh; run as "gen seed", and the same seed always prints the same input
+// random input generator; run as "gen seed", and the same seed always prints the same input
 
 #include <bits/stdc++.h>
 using namespace std;
