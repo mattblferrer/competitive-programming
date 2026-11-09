@@ -226,7 +226,7 @@ struct SuffixArray {
 
 // Aho-Corasick automaton: KMP for many patterns over the alphabet [BASE, BASE + ALPHA)
 //   add(s)          add pattern s, O(|s|)
-//   build()         compute the fail links; call after every add, O(nodes * ALPHA)
+//   build()         compute the fail links; call exactly once, after all adds, O(nodes * ALPHA)
 //   count(text)     total occurrences of all patterns in text, counted with multiplicity, O(|text|)
 template <int ALPHA = 26, char BASE = 'a'>
 struct AhoCorasick {
@@ -418,11 +418,12 @@ pair<vector<int>, vector<int>> manacher(const string &s) {
 //   compute_counts()      fill cnt[state] = number of end positions of that state, O(states)
 //   contains(p)           true if p is a substring, O(|p|)
 //   occurrences(p)        number of occurrences of p in the string, O(|p|)
+//   first_occurrence(p)   0-indexed start of the first occurrence of p, -1 if absent, O(|p|)
 //   distinct()            number of distinct non-empty substrings, O(states)
 //   lcs(t)                length of the longest common substring with t, O(|t|)
 struct SuffixAutomaton {
     struct State {
-        int len, link;
+        int len, link, first;  // first = smallest end position (0-indexed)
         bool clone;
         array<int, 26> next;
     };
@@ -433,6 +434,7 @@ struct SuffixAutomaton {
     SuffixAutomaton(const string &s = "") {
         State root;
         root.len = 0;
+        root.first = -1;
         root.link = -1;
         root.clone = false;
         root.next.fill(-1);
@@ -445,6 +447,7 @@ struct SuffixAutomaton {
         int c = ch - 'a', cur = st.size();
         State node;
         node.len = st[last].len + 1;
+        node.first = node.len - 1;
         node.link = 0;
         node.clone = false;
         node.next.fill(-1);
@@ -499,6 +502,11 @@ struct SuffixAutomaton {
     ll occurrences(const string &p) const {
         int v = find_state(p);
         return v == -1 ? 0 : cnt[v];
+    }
+
+    int first_occurrence(const string &p) const {
+        int v = find_state(p);
+        return v == -1 ? -1 : st[v].first - (int)p.size() + 1;
     }
 
     ll distinct() const {
