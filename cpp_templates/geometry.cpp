@@ -134,17 +134,21 @@ Point polygon_centroid(const vector<Point> &p) {
     return ans / (3 * z);
 }
 
-// strict convex hull in counter-clockwise order (monotone chain), O(n log n)
-vector<Point> convex_hull(vector<Point> p) {
+// convex hull in counter-clockwise order (monotone chain), O(n log n)
+// strict by default; with keep_collinear, also keeps input points in the middle of hull edges
+// (if all points are collinear, returns them sorted)
+vector<Point> convex_hull(vector<Point> p, bool keep_collinear = false) {
     sort(p.begin(), p.end());
     p.erase(unique(p.begin(), p.end()), p.end());
     int n = p.size(), k = 0;
     if (n <= 2) return p;
+    ld lim = keep_collinear ? -EPS : EPS;
     vector<Point> h(2 * n);
     for (int i = 0; i < n; h[k++] = p[i++])
-        while (k >= 2 && cross(h[k - 2], h[k - 1], p[i]) < EPS) k--;
+        while (k >= 2 && cross(h[k - 2], h[k - 1], p[i]) < lim) k--;
     for (int i = n - 2, t = k + 1; i >= 0; h[k++] = p[i--])
-        while (k >= t && cross(h[k - 2], h[k - 1], p[i]) < EPS) k--;
+        while (k >= t && cross(h[k - 2], h[k - 1], p[i]) < lim) k--;
+    if (k == 2 * n - 1) return p;  // nothing popped: all points are collinear
     h.resize(k - 1);
     return h;
 }
