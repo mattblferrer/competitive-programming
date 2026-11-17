@@ -1,0 +1,67 @@
+\note{Compile and run}
+\begin{lstlisting}[language=bash]
+# contest build
+g++ -std=gnu++20 -O2 -Wall -Wextra -Wshadow -DLOCAL a.cpp -o a
+# debug build: bounds checks, overflow, memory errors
+g++ -std=gnu++20 -g -Wall -Wextra -Wshadow -DLOCAL \
+    -D_GLIBCXX_DEBUG -fsanitize=address,undefined a.cpp -o a
+./a < in.txt
+\end{lstlisting}
+
+\note{Pragmas and I/O}
+\begin{lstlisting}
+#pragma GCC optimize("O3,unroll-loops")           // before #includes
+#pragma GCC target("avx2,bmi,bmi2,popcnt,lzcnt")  // if judge CPU has it
+\end{lstlisting}
+{\scriptsize Interactive problems: the template unties \texttt{cin}, so flush after
+every query with \texttt{cout.flush()} or \texttt{endl}. Elsewhere use \texttt{'\textbackslash n'},
+never \texttt{endl}.\par}
+
+\note{Complexity guide}
+{\scriptsize About $10^8$ simple operations per second.\par
+\begin{tabular}{@{}ll|ll@{}}
+$n \le 10$ & $O(n!)$, $O(n^6)$ & $n \le 10^5$ & $O(n\sqrt n)$, $O(n\log^2 n)$ \\
+$n \le 20$ & $O(2^n n)$ & $n \le 10^6$ & $O(n\log n)$ \\
+$n \le 40$ & $O(2^{n/2})$ meet in middle & $n \le 10^8$ & $O(n)$ \\
+$n \le 500$ & $O(n^3)$ & $n \le 10^{18}$ & $O(\log n)$, $O(\sqrt[3]{n})$ \\
+$n \le 5000$ & $O(n^2)$ & & \\
+\end{tabular}\par}
+
+\note{Checklist}
+{\scriptsize
+\textbf{Before submitting}
+\begin{itemize}
+  \item Single test? Comment out \texttt{cin >{}> t} in the template.
+  \item Overflow: \texttt{int * int}, \texttt{1 <{}< k} vs \texttt{1LL <{}< k}, sums of $10^5$ values of $10^9$.
+  \item Globals and arrays reset between test cases.
+  \item Edge cases: $n = 0, 1, 2$, all equal, maximum values, negative numbers.
+  \item Output format: YES/Yes, spaces, newlines, decimal precision, $-0.0$.
+\end{itemize}
+\textbf{Wrong answer}
+\begin{itemize}
+  \item Re-read the statement and constraints; 0- vs 1-indexed input.
+  \item Solve small cases by hand; write a brute force and stress test it.
+  \item Off-by-one in loops and binary search bounds; uninitialized variables.
+  \item Comparator must be a strict weak ordering (\texttt{<}, never \texttt{<=}).
+  \item Negative mod: \texttt{(x \% m + m) \% m}; take the mod after every subtraction.
+  \item Floating point: compare with EPS, use \texttt{long double}, avoid it if exact is possible.
+  \item Explain the solution to a teammate.
+\end{itemize}
+\textbf{Runtime error}
+\begin{itemize}
+  \item Out of bounds (build with \texttt{-D\_GLIBCXX\_DEBUG}), division by zero.
+  \item \texttt{.back()}, \texttt{.top()}, \texttt{.front()} on an empty container; iterators used after erase.
+  \item Recursion too deep (DFS on a $10^6$ path): make it iterative.
+\end{itemize}
+\textbf{Time limit exceeded}
+\begin{itemize}
+  \item Infinite loop? Clearing $O(\max n)$ arrays on every test case?
+  \item Pass containers by reference; avoid \texttt{map}/\texttt{set} in inner loops.
+  \item \texttt{unordered\_map} under anti-hash tests: use Safe Hash.
+  \item Flat arrays beat \texttt{vector<vector>}; try the pragmas.
+\end{itemize}
+\textbf{Memory limit exceeded}
+\begin{itemize}
+  \item $10^6$ \texttt{ll} = 8\,MB, $10^6$ \texttt{int} = 4\,MB; \texttt{vector<bool>} or \texttt{bitset} for flags.
+\end{itemize}
+\par}

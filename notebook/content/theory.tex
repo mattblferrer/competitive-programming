@@ -1,0 +1,140 @@
+{\scriptsize
+
+\note{Useful numbers}
+\begin{tabular}{@{}ll@{}}
+$10^9+7$, $10^9+9$, $10^{18}+3$, $10^{18}+9$ & primes \\
+$999\,999\,937$, $999\,999\,999\,999\,999\,989$ & largest primes below $10^9$, $10^{18}$ \\
+$998\,244\,353 = 119 \cdot 2^{23}+1$ & NTT prime, root $g = 3$ \\
+$469\,762\,049 = 7 \cdot 2^{26}+1$ & NTT prime, root $g = 3$ \\
+$167\,772\,161 = 5 \cdot 2^{25}+1$ & NTT prime, root $g = 3$ \\
+$754\,974\,721 = 45 \cdot 2^{24}+1$ & NTT prime, root $g = 11$ \\
+$\pi(10^6) = 78\,498$, $\pi(10^7) = 664\,579$ & prime counts \\
+$2^{31} - 1 = 2\,147\,483\,647$ & \texttt{INT\_MAX}, prime \\
+$2^{63} \approx 9.22 \cdot 10^{18}$, $2^{64} \approx 1.84 \cdot 10^{19}$ & \texttt{ll}, \texttt{ull} \\
+$20! \approx 2.43 \cdot 10^{18}$ & largest factorial in \texttt{ll} \\
+$\le 9$ ($n \le 10^9$), $\le 15$ ($n \le 10^{18}$) & distinct prime factors \\
+\end{tabular}
+
+\smallskip
+\begin{tabular}{@{}l|rrrrrr@{}}
+$n \le$ & $10^3$ & $10^6$ & $10^9$ & $10^{12}$ & $10^{15}$ & $10^{18}$ \\ \hline
+max \#divisors & 32 & 240 & 1344 & 6720 & 26880 & 103680 \\
+\end{tabular}
+
+\smallskip
+\begin{tabular}{@{}l|rrrrrrrrrrr@{}}
+$n$ & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 \\ \hline
+Catalan & 1 & 1 & 2 & 5 & 14 & 42 & 132 & 429 & 1430 & 4862 & 16796 \\
+Bell & 1 & 1 & 2 & 5 & 15 & 52 & 203 & 877 & 4140 & 21147 & 115975 \\
+Derange & 1 & 0 & 1 & 2 & 9 & 44 & 265 & 1854 & 14833 & 133496 & 1334961 \\
+Partition & 1 & 1 & 2 & 3 & 5 & 7 & 11 & 15 & 22 & 30 & 42 \\
+\end{tabular}
+
+$p(20) = 627$, $p(50) = 204\,226$, $p(60) = 966\,467$.
+
+\note{Sums}
+$\sum_{k=1}^n k = \frac{n(n+1)}{2}$, \quad
+$\sum k^2 = \frac{n(n+1)(2n+1)}{6}$, \quad
+$\sum k^3 = \left(\frac{n(n+1)}{2}\right)^2$ \\
+$\sum_{k=0}^{n} x^k = \frac{x^{n+1}-1}{x-1}$, \quad
+$H_n = \sum_{k=1}^n \frac1k \approx \ln n + 0.5772$ \\
+$\lfloor n/i \rfloor$ takes at most $2\sqrt n$ values; block $[l, r]$ with
+\texttt{r = n / (n / l)}.
+
+\note{Combinatorics}
+\begin{itemize}
+  \item $\binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k}$; \
+        Vandermonde $\sum_i \binom{m}{i}\binom{n}{k-i} = \binom{m+n}{k}$; \
+        hockey stick $\sum_{i=r}^{n} \binom{i}{r} = \binom{n+1}{r+1}$.
+  \item Stars and bars: $x_1 + \dots + x_k = n$, $x_i \ge 0$: $\binom{n+k-1}{k-1}$.
+  \item Lucas: $\binom{n}{k} \equiv \prod_i \binom{n_i}{k_i} \pmod p$, digits in base $p$.
+  \item Catalan $C_n = \frac{1}{n+1}\binom{2n}{n} = \binom{2n}{n} - \binom{2n}{n+1}$,
+        $C_{n+1} = \sum_{i=0}^{n} C_i C_{n-i}$: balanced bracket strings, binary trees with
+        $n$ nodes, triangulations of an $(n+2)$-gon, lattice paths below the diagonal.
+  \item Stirling 1st kind $c(n,k)$ (perms with $k$ cycles):
+        $c(n,k) = c(n-1,k-1) + (n-1)\,c(n-1,k)$.
+  \item Stirling 2nd kind $S(n,k)$ (partitions into $k$ nonempty sets):
+        $S(n,k) = S(n-1,k-1) + k\,S(n-1,k) = \frac{1}{k!}\sum_{i=0}^{k} (-1)^i \binom{k}{i}(k-i)^n$.
+  \item Bell $B_{n+1} = \sum_k \binom{n}{k} B_k$; \
+        derangements $D_n = (n-1)(D_{n-1} + D_{n-2})$.
+  \item Burnside: \#orbits $= \frac{1}{|G|}\sum_{g \in G} |\mathrm{Fix}(g)|$.
+        Necklaces (rotation), $n$ beads, $k$ colors: $N = \frac1n \sum_{d \mid n} \varphi(d)\, k^{n/d}$.
+        Bracelets (plus reflection): $\frac N2 + \frac12 k^{(n+1)/2}$ if $n$ odd,
+        $\frac N2 + \frac14 (k+1)k^{n/2}$ if $n$ even.
+  \item Labeled trees: $n^{n-2}$ (Cayley); forests of $k$ trees rooted at $1..k$: $k\,n^{n-k-1}$.
+  \item Kirchhoff: \#spanning trees = any cofactor of the Laplacian $L = D - A$.
+\end{itemize}
+
+\note{Number theory}
+\begin{itemize}
+  \item Fermat: $a^{p-1} \equiv 1 \pmod p$, so $a^{-1} \equiv a^{p-2}$.
+        Euler: $a^{\varphi(n)} \equiv 1$ for $\gcd(a, n) = 1$.
+  \item Huge exponents: $a^k \equiv a^{(k \bmod \varphi(n)) + \varphi(n)} \pmod n$ for any $a$
+        when $k \ge \varphi(n)$.
+  \item $\varphi(n) = n\prod_{p \mid n}(1 - \frac1p)$, \ $\sum_{d \mid n} \varphi(d) = n$.
+        Wilson: $(p-1)! \equiv -1 \pmod p$.
+  \item Bézout: $ax + by = c$ is solvable iff $\gcd(a, b) \mid c$.
+  \item M\"obius: $\sum_{d \mid n} \mu(d) = [n = 1]$; \
+        $g(n) = \sum_{d \mid n} f(d) \iff f(n) = \sum_{d \mid n} \mu(d)\, g(n/d)$.
+        Coprime pairs in $[1,n]^2$: $\sum_d \mu(d) \lfloor n/d \rfloor^2$.
+  \item $\gcd(F_m, F_n) = F_{\gcd(m,n)}$, \ $\gcd(a^m - 1, a^n - 1) = a^{\gcd(m,n)} - 1$.
+\end{itemize}
+
+\note{Graph theory}
+\begin{itemize}
+  \item Euler path, undirected: edges connected, 0 or 2 odd-degree vertices.
+        Directed: in $=$ out everywhere, or one vertex out $-$ in $= 1$ (start)
+        and one in $-$ out $= 1$ (end).
+  \item K\"onig (bipartite): max matching $=$ min vertex cover;
+        max independent set $= V -$ max matching.
+        Min edge cover (no isolated vertices, any graph) $= V -$ max matching.
+  \item Hall: left side fully matchable iff $|N(S)| \ge |S|$ for every $S \subseteq L$.
+  \item Dilworth: min chains covering a poset $=$ max antichain.
+        Min vertex-disjoint path cover of a DAG $= V -$ max matching on (out-copy, in-copy);
+        if paths may share vertices, take the transitive closure first.
+  \item Max flow $=$ min cut; the cut is (reachable in the residual graph, the rest).
+  \item Planar, connected: $V - E + F = 2$ (outer face counts), $E \le 3V - 6$.
+  \item Erdős–Gallai: $d_1 \ge \dots \ge d_n$ is graphical iff $\sum d_i$ is even and
+        $\sum_{i \le k} d_i \le k(k-1) + \sum_{i > k}\min(d_i, k)$ for every $k$.
+\end{itemize}
+
+\note{Games}
+\begin{itemize}
+  \item Sprague–Grundy: $g(s) = \mathrm{mex}\{g(t) : s \to t\}$; $s$ is losing iff $g(s) = 0$;
+        a sum of games has $g = $ XOR of the parts.
+  \item Nim: first player wins iff the XOR of piles is nonzero. Misère: same, unless
+        every pile is $\le 1$, then first player wins iff the number of 1-piles is even.
+  \item Staircase nim: only the piles on odd steps matter (XOR them).
+\end{itemize}
+
+\note{Probability}
+\begin{itemize}
+  \item Linearity of expectation holds even for dependent variables.
+  \item Trials until first success with probability $p$: expected $1/p$.
+        Coupon collector: $n H_n$.
+  \item $E[X] = \sum_{k \ge 1} P(X \ge k)$ for $X \in \{0, 1, 2, \dots\}$.
+\end{itemize}
+
+\note{Geometry}
+\begin{itemize}
+  \item Shoelace: $A = \frac12 \left|\sum_i (x_i y_{i+1} - x_{i+1} y_i)\right|$.
+        Pick: $A = I + \frac B2 - 1$; a segment has $\gcd(|\Delta x|, |\Delta y|) + 1$ lattice points.
+  \item Triangle: $A = \sqrt{s(s-a)(s-b)(s-c)}$; $c^2 = a^2 + b^2 - 2ab\cos C$;
+        $\frac{a}{\sin A} = 2R$; $R = \frac{abc}{4A}$; $r = \frac{A}{s}$.
+  \item Rotate by $\theta$: $(x\cos\theta - y\sin\theta,\ x\sin\theta + y\cos\theta)$.
+  \item Sphere $V = \frac43\pi r^3$, $S = 4\pi r^2$; cap of height $h$:
+        $V = \frac{\pi h^2 (3r - h)}{3}$, $S = 2\pi r h$; cone $V = \frac13\pi r^2 h$.
+  \item Great circle (latitude $\phi$, longitude $\lambda$):
+        $d = r\arccos(\sin\phi_1\sin\phi_2 + \cos\phi_1\cos\phi_2\cos\Delta\lambda)$.
+  \item Manhattan to Chebyshev: $(x, y) \to (x + y, x - y)$ turns $|\Delta x| + |\Delta y|$
+        into $\max(|\Delta u|, |\Delta v|)$.
+\end{itemize}
+
+\note{Bit tricks}
+\begin{itemize}
+  \item \texttt{\_\_builtin\_popcountll}, \texttt{\_\_builtin\_ctzll} / \texttt{clzll} (undefined at 0),
+        \texttt{\_\_lg(x)} $= \lfloor\log_2 x\rfloor$, lowest bit \texttt{x \& -x}.
+  \item Nonempty submasks of \texttt{m}: \texttt{for (s = m; s; s = (s - 1) \& m)};
+        over all \texttt{m} this is $O(3^n)$.
+\end{itemize}
+\par}

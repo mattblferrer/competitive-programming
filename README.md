@@ -20,6 +20,10 @@
 
 Solve counts updated as of October 25, 2026
 
+## Team Notebook
+
+- Printable contest reference built from `cpp_templates/`: [notebook/notebook.pdf](notebook/notebook.pdf) (rebuild with `python notebook/build.py`).
+
 ## AtCoder
 
 - All code submissions submitted by the user [mattferrer](https://atcoder.jp/users/mattferrer) on AtCoder (Python, C++20).

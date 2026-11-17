@@ -1,0 +1,80 @@
+% layout for the team notebook; build.py fills in the %%...%% placeholders
+\documentclass[10pt]{article}
+\usepackage[%%PAPER%%,landscape,left=5mm,right=5mm,top=10mm,bottom=5mm,
+            headheight=10pt,headsep=3pt,footskip=0pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[varqu,varl]{zi4}
+\usepackage{amsmath,amssymb}
+\usepackage{multicol}
+\usepackage{listings}
+\usepackage{xcolor}
+\definecolor{comment}{gray}{0.38}
+\definecolor{wrap}{gray}{0.5}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\columnsep}{3mm}
+\setlength{\columnseprule}{0.3pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlist{nosep,leftmargin=1.2em}
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.95}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\bfseries %%TEAM%%}
+\chead{\small\leftmark}
+\rhead{\small\thepage\ / \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\sectionmark}[1]{\markboth{#1}{}}
+
+\titleformat{\section}{\normalsize\bfseries}{}{0pt}{}[\vspace{-3pt}\titlerule]
+\titlespacing*{\section}{0pt}{5pt}{3pt}
+\titleformat{\subsection}{\small\bfseries}{}{0pt}{}
+\titlespacing*{\subsection}{0pt}{4pt}{1pt}
+
+\lstset{
+  language=C++,
+  basicstyle=%%CODEFONT%%\ttfamily,
+  columns=fullflexible, keepspaces=true, tabsize=4,
+  breaklines=true, breakatwhitespace=false,
+  postbreak=\mbox{\textcolor{wrap}{$\hookrightarrow$}\space},  % no "!" color mixes here
+  showstringspaces=false, upquote=true,
+  keywordstyle=\bfseries,
+  commentstyle=\color{comment},
+  morekeywords={auto,constexpr,nullptr,noexcept,decltype,static_assert,override,
+                final,thread_local,alignas,alignof,char16_t,char32_t},
+  aboveskip=1pt, belowskip=2pt,
+}
+
+% \codefile{title}{file name}{label}{path}
+\newcommand{\codefile}[4]{%
+  \subsection*{\phantomsection\label{#3}#1\hfill{\normalfont\ttfamily\tiny #2}}%
+  \lstinputlisting{#4}}
+% hand-written pages use \note{title}
+\newcommand{\note}[1]{\subsection*{#1}}
+
+% compact table of contents
+\newcommand{\tocsection}[1]{\par\vspace{3pt}{\small\bfseries #1}\par\vspace{1pt}}
+\newcommand{\tocentry}[3]{%
+  {\footnotesize #1\dotfill\pageref{#2}}\par
+  \if\relax\detokenize{#3}\relax\else
+    {\fontsize{5.5}{6.3}\selectfont\raggedright\leftskip=1em #3\par}%
+  \fi}
+
+\begin{document}
+\begin{multicols*}{3}
+{\Large\bfseries %%TEAM%%}\par
+{\tiny\ttfamily %%SUBTITLE%%}\par
+\vspace{4pt}\hrule\vspace{2pt}
+%%TOC%%
+
+%%BODY%%
+\end{multicols*}
+\end{document}
