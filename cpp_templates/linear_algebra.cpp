@@ -63,6 +63,90 @@ bool solve_linear(vector<vector<ld>> a, const vector<ld> &b, vector<ld> &x) {
     return true;
 }
 
+// reduces a to reduced row echelon form mod a prime p < 2^31 using its first cols columns, returns the rank,
+// O(n * m * min(n, cols)); det is set to the determinant when a's first cols columns form a square matrix
+int gauss_jordan_mod(vector<vector<ll>> &a, int cols, ll p, ll &det) {
+    int n = a.size(), rank = 0;
+    det = 1;
+    for (auto &row : a) for (ll &x : row) x = (x % p + p) % p;
+    for (int c = 0; c < cols && rank < n; c++) {
+        int r = rank;
+        while (r < n && a[r][c] == 0) r++;
+        if (r == n) continue;
+        if (r != rank) {
+            swap(a[r], a[rank]);
+            det = (p - det) % p;
+        }
+        det = det * a[rank][c] % p;
+        ll inv = binexp(a[rank][c], p - 2, p);
+        for (ll &x : a[rank]) x = x * inv % p;
+        for (int i = 0; i < n; i++) {
+            if (i == rank || a[i][c] == 0) continue;
+            ll f = a[i][c];
+            for (int j = c; j < (int)a[i].size(); j++) a[i][j] = (a[i][j] + (p - f) * a[rank][j]) % p;
+        }
+        rank++;
+    }
+    if (rank < cols) det = 0;
+    return rank;
+}
+
+// solves A x = b mod a prime p < 2^31; free variables are set to 0
+// returns -1 if there is no solution, else the number of free variables (there are p^that solutions), O(n * m * min(n, m))
+int solve_linear_mod(vector<vector<ll>> a, const vector<ll> &b, ll p, vector<ll> &x) {
+    int n = a.size(), m = n ? a[0].size() : 0;
+    for (int i = 0; i < n; i++) a[i].push_back(b[i]);
+    ll det;
+    int rank = gauss_jordan_mod(a, m, p, det);
+    for (int i = rank; i < n; i++) if (a[i][m]) return -1;
+    x.assign(m, 0);
+    for (int i = 0, c = 0; i < rank; i++, c++) {
+        while (a[i][c] == 0) c++;
+        x[c] = a[i][m];
+    }
+    return m - rank;
+}
+
+// inverse of a square matrix mod a prime p < 2^31; returns false if it is singular, O(n^3)
+bool inverse_mod(vector<vector<ll>> a, ll p, vector<vector<ll>> &inv) {
+    int n = a.size();
+    for (int i = 0; i < n; i++) {
+        a[i].resize(2 * n, 0);
+        a[i][n + i] = 1;
+    }
+    ll det;
+    if (gauss_jordan_mod(a, n, p, det) < n) return false;
+    inv.assign(n, {});
+    for (int i = 0; i < n; i++) inv[i].assign(a[i].begin() + n, a[i].end());
+    return true;
+}
+
+// solves A x = b over GF(2) (XOR equations) with m <= N variables; row i of A is the bitset a[i]; free variables are set to 0
+// returns -1 if there is no solution, else the number of free variables (there are 2^that solutions), O(n * m * min(n, m) / 64)
+template <size_t N>
+int solve_xor(vector<bitset<N>> a, vector<int> b, int m, bitset<N> &x) {
+    int n = a.size(), rank = 0;
+    vector<int> where(m, -1);  // where[c] = row whose pivot is column c
+    for (int c = 0; c < m && rank < n; c++) {
+        int r = rank;
+        while (r < n && !a[r][c]) r++;
+        if (r == n) continue;
+        swap(a[r], a[rank]);
+        swap(b[r], b[rank]);
+        for (int i = 0; i < n; i++) {
+            if (i != rank && a[i][c]) {
+                a[i] ^= a[rank];
+                b[i] ^= b[rank];
+            }
+        }
+        where[c] = rank++;
+    }
+    for (int i = rank; i < n; i++) if (b[i]) return -1;
+    x.reset();
+    for (int c = 0; c < m; c++) if (where[c] != -1) x[c] = b[where[c]];
+    return m - rank;
+}
+
 // determinant of a square matrix mod a prime, O(n^3)
 ll det_mod(vector<vector<ll>> a, ll p) {
     int n = a.size();

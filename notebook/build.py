@@ -54,7 +54,7 @@ SECTIONS = [
         ("number_theory.cpp", "Number Theory"),
         ("combinatorics.cpp", "Combinatorics"),
         ("matrix.cpp", "Matrix"),
-        ("linear_algebra.cpp", "Linear Algebra"),
+        ("linear_algebra.cpp", "Linear Algebra", ["binexp", "gauss_jordan", "solve_linear", "det_mod", "count_spanning_trees", "XorBasis"]),
         ("fft.cpp", "FFT / NTT"),
         ("polynomial.cpp", "Polynomials"),
         ("bitmask.cpp", "Bitmask Transforms"),
