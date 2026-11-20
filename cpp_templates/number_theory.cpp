@@ -115,28 +115,6 @@ ll sum_of_divisors(ll n, ll mod) {
     return ans % mod;
 }
 
-// smallest primitive root mod prime m, O(sqrt(m) + g log^2 m) where g is the answer (small in practice)
-ll primitive_root(ll m) {
-    if (m == 2) return 1;
-    vector<ll> fact;  // distinct prime factors of m - 1
-    ll phi = m - 1, n = phi;
-    for (ll i = 2; i * i <= n; i++) {
-        if (n % i == 0) {
-            fact.push_back(i);
-            while (n % i == 0) n /= i;
-        }
-    }
-    if (n > 1) fact.push_back(n);
-    for (ll x = 2; x < m; ++x) {
-        bool ok = true;
-        for (ll p : fact) if (binexp(x, phi / p, m) == 1) {
-            ok = false; break;
-        }
-        if (ok) return x;
-    }
-    return -1;
-}
-
 // deterministic Miller-Rabin for any n fitting in ll, O(log n) multiplications
 bool miller_rabin(ll n) {
     if (n < 2) return false;
@@ -361,6 +339,29 @@ vector<ll> factorize(ll n) {
     go(n);
     sort(res.begin(), res.end());
     return res;
+}
+
+// smallest primitive root mod prime m, any m fitting in ll; uses factorize above
+// O(m^(1/4) log m + g log^2 m) expected, where g is the answer (small in practice)
+ll primitive_root(ll m) {
+    if (m == 2) return 1;
+    auto mul = [&](ll a, ll b) { return (ll)((__int128)a * b % m); };  // a * b overflows ll once m > ~3e9
+    auto power = [&](ll a, ll e) {
+        ll r = 1;
+        for (; e; e >>= 1, a = mul(a, a)) if (e & 1) r = mul(r, a);
+        return r;
+    };
+    ll phi = m - 1;
+    vector<ll> fact = factorize(phi);  // Pollard's rho; trial division is ~1e9 steps when m - 1 = 2 * prime
+    fact.erase(unique(fact.begin(), fact.end()), fact.end());
+    for (ll x = 2; x < m; x++) {
+        bool ok = true;
+        for (ll p : fact) if (power(x, phi / p) == 1) {
+            ok = false; break;
+        }
+        if (ok) return x;
+    }
+    return -1;
 }
 
 // sum of floor((a * i + b) / m) for i in [0, n); m > 0, a and b can be negative, O(log m)
