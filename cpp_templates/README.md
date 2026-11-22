@@ -255,6 +255,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `kth_root_mod` | some x with x^k = a (mod p) for a prime p, -1 if none (Adleman-Manders-Miller) |
 | `bernoulli` | Bernoulli numbers B[0..n] mod a prime p > n + 1, with B[1] = -1/2, O(n^2) |
 | `tetration` | a^^b = a^(a^(...^a)) (b copies of a) mod m, with a^^0 = 1 and 0^0 = 1 |
+| `count_squarefree` | number of squarefree integers in [1, n], n up to 1e18, O(n^(2/5)) |
 
 ### [`combinatorics.cpp`](combinatorics.cpp)
 
