@@ -5,6 +5,7 @@
 //   poly_divide_real      long division of real polynomials: returns {quotient, remainder} of a / b
 //   berlekamp_massey      shortest linear recurrence of s mod a prime (Berlekamp-Massey), O(n^2)
 //   kth_term              k-th term (0-indexed) of the recurrence s[i] = c[0] * s[i - 1] + c[1] * s[i - 2] + ...
+//   kth_term_ntt          k-th term of a linear recurrence mod an NTT prime (Bostan-Mori), O(d log d log k)
 //   lagrange              value at x of the unique polynomial through (xs[i], ys[i])
 //   lagrange_consecutive  value at x of the unique polynomial with p(i) = ys[i] for i = 0..n-1
 
@@ -338,6 +339,39 @@ ll kth_term(const vector<ll> &c, const vector<ll> &init, ll k, ll mod) {
     ll ans = 0;
     for (int i = 0; i < len; i++) ans = (ans + r[i] * ((init[i] % mod + mod) % mod)) % mod;
     return ans;
+}
+
+// k-th term (0-indexed) of s[i] = c[0] * s[i - 1] + ... + c[d - 1] * s[i - d] mod an NTT prime, using NTT above
+// (Bostan-Mori: k-th coefficient of P / Q, halving k each step); init holds the first d terms, O(d log d log k)
+template <ll MOD, ll ROOT>
+ll kth_term_ntt(const vector<ll> &c, const vector<ll> &init, ll k) {
+    using N = NTT<MOD, ROOT>;
+    int d = c.size();
+    if (d == 0) return 0;
+    vector<ll> q(d + 1);  // Q(x) = 1 - c[0] x - c[1] x^2 - ...
+    q[0] = 1;
+    for (int i = 0; i < d; i++) q[i + 1] = ((-c[i]) % MOD + MOD) % MOD;
+    vector<ll> p = N::multiply(vector<ll>(init.begin(), init.begin() + d), q);
+    p.resize(d);  // P(x) = init * Q mod x^d
+    int n = 1;
+    while (n < 2 * d + 1) n <<= 1;
+    for (; k; k >>= 1) {
+        vector<ll> P = p, Q = q, V(n);
+        P.resize(n);
+        Q.resize(n);
+        N::ntt(P);
+        N::ntt(Q);
+        for (int i = 0; i < n; i++) {
+            ll qm = Q[i ^ (n >> 1)];  // Q(-x) at w^i is Q at w^(i + n/2)
+            P[i] = P[i] * qm % MOD;
+            V[i] = Q[i] * qm % MOD;
+        }
+        N::ntt(P, true);
+        N::ntt(V, true);
+        for (int i = 0; i < d; i++) p[i] = P[2 * i + (k & 1)];
+        for (int i = 0; i <= d; i++) q[i] = V[2 * i];
+    }
+    return p[0];
 }
 
 // value at x of the unique polynomial through (xs[i], ys[i]); xs distinct mod the prime mod, O(n^2 + n log mod)
