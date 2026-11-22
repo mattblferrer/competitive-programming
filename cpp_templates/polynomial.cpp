@@ -6,6 +6,7 @@
 //   berlekamp_massey      shortest linear recurrence of s mod a prime (Berlekamp-Massey), O(n^2)
 //   kth_term              k-th term (0-indexed) of the recurrence s[i] = c[0] * s[i - 1] + c[1] * s[i - 2] + ...
 //   kth_term_ntt          k-th term of a linear recurrence mod an NTT prime (Bostan-Mori), O(d log d log k)
+//   bernoulli_ntt         Bernoulli numbers B[0..n] mod an NTT prime, with B[1] = -1/2, O(n log n)
 //   lagrange              value at x of the unique polynomial through (xs[i], ys[i])
 //   lagrange_consecutive  value at x of the unique polynomial with p(i) = ys[i] for i = 0..n-1
 
@@ -372,6 +373,21 @@ ll kth_term_ntt(const vector<ll> &c, const vector<ll> &init, ll k) {
         for (int i = 0; i <= d; i++) q[i] = V[2 * i];
     }
     return p[0];
+}
+
+// Bernoulli numbers B[0..n] mod an NTT prime MOD > n + 1, with B[1] = -1/2, using Poly above
+// x / (e^x - 1) = sum of B[i] x^i / i!, so invert (e^x - 1) / x = sum of x^i / (i + 1)!, O(n log n)
+template <ll MOD, ll ROOT>
+vector<ll> bernoulli_ntt(int n) {
+    vector<ll> fac(n + 2, 1), ifac(n + 2, 1);
+    for (int i = 1; i <= n + 1; i++) fac[i] = fac[i - 1] * i % MOD;
+    ifac[n + 1] = binexp(fac[n + 1], MOD - 2, MOD);
+    for (int i = n + 1; i > 0; i--) ifac[i - 1] = ifac[i] * i % MOD;
+    vector<ll> a(n + 1);
+    for (int i = 0; i <= n; i++) a[i] = ifac[i + 1];
+    vector<ll> b = Poly<MOD, ROOT>::inv(a, n + 1);
+    for (int i = 0; i <= n; i++) b[i] = b[i] * fac[i] % MOD;
+    return b;
 }
 
 // value at x of the unique polynomial through (xs[i], ys[i]); xs distinct mod the prime mod, O(n^2 + n log mod)
