@@ -251,6 +251,10 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `primitive_root` | smallest primitive root mod prime m, any m fitting in ll; uses factorize above |
 | `floor_sum` | sum of floor((a * i + b) / m) for i in [0, n); m > 0, a and b can be negative, O(log m) |
 | `mod_sqrt` | a square root of a mod the prime p (Tonelli-Shanks), the smaller of the two |
+| `kth_root_floor` | floor(a^(1/k)) for any a < 2^64 and k >= 1, O(k) |
+| `kth_root_mod` | some x with x^k = a (mod p) for a prime p, -1 if none (Adleman-Manders-Miller) |
+| `bernoulli` | Bernoulli numbers B[0..n] mod a prime p > n + 1, with B[1] = -1/2, O(n^2) |
+| `tetration` | a^^b = a^(a^(...^a)) (b copies of a) mod m, with a^^0 = 1 and 0^0 = 1 |
 
 ### [`combinatorics.cpp`](combinatorics.cpp)
 

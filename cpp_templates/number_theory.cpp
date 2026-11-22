@@ -23,12 +23,17 @@
 //   primitive_root      smallest primitive root mod prime m, any m fitting in ll; uses factorize above
 //   floor_sum           sum of floor((a * i + b) / m) for i in [0, n); m > 0, a and b can be negative, O(log m)
 //   mod_sqrt            a square root of a mod the prime p (Tonelli-Shanks), the smaller of the two
+//   kth_root_floor      floor(a^(1/k)) for any a < 2^64 and k >= 1, O(k)
+//   kth_root_mod        some x with x^k = a (mod p) for a prime p, -1 if none (Adleman-Manders-Miller)
+//   bernoulli           Bernoulli numbers B[0..n] mod a prime p > n + 1, with B[1] = -1/2, O(n^2)
+//   tetration           a^^b = a^(a^(...^a)) (b copies of a) mod m, with a^^0 = 1 and 0^0 = 1
 
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
+using ull = unsigned long long;
 
 // a^b mod mod, O(log b)
 ll binexp(ll a, ll b, ll mod) {
@@ -454,4 +459,118 @@ ll mod_sqrt(ll a, ll p) {
         }
     }
     return min(r, p - r);
+}
+
+// floor(a^(1/k)) for any a < 2^64 and k >= 1, O(k)
+ull kth_root_floor(ull a, ull k) {
+    if (k == 1 || a <= 1) return a;
+    if (k >= 64) return 1;
+    auto fits = [&](ull x) {  // x^k <= a, without overflow
+        ull r = 1;
+        for (ull i = 0; i < k; i++) {
+            if (r > a / x) return false;
+            r *= x;
+        }
+        return true;
+    };
+    ull x = powl((ld)a, 1.0L / k);  // off by at most a few, fixed below
+    while (!fits(x)) x--;
+    while (fits(x + 1)) x++;
+    return x;
+}
+
+// some x with x^k = a (mod p) for a prime p, -1 if none (Adleman-Manders-Miller); k >= 0, 0^0 = 1
+// reduces to g-th roots for g = gcd(k, p - 1), then takes one q-th root per prime factor q of g
+// O(log^2 p + sqrt(q) log p) per prime q dividing g (with multiplicity); uses modinv and factorize above
+ll kth_root_mod(ll a, ll k, ll p) {
+    auto mul = [&](ll x, ll y) { return (ll)((__int128)x * y % p); };
+    auto power = [&](ll x, ll e) {
+        ll r = 1;
+        for (; e; e >>= 1, x = mul(x, x)) if (e & 1) r = mul(r, x);
+        return r;
+    };
+    a = (a % p + p) % p;
+    if (k == 0) return a == 1 ? 1 : -1;
+    if (a == 0) return 0;
+    ll g = gcd(k, p - 1), m = (p - 1) / g;
+    if (power(a, m) != 1) return -1;
+    a = power(a, modinv(k / g % m, m));  // now any x with x^g = a works
+    auto root = [&](ll a, ll r) {  // some x with x^r = a, for a prime r dividing p - 1 and an r-th power a
+        ll s = 0, t = p - 1;
+        while (t % r == 0) t /= r, s++;
+        ll rho = 2;
+        while (power(rho, (p - 1) / r) == 1) rho++;  // any non-r-th power
+        ll z = power(rho, t), zinv = power(z, p - 2);  // z generates the subgroup of order r^s
+        ll x = power(a, t == 1 ? 0 : modinv(r % t, t));  // x^r = a * (an element of that subgroup)
+        ll h = mul(a, power(power(x, r), p - 2));  // the correction: find h = z^e, then x * z^(e / r) works
+        ll top = 1;
+        for (ll i = 0; i < s - 1; i++) top *= r;
+        ll gam = power(z, top), M = sqrtl(r) + 1;  // gam has order r; baby-step giant-step for its logs
+        vector<pll> baby(M);
+        for (ll j = 0, cur = 1; j < M; j++, cur = mul(cur, gam)) baby[j] = {cur, j};
+        sort(baby.begin(), baby.end());
+        ll giant = power(power(gam, M), p - 2);
+        auto dlog = [&](ll y) {  // d in [0, r) with gam^d = y
+            for (ll i = 0; i <= M; i++, y = mul(y, giant)) {
+                auto it = lower_bound(baby.begin(), baby.end(), pll(y, LLONG_MIN));
+                if (it != baby.end() && it->first == y) return i * M + it->second;
+            }
+            return -1LL;
+        };
+        ll e = 0;
+        for (ll i = 0, ri = 1, rest = top; i < s; i++, ri *= r, rest /= r)  // e one base-r digit at a time
+            e += dlog(power(mul(h, power(zinv, e)), rest)) * ri;
+        return mul(x, power(z, e / r));
+    };
+    for (ll q : factorize(g)) a = root(a, q);
+    return a;
+}
+
+// Bernoulli numbers B[0..n] mod a prime p > n + 1, p below 2^31, with B[1] = -1/2:
+// x / (e^x - 1) = sum of B[i] x^i / i!; use B[1] = +1/2 for sum_{i=1..N} i^m. O(n^2)
+// sum_{i=0..N-1} i^m = 1 / (m + 1) * sum_{j=0..m} C(m + 1, j) B[j] N^(m + 1 - j)
+vector<ll> bernoulli(int n, ll p) {
+    vector<ll> inv(n + 2, 1), B(n + 1, 0), row = {1, 1};  // row = C(m + 1, 0..m + 1)
+    for (int i = 2; i <= n + 1; i++) inv[i] = (p - p / i) * inv[p % i] % p;
+    B[0] = 1;
+    for (int m = 1; m <= n; m++) {
+        row.push_back(1);
+        for (int j = m; j > 0; j--) row[j] = (row[j] + row[j - 1]) % p;
+        ll s = 0;
+        for (int j = 0; j < m; j++) s = (s + row[j] * B[j]) % p;
+        B[m] = (p - s) % p * inv[m + 1] % p;
+    }
+    return B;
+}
+
+// a^^b = a^(a^(...^a)) (b copies of a) mod m, with a^^0 = 1 and 0^0 = 1; a, b >= 0, m >= 1
+// a^n = a^(n mod phi(m) + phi(m)) (mod m) once n >= log2(m), so recurse on phi(m) until it reaches 1
+// O(sqrt(m) log m); uses totient above
+ll tetration(ll a, ll b, ll m) {
+    const ll CAP = 64;  // above log2(m) for every m in ll
+    auto power = [](ll x, ll e, ll md) {
+        ll r = 1 % md;
+        for (x %= md; e; e >>= 1, x = (ll)((__int128)x * x % md)) if (e & 1) r = (ll)((__int128)r * x % md);
+        return r;
+    };
+    auto exact = [&](ll k) {  // min(a^^k, CAP)
+        if (a == 0) return (ll)(k % 2 == 0);
+        if (a == 1) return 1LL;
+        ll v = 1;
+        for (ll i = 0; i < k && v < CAP; i++) {
+            ll r = 1;
+            for (ll j = 0; j < v && r < CAP; j++) r = min(CAP, r * min(a, CAP));
+            v = r;
+        }
+        return v;
+    };
+    function<ll(ll, ll)> go = [&](ll b, ll m) -> ll {
+        if (m == 1) return 0;
+        if (b == 0) return 1;
+        ll n = exact(b - 1);
+        if (n < CAP) return power(a, n, m);
+        ll ph = totient(m);
+        return power(a, go(b - 1, ph) + ph, m);
+    };
+    return go(b, m);
 }
