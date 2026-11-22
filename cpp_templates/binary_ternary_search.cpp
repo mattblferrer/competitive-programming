@@ -1,3 +1,7 @@
+// Contents
+//   ternary_search_int   smallest x in [lo, hi] minimizing f, O(log(hi - lo)) calls to f; f must fall, then rise
+//   ternary_search_real  x in [lo, hi] minimizing a real function that falls and then rises, O(iters) calls to f
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

@@ -100,6 +100,19 @@ def shared_preamble():
     return {l.strip() for l in lines if PREAMBLE_LINE.match(l) and l.strip()}
 
 
+def strip_contents(text):
+    """Drop the "// Contents" block at the top of a template (the notebook has its own index)."""
+    lines = text.splitlines()
+    if not lines or not lines[0].startswith("// Contents"):
+        return text
+    i = 0
+    while i < len(lines) and lines[i].strip():
+        i += 1
+    while i < len(lines) and not lines[i].strip():
+        i += 1
+    return "\n".join(lines[i:]) + "\n"
+
+
 def strip_preamble(text, shared):
     """Drop the leading #include/using/const lines that the contest template already has.
 
@@ -187,7 +200,7 @@ def build_tex():
             if not path.exists():
                 sys.exit(f"error: {path} not found (listed in SECTIONS)")
             listed.add(fname)
-            raw = path.read_text()
+            raw = strip_contents(path.read_text())
             code = raw if fname == HEADER_FILE else strip_preamble(raw, shared)
             if only:
                 code = keep_only(code, only, fname)

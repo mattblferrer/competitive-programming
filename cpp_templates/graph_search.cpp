@@ -1,3 +1,6 @@
+// Contents
+//   topo_sort  Kahn's algorithm, O(V + E); returns vertices in topological order
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

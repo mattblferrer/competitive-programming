@@ -1,3 +1,7 @@
+// Contents
+//   Flow      Dinic's algorithm, O(V^2 E)
+//   GomoryHu  all-pairs max flow on an undirected graph (Gomory-Hu tree), uses Flow above
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

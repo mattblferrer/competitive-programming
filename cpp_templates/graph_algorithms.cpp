@@ -1,3 +1,19 @@
+// Contents
+//   SCC               strongly connected components (Tarjan), 0-indexed
+//   TwoSat            2-SAT, uses SCC above
+//   min_mean_cycle    smallest average edge weight over all directed cycles (Karp)
+//   Biconnected       bridges, articulation points and biconnected components of an undirected graph
+//   kruskal           minimum spanning forest (Kruskal), edges are {w, u, v}
+//   euler_directed    Euler path/cycle in a directed graph, as a vertex list of length E + 1
+//   euler_undirected  Euler path/cycle in an undirected graph, as a vertex list of length E + 1
+//   Arborescence      minimum spanning arborescence (Chu-Liu/Edmonds)
+//   dominator_tree    dominator tree of a directed graph from root (Lengauer-Tarjan), O(E log V)
+//   MaxClique         cliques in a graph on at most N vertices, exponential in the worst case
+//   chromatic_number  fewest colors for a proper vertex coloring (inclusion-exclusion over independent sets)
+//   steiner_tree      weight of the cheapest connected subgraph containing all terminals (Steiner tree)
+//   KShortestWalks    k shortest walks from s to t (Eppstein with a persistent leftist heap)
+//   SimplePaths       k shortest simple paths from s to t (Yen's algorithm): no vertex repeats
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

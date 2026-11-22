@@ -1,3 +1,29 @@
+// Contents
+//   binexp              a^b mod mod, O(log b)
+//   modinv_p            inverse of a mod prime p (Fermat), O(log p)
+//   extended_euclidean  returns g = gcd(a, b) and sets x, y so that ax + by = g, O(log min(a, b))
+//   modinv              inverse of a mod any modulus, -1 if gcd(a, mod) != 1, O(log mod)
+//   discrete_log        smallest x >= 0 with a^x = b (mod m), -1 if none; baby-step giant-step, O(sqrt(m))
+//   is_prime            trial-division primality test, O(sqrt(n))
+//   sieve               Sieve of Eratosthenes: prime[i] for 0 <= i <= n, O(n log log n)
+//   sum_of_divisors     sum of the divisors of n, mod mod, O(sqrt(n))
+//   miller_rabin        deterministic Miller-Rabin for any n fitting in ll, O(log n) multiplications
+//   mobius_sieve        Mobius function mu[0..n], O(n log log n)
+//   gcd_subset_count    cnt[g] = number of non-empty subsets of a with gcd exactly g, mod mod
+//   totient             Euler's totient phi(n), O(sqrt n)
+//   mod_solver          solves a * x = b (mod m), m > 0: returns {x, M} meaning all solutions are x mod M
+//   diophantine         integers x, y with a * x + b * y = c, nullopt if none; prefers y > 0
+//   crt                 solves x = b1 (mod m1), x = b2 (mod m2), m1, m2 > 0: returns {x, lcm}, nullopt if none
+//   super_crt           solves a[i] * x = b[i] (mod m[i]) for every i
+//   josephus            survivor (0-indexed) among n people when every k-th is removed
+//   spf_sieve           smallest prime factor of every number up to n (linear sieve); spf[0] = spf[1] = 0, O(n)
+//   factorize_spf       prime factorization of x >= 1 as {prime, exponent} pairs in increasing order
+//   pollard_rho         a nontrivial factor of a composite n (Pollard's rho, Brent's variant)
+//   factorize           prime factors of n >= 1 in increasing order, with repeats; n can be any ll
+//   primitive_root      smallest primitive root mod prime m, any m fitting in ll; uses factorize above
+//   floor_sum           sum of floor((a * i + b) / m) for i in [0, n); m > 0, a and b can be negative, O(log m)
+//   mod_sqrt            a square root of a mod the prime p (Tonelli-Shanks), the smaller of the two
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

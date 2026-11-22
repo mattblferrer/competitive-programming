@@ -1,3 +1,6 @@
+// Contents
+//   HexBigInt  arbitrary-precision signed hex integer in base 2^28 limbs (7 hex digits each)
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

@@ -1,3 +1,9 @@
+// Contents
+//   BellmanFord    single-source shortest paths, negative weights allowed
+//   FloydWarshall  all-pairs shortest paths; adj[i][j] = weight, 0 means no edge
+//   Dijkstra       single-source shortest paths, non-negative weights only
+//   zero_one_bfs   shortest paths from s when every edge weight is 0 or 1 (0-1 BFS), INF if unreachable
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

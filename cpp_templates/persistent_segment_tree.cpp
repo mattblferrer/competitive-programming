@@ -1,3 +1,11 @@
+// Contents
+//   Monoid                 example monoid (sum) for PersistentSegTree
+//   PersistentSegTree      persistent segment tree, point update, query on [l, r)
+//   Spec                   example lazy spec (range add, range sum) for PersistentLazySegTree
+//   PersistentLazySegTree  persistent lazy segment tree, range update and query on [l, r)
+//   LeqCounter             counts values <= x in any subarray, online; values can be any integers
+//   UniqueCounter          counts distinct values in any subarray, online; uses LeqCounter above
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

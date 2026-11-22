@@ -1,3 +1,6 @@
+// Contents
+//   BigInt  arbitrary-precision signed integer in base 1e9 limbs
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

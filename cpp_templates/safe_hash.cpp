@@ -1,3 +1,8 @@
+// Contents
+//   SafeHash  hash for unordered_map / unordered_set that resists anti-hash tests
+//   SafeMap   unordered_map using SafeHash
+//   SafeSet   unordered_set using SafeHash
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

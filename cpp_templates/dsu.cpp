@@ -1,3 +1,6 @@
+// Contents
+//   DSU  disjoint set union with path compression and union by size
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

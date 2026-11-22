@@ -1,3 +1,59 @@
+// Contents
+//   Point                    2D point / vector
+//   dot                      dot product, O(1)
+//   cross                    cross product, O(1)
+//   norm                     squared length, O(1)
+//   abs                      length, O(1)
+//   dist                     distance between a and b, O(1)
+//   angle                    angle abc at b in radians, in [0, pi], O(1)
+//   rotate                   rotate a counter-clockwise by d radians about pivot p, O(1)
+//   proj_line                projection of p onto the line ab, O(1)
+//   proj_seg                 closest point to p on the segment ab, O(1)
+//   dist_pt_line             distance from p to the line ax + by + c = 0, O(1)
+//   line_inter               intersection of lines ab and cd (segments if seg), nullopt if there is none
+//   circle_line_inter        intersection points of the circle (c, r) and the line ab: 0, 1 (tangent), or 2 points
+//   circle_circle_inter      intersection points of circles (c1, r1) and (c2, r2): 0, 1 (tangent), or 2 points
+//   polygon_area             area of a simple polygon, O(n)
+//   triangle_area            area of a triangle from its side lengths (Heron), O(1)
+//   cyclic_quad_area         area of a cyclic quadrilateral (opposite angles sum to 180 degrees) from its side...
+//   polygon_centroid         centroid (center of mass) of a simple polygon with nonzero area, O(n)
+//   convex_hull              convex hull in counter-clockwise order (monotone chain), O(n log n)
+//   on_polygon               true if q is on the boundary of polygon p, O(n)
+//   in_polygon               true if q is inside polygon p (for points on the boundary, use on_polygon), O(n)
+//   cut_polygon              part of polygon p to the left of the directed line a -> b, O(n)
+//   bary                     point with barycentric weights a, b, c in triangle ABC, O(1)
+//   trilinear                point with trilinear coordinates a : b : c in triangle ABC, O(1)
+//   centroid                 centroid of a triangle, O(1)
+//   circumcenter             circumcenter of a non-degenerate triangle, O(1)
+//   orthocenter              orthocenter of a non-degenerate triangle, O(1)
+//   incenter                 incenter of a triangle, O(1)
+//   inradius                 inradius of a triangle from its side lengths, O(1)
+//   excenter                 excenter opposite A; cycle the arguments for the other two, O(1)
+//   brocard                  first Brocard point of a triangle (CCW); swap B and C for the other one, O(1)
+//   symmedian                symmedian point of a triangle, O(1)
+//   convex_polygon_inter     intersection of two convex polygons as a convex polygon, O(nm + (n + m) log(n + m))
+//   lattice_boundary         number of lattice points on the boundary of a polygon with integer vertices, O(n log C)
+//   lattice_interior         number of lattice points strictly inside a polygon with integer vertices (Pick's...
+//   min_enclosing_circle     smallest circle containing all points, returned as {center, radius}, O(n) expected
+//   polygon_diameter         largest distance between any two points (rotating calipers), O(n log n)
+//   polygon_width            smallest distance between two parallel lines containing all points between them...
+//   closest_pair             smallest distance between two of the points (line sweep), HUGE_VALL if n < 2, O(n log n)
+//   KDTree                   2D tree for nearest neighbor queries; the tree reorders its own copy of the points
+//   Point3                   3D point / vector with arithmetic, dot, cross, and length, O(1) each
+//   proj_plane               projection of p onto the plane ax + by + cz + d = 0, O(1)
+//   dist_pt_plane            distance from p to the plane ax + by + cz + d = 0, O(1)
+//   dist_line_3d             distance between the 3D lines AB and CD, O(1)
+//   great_circle_dist        great-circle distance between two points given as latitude and longitude in degrees
+//   great_circle_angle       great-circle angle in radians between two 3D vectors, O(1)
+//   Point3I                  3D point with integer coordinates, for convex_hull_3d
+//   Face                     triangular face of a 3D hull, for convex_hull_3d
+//   convex_hull_3d           3D convex hull with integer coordinates, O(n^2)
+//   in_convex                true if q is inside or on the convex polygon h (strict hull in CCW order, at least 3...
+//   sort_by_angle            sorts p by polar angle around o, from angle 0 up to 2 pi
+//   minkowski_sum            Minkowski sum of two convex polygons given as strict hulls in CCW order
+//   half_plane_intersection  intersection of half-planes as a CCW polygon
+//   polygon_union_area       area of the union of simple polygons, each in CCW order
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

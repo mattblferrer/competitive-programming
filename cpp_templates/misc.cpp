@@ -1,3 +1,19 @@
+// Contents
+//   SAT                  SAT solver (DPLL with watched literals); variables are 1..n, literal -x means "not x"
+//   find_cycle           Floyd's cycle finding on x0, f(x0), f(f(x0)), ...
+//   lis                  indices of a longest strictly increasing subsequence of a, O(n log n)
+//   date_to_int          day number (Julian day) of a Gregorian date, O(1)
+//   int_to_date          Gregorian date of a day number, O(1)
+//   int_to_day           day of the week of a day number, 0 = Monday, O(1)
+//   cur_time             current CPU time in seconds, O(1)
+//   simulated_annealing  simulated annealing example
+//   Simplex              two-phase simplex: maximize c^T x subject to A x <= b, x >= 0; A is m x n
+//   read_int             reads the next integer from stdin into x, false at end of input, O(digits)
+//   next_bit_perm        next larger integer with the same number of set bits; requires x > 0, O(1)
+//   is_square            true if x is a perfect square, O(1)
+//   simpson              numeric integral of f over [a, b] by Simpson's rule, O(steps); steps must be even
+//   DLX                  exact cover with dancing links (Algorithm X)
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

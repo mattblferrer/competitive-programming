@@ -1,3 +1,9 @@
+// Contents
+//   HopcroftKarp     maximum bipartite matching (Hopcroft-Karp); left vertices 0..n-1, right vertices 0..m-1
+//   hungarian        minimum cost assignment (Hungarian) of every row to a distinct column
+//   Blossom          maximum matching in a general graph (Edmonds' blossom)
+//   stable_marriage  stable marriage (Gale-Shapley), O(n^2): men[i] and women[i] are preference lists
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

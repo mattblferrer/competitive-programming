@@ -1,3 +1,15 @@
+// Contents
+//   binexp                a^b mod mod, O(log b)
+//   gauss_jordan          reduces a to reduced row echelon form using its first cols columns, returns the rank
+//   solve_linear          solves A x = b; free variables are set to 0; returns false if there is no solution
+//   gauss_jordan_mod      reduces a to reduced row echelon form mod a prime p < 2^31 using its first cols columns
+//   solve_linear_mod      solves A x = b mod a prime p < 2^31; free variables are set to 0
+//   inverse_mod           inverse of a square matrix mod a prime p < 2^31; returns false if it is singular, O(n^3)
+//   solve_xor             solves A x = b over GF(2) (XOR equations) with m <= N variables
+//   det_mod               determinant of a square matrix mod a prime, O(n^3)
+//   count_spanning_trees  number of spanning trees of a multigraph mod a prime (Kirchhoff), O(n^3)
+//   XorBasis              XOR linear basis over values in [0, 2^BITS), BITS <= 62
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

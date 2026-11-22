@@ -1,3 +1,15 @@
+// Contents
+//   BinaryLift      binary lifting on a rooted tree, 0-indexed
+//   LCA             lowest common ancestor with O(1) queries (sparse table over DFS order), 0-indexed
+//   HLD             heavy-light decomposition, 0-indexed
+//   CentroidDecomp  centroid decomposition, 0-indexed; example use: nearest painted vertex
+//   TreeCanon       tree isomorphism by canonical ids (AHU); compare ids from the same TreeCanon object
+//   SumDist         rerooting DP example: sum of distances from each vertex to all others
+//   rerooting       answer of a tree DP for every choice of root; returns ans[v] for each v
+//   dsu_on_tree     small-to-large on a tree (DSU on tree / sack)
+//   virtual_tree    virtual tree of the vertices vs, using LCA above; returns {nodes, par}
+//   LinkCutTree     link-cut tree: a forest under link and cut with path sum queries, 0-indexed
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

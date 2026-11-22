@@ -1,3 +1,17 @@
+// Contents
+//   prefix_function    prefix function, O(n)
+//   kmp                start indices of all occurrences of f in s, O(|s| + |f|)
+//   Booth              Booth's algorithm for the lexicographically smallest rotation in O(n)
+//   z_function         Z function, O(n): z[i] = length of the longest common prefix of s and s[i..]; z[0] = n
+//   Trie               trie over sequences of any comparable type, L = sequence length
+//   PersistentXorTrie  persistent binary trie
+//   SuffixArray        suffix array and LCP array
+//   AhoCorasick        Aho-Corasick automaton: KMP for many patterns over the alphabet [BASE, BASE + ALPHA)
+//   Eertree            palindromic tree (eertree) over lowercase letters
+//   RollingHash        polynomial rolling hash mod 2^61 - 1 with a random base
+//   manacher           Manacher's algorithm, O(n); returns {d1, d2}
+//   SuffixAutomaton    suffix automaton over lowercase letters
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

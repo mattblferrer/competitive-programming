@@ -1,3 +1,6 @@
+// Contents
+//   MinCostFlow  min cost max flow (successive shortest paths with potentials); negative costs are fine
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

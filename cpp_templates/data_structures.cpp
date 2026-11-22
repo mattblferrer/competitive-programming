@@ -1,3 +1,21 @@
+// Contents
+//   IndexedSet      set with order statistics: s.find_by_order(k) (0-indexed iterator)
+//   Compressor      coordinate compression
+//   Fenwick         Fenwick tree (0-indexed)
+//   RangeFenwick    Fenwick tree with range update, point query (0-indexed)
+//   MinStack        stack with minimum query
+//   MinQueue        queue with minimum query
+//   MisofTree       multiset of integers in [0, 2^BITS)
+//   hilbert_order   position of (x, y) along a Hilbert curve of order pow; requires x, y < 2^pow, O(pow)
+//   mo              Mo's algorithm with Hilbert ordering; queries are {l, r} over [l, r)
+//   MinOp           example idempotent op (min) for SparseTable
+//   SparseTable     static range query for idempotent ops (min, max, gcd), O(1)
+//   SparseTable2D   static rectangle query for idempotent ops
+//   RollbackDSU     DSU with undo, example structure for OfflineDynamic below; D needs Op, snapshot()
+//   OfflineDynamic  segment tree over time
+//   ImplicitTreap   implicit treap: an array supporting insert/erase at any position with range add
+//   WaveletMatrix   wavelet matrix: static order statistics on subarrays, online; values can be any integers
+
 #include <bits/stdc++.h>
 #include <ext/pb_ds/assoc_container.hpp>
 #include <ext/pb_ds/tree_policy.hpp>

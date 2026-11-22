@@ -1,3 +1,13 @@
+// Contents
+//   Monoid          example monoid (sum) for SegTree
+//   SegTree         iterative segment tree, point update, query on [l, r)
+//   Spec            example lazy spec (range add, range sum) for LazySegTree
+//   LazySegTree     lazy segment tree (iterative), range update and query on [l, r)
+//   SegTree2D       2D segment tree (iterative), point update
+//   DynamicSegTree  implicit segment tree on any integer range [lo, hi)
+//   MergeSortTree   merge sort tree: static counting of values in a range, online
+//   SegTreeBeats    segment tree beats on [l, r): range chmin, chmax and add with sum, max and min queries
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

@@ -1,3 +1,18 @@
+// Contents
+//   binexp              a^b mod mod, O(log b)
+//   modinv_p            inverse of a mod prime p (Fermat), O(log p)
+//   comb                exact nCk without a modulus, O(k); n * C(n - 1, k - 1) must fit in ll
+//   init_fac            O(n) precompute factorials up to n; mod must be a prime > n
+//   comb_f              O(1) nCk mod p, requires init_fac(N, mod) with N >= n
+//   comb_m              O(k) nCk mod p without precomputation, useful when n is huge but k is small
+//   factorial           exact n! without a modulus (overflows for n > 20), O(n)
+//   lucas               nCk mod a prime p (Lucas), O(p) once per p, then O(log_p n) per call
+//   comb_any            nCk mod any m (Granville + CRT)
+//   OrderTree           helper for permutations: which of 0..n-1 are still available
+//   perm_to_factoradic  factoradic digits of a permutation of 0..n-1
+//   factoradic_to_perm  inverse of perm_to_factoradic, O(n log n)
+//   kth_permutation     k-th permutation of 0..n-1 in lexicographic order (0-indexed); k is taken mod n!
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

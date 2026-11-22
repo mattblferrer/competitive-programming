@@ -1,3 +1,10 @@
+// Contents
+//   fft                  in-place FFT (inverse FFT if invert, including the 1/n scaling)
+//   multiply             product of integer polynomials a and b, O((n + m) log(n + m))
+//   binexp               a^b mod mod, O(log b)
+//   NTT                  number theoretic transform, each MOD and ROOT pair is its own type
+//   convolution_any_mod  product of polynomials a and b mod any modulus below 2^31
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

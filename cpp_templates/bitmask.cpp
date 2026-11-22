@@ -1,3 +1,12 @@
+// Contents
+//   sos_subset       SOS DP: a[mask] becomes the sum of a[sub] over all submasks sub of mask (undone if...
+//   sos_superset     SOS DP: a[mask] becomes the sum of a[sup] over all supermasks sup of mask (undone if...
+//   xor_transform    Walsh-Hadamard transform (inverse if invert, including the 1/n scaling), O(n log n)
+//   pad_to_power     pads a and b with zeros to a common power of 2 length (at least 1), O(n)
+//   or_convolution   c[k] = sum of a[i] * b[j] over all i | j == k, O(n log n)
+//   and_convolution  c[k] = sum of a[i] * b[j] over all i & j == k, O(n log n)
+//   xor_convolution  c[k] = sum of a[i] * b[j] over all i ^ j == k, O(n log n)
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

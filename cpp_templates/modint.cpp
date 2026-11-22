@@ -1,3 +1,6 @@
+// Contents
+//   ModInt  modular integer with a compile-time modulus
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

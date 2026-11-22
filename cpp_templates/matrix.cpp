@@ -1,3 +1,6 @@
+// Contents
+//   Matrix  dense matrix with entries mod MOD
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

@@ -1,3 +1,10 @@
+// Contents
+//   LineContainer     dynamic convex hull trick: add lines in any order, query at any x
+//   LiChao            Li Chao tree on integer x in [lo, hi]
+//   PersistentLiChao  persistent Li Chao tree for minimum queries on integer x in [lo, hi]
+//   dnc_opt           divide and conquer DP optimization
+//   knuth_opt         Knuth optimization, O(n^2)
+
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;

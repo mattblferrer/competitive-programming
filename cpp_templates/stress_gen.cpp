@@ -1,3 +1,11 @@
+// Contents
+//   rnd         random integer in [lo, hi], O(1)
+//   rnd_array   n random integers in [lo, hi], O(n)
+//   rnd_perm    random permutation of 1..n, O(n)
+//   rnd_string  random string of length n using the first k lowercase letters, O(n)
+//   rnd_tree    random tree on vertices 1..n as n - 1 edges; shape 0 = uniform parents, 1 = path
+//   rnd_graph   random simple graph on vertices 1..n with m edges (no loops or repeats)
+
 // random input generator; run as "gen seed", and the same seed always prints the same input
 
 #include <bits/stdc++.h>
