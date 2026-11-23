@@ -239,6 +239,8 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `miller_rabin` | deterministic Miller-Rabin for any n fitting in ll, O(log n) multiplications |
 | `mobius_sieve` | Mobius function mu[0..n], O(n log log n) |
 | `gcd_subset_count` | cnt[g] = number of non-empty subsets of a with gcd exactly g, mod mod |
+| `divisor_transform` | sum over multiples or divisors of each index (and its inverse), one prime at a time |
+| `gcd_convolution` | c[k] = sum of a[i] * b[j] over all gcd(i, j) == k (or lcm(i, j) == k), 1-indexed |
 | `totient` | Euler's totient phi(n), O(sqrt n) |
 | `mod_solver` | solves a * x = b (mod m), m > 0: returns {x, M} meaning all solutions are x mod M |
 | `diophantine` | integers x, y with a * x + b * y = c, nullopt if none; prefers y > 0 |

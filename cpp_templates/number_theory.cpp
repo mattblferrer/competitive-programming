@@ -10,6 +10,8 @@
 //   miller_rabin        deterministic Miller-Rabin for any n fitting in ll, O(log n) multiplications
 //   mobius_sieve        Mobius function mu[0..n], O(n log log n)
 //   gcd_subset_count    cnt[g] = number of non-empty subsets of a with gcd exactly g, mod mod
+//   divisor_transform   sum over multiples or divisors of each index (and its inverse), one prime at a time
+//   gcd_convolution     c[k] = sum of a[i] * b[j] over all gcd(i, j) == k (or lcm(i, j) == k), 1-indexed
 //   totient             Euler's totient phi(n), O(sqrt n)
 //   mod_solver          solves a * x = b (mod m), m > 0: returns {x, M} meaning all solutions are x mod M
 //   diophantine         integers x, y with a * x + b * y = c, nullopt if none; prefers y > 0
@@ -208,6 +210,32 @@ vector<ll> gcd_subset_count(const vector<int> &a, ll mod) {
         cnt[g] = ((binexp(2, multiples, mod) - 1 - sub) % mod + mod) % mod;
     }
     return cnt;
+}
+
+// in place over a[1..n] (a[0] unused), one prime at a time; invert undoes it (Mobius inversion), O(n log log n)
+// multiples = true: a[d] becomes the sum of a[k] over multiples k of d (for gcd_convolution)
+// multiples = false: a[d] becomes the sum of a[k] over divisors k of d (for lcm_convolution)
+template <class T>
+void divisor_transform(vector<T> &a, bool multiples, bool invert = false) {
+    int n = a.size() - 1;
+    vector<bool> composite(n + 1);
+    for (int p = 2; p <= n; p++) {
+        if (composite[p]) continue;
+        for (ll q = (ll)p * p; q <= n; q += p) composite[q] = true;
+        if (multiples != invert) for (int i = n / p; i >= 1; i--) multiples ? a[i] += a[i * p] : a[i * p] -= a[i];
+        else for (int i = 1; i <= n / p; i++) multiples ? a[i] -= a[i * p] : a[i * p] += a[i];
+    }
+}
+
+// c[k] = sum of a[i] * b[j] over all gcd(i, j) == k (lcm(i, j) == k if lcm), 1-indexed, a.size() == b.size(); no division,
+// so T can be any ring, O(n log log n)
+template <class T>
+vector<T> gcd_convolution(vector<T> a, vector<T> b, bool lcm = false) {
+    divisor_transform(a, !lcm);
+    divisor_transform(b, !lcm);
+    for (int i = 1; i < (int)a.size(); i++) a[i] = a[i] * b[i];
+    divisor_transform(a, !lcm, true);
+    return a;
 }
 
 // Euler's totient phi(n), O(sqrt n)
