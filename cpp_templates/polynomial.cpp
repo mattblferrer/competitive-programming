@@ -15,6 +15,7 @@ using namespace std;
 using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
+using ull = unsigned long long;
 
 // a^b mod mod, O(log b)
 ll binexp(ll a, ll b, ll mod) {
@@ -41,52 +42,95 @@ ll binexp(ll a, ll b, ll mod) {
 //   (754'974'721, 11), 2^24
 //   (1'004'535'809, 3), 2^21
 //   (2'013'265'921, 31), 2^27
-//   ntt(a, invert)   in-place NTT (inverse if invert); a.size() must be a power of 2 up to the max size, O(n log n)
+//   ntt(a, invert)   in-place NTT (inverse if invert) of a vector<ll> or vector<unsigned> (half the memory) with values in
+//                    [0, MOD); a.size() must be a power of 2 up to the max size; the forward result is in bit-reversed
+//                    order and the inverse expects that order (fine for pointwise products), O(n log n)
 //   multiply(a, b)   product of polynomials a and b mod MOD, O((n + m) log(n + m))
+//   multiply_large(a, b)   multiply for products longer than the max size, in blocks; pass a and b with move to save memory,
+//                          O((n + m) log(max size) + n * m / max size)
 template <ll MOD, ll ROOT>
 struct NTT {
-    static void ntt(vector<ll> &a, bool invert = false) {
+    template <class T>
+    static void ntt(vector<T> &a, bool invert = false) {
         int n = a.size();
         assert(n > 0 && (n & (n - 1)) == 0 && (MOD - 1) % n == 0);
-        for (int i = 1, j = 0; i < n; i++) {  // bit-reversal permutation
-            int bit = n >> 1;
-            for (; j & bit; bit >>= 1) j ^= bit;
-            j ^= bit;
-            if (i < j) swap(a[i], a[j]);
+        static vector<T> rt(2, 1);  // rt[k + j] = w^j, w a primitive (2k)-th root of unity, for each power of 2 k
+        for (static int k = 2; k < n; k *= 2) {
+            rt.resize(n);
+            ull z = binexp(ROOT, (MOD - 1) / (2 * k), MOD);
+            for (int j = k; j < 2 * k; j++) rt[j] = j & 1 ? rt[j / 2] * z % MOD : rt[j / 2];
         }
-        for (int len = 2; len <= n; len <<= 1) {
-            ll w = binexp(ROOT, (MOD - 1) / len, MOD);
-            if (invert) w = binexp(w, MOD - 2, MOD);
-            for (int i = 0; i < n; i += len) {
-                ll wn = 1;
-                for (int j = 0; j < len / 2; j++) {
-                    ll u = a[i + j], v = a[i + j + len / 2] * wn % MOD;
-                    a[i + j] = u + v < MOD ? u + v : u + v - MOD;
-                    a[i + j + len / 2] = u - v >= 0 ? u - v : u - v + MOD;
-                    wn = wn * w % MOD;
+        if (!invert) {  // decimation in frequency: no bit-reversal pass, output in bit-reversed order
+            for (int k = n / 2; k >= 1; k /= 2) {
+                for (int i = 0; i < n; i += 2 * k) {
+                    for (int j = 0; j < k; j++) {
+                        T &u = a[i + j], &v = a[i + j + k], x = u, y = v;
+                        u = x + y < MOD ? x + y : x + y - MOD;
+                        v = (ull)(x < y ? x + MOD - y : x - y) * rt[j + k] % MOD;
+                    }
+                }
+            }
+            return;
+        }
+        for (int k = 1; k < n; k *= 2) {  // decimation in time: bit-reversed input, natural order output
+            for (int i = 0; i < n; i += 2 * k) {
+                for (int j = 0; j < k; j++) {
+                    T &u = a[i + j], &v = a[i + j + k], x = u, y = (ull)v * rt[j + k] % MOD;
+                    u = x + y < MOD ? x + y : x + y - MOD;
+                    v = x < y ? x + MOD - y : x - y;
                 }
             }
         }
-        if (invert) {
-            ll n_inv = binexp(n, MOD - 2, MOD);
-            for (ll &x : a) x = x * n_inv % MOD;
-        }
+        reverse(a.begin() + 1, a.end());  // turns the transform with w into the one with w^-1
+        ull n_inv = binexp(n, MOD - 2, MOD);
+        for (T &x : a) x = x * n_inv % MOD;
     }
 
-    static vector<ll> multiply(vector<ll> a, vector<ll> b) {
+    static vector<ll> multiply(const vector<ll> &a, const vector<ll> &b) {
         if (a.empty() || b.empty()) return {};
         int need = a.size() + b.size() - 1, n = 1;
         while (n < need) n <<= 1;
-        for (ll &x : a) x = (x % MOD + MOD) % MOD;
-        for (ll &x : b) x = (x % MOD + MOD) % MOD;
-        a.resize(n);
-        b.resize(n);
-        ntt(a);
-        ntt(b);
-        for (int i = 0; i < n; i++) a[i] = a[i] * b[i] % MOD;
-        ntt(a, true);
-        a.resize(need);
-        return a;
+        vector<unsigned> fa(n), fb(n);
+        for (int i = 0; i < (int)a.size(); i++) fa[i] = (a[i] % MOD + MOD) % MOD;
+        for (int i = 0; i < (int)b.size(); i++) fb[i] = (b[i] % MOD + MOD) % MOD;
+        ntt(fa);
+        ntt(fb);
+        for (int i = 0; i < n; i++) fa[i] = (ull)fa[i] * fb[i] % MOD;
+        ntt(fa, true);
+        return vector<ll>(fa.begin(), fa.begin() + need);
+    }
+
+    static vector<ll> multiply_large(vector<ll> a, vector<ll> b) {
+        if (a.empty() || b.empty()) return {};
+        int need = a.size() + b.size() - 1, sz = (MOD - 1) & -(MOD - 1), L = sz / 2;  // sz = max size
+        if (need <= sz) return multiply(a, b);
+        auto blocks = [&](vector<ll> &v) {  // NTT of each length-L block of v, zero-padded to sz; frees v
+            vector<vector<unsigned>> res;
+            for (int i = 0; i < (int)v.size(); i += L) {
+                vector<unsigned> blk(sz);
+                for (int t = i; t < min((int)v.size(), i + L); t++) blk[t - i] = (v[t] % MOD + MOD) % MOD;
+                ntt(blk);
+                res.push_back(move(blk));
+            }
+            vector<ll>().swap(v);
+            return res;
+        };
+        vector<vector<unsigned>> A = blocks(a), B = blocks(b);
+        int na = A.size(), nb = B.size();
+        vector<ll> res(need);
+        vector<unsigned> c(sz);
+        for (int k = 0; k < na + nb - 1; k++) {  // output block k = sum of A[i] * B[k - i], overlap-added at k * L
+            fill(c.begin(), c.end(), 0);
+            for (int i = max(0, k - nb + 1); i <= min(k, na - 1); i++) {
+                for (int t = 0; t < sz; t++) c[t] = (c[t] + (ull)A[i][t] * B[k - i][t]) % MOD;
+            }
+            ntt(c, true);
+            for (int t = 0; t < sz && (ll)k * L + t < need; t++) {
+                ll &r = res[(ll)k * L + t];
+                r = r + c[t] < MOD ? r + c[t] : r + c[t] - MOD;
+            }
+        }
+        return res;
     }
 };
 
@@ -363,7 +407,7 @@ ll kth_term_ntt(const vector<ll> &c, const vector<ll> &init, ll k) {
         N::ntt(P);
         N::ntt(Q);
         for (int i = 0; i < n; i++) {
-            ll qm = Q[i ^ (n >> 1)];  // Q(-x) at w^i is Q at w^(i + n/2)
+            ll qm = Q[i ^ 1];  // Q(-x) at w^j is Q at w^(j + n/2), next to it in bit-reversed order
             P[i] = P[i] * qm % MOD;
             V[i] = Q[i] * qm % MOD;
         }
