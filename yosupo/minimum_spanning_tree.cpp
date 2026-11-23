@@ -23,7 +23,10 @@ pair<ll, vector<int>> kruskal(int n, const vector<array<ll, 3>> &edges) {
     iota(p.begin(), p.end(), 0);
     iota(order.begin(), order.end(), 0);
     sort(order.begin(), order.end(), [&](int a, int b) { return edges[a] < edges[b]; });
-    function<int(int)> find_set = [&](int x) { return p[x] == x ? x : p[x] = find_set(p[x]); };
+    auto find_set = [&](int x) {  // path halving, no recursion
+        while (p[x] != x) x = p[x] = p[p[x]];
+        return x;
+    };
     ll total = 0;
     for (int i : order) {
         int u = find_set(edges[i][1]), v = find_set(edges[i][2]);

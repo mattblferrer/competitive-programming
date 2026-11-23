@@ -49,15 +49,27 @@ struct HopcroftKarp {
         return found;
     }
 
-    bool dfs(int u) {
-        for (int v : adj[u]) {
-            if (r[v] == -1 || (dist[r[v]] == dist[u] + 1 && dfs(r[v]))) {
-                l[u] = v;
-                r[v] = u;
+    bool dfs(int s) {  // iterative: call holds {left vertex, index of the edge being tried}
+        vector<pair<int, int>> call{{s, 0}};
+        while (!call.empty()) {
+            auto [u, i] = call.back();
+            if (i == (int)adj[u].size()) {  // dead end: never try u again this phase
+                dist[u] = -1;
+                call.pop_back();
+                if (!call.empty()) call.back().second++;
+                continue;
+            }
+            int v = adj[u][i];
+            if (r[v] == -1) {  // free right vertex: flip the matching along the whole path
+                for (auto [x, j] : call) {
+                    l[x] = adj[x][j];
+                    r[adj[x][j]] = x;
+                }
                 return true;
             }
+            if (dist[r[v]] == dist[u] + 1) call.push_back({r[v], 0});
+            else call.back().second++;
         }
-        dist[u] = -1;
         return false;
     }
 
@@ -71,15 +83,24 @@ struct HopcroftKarp {
 
     pair<vector<int>, vector<int>> min_vertex_cover() {
         vector<char> vis_l(n, false), vis_r(m, false);
-        function<void(int)> go = [&](int u) {
-            vis_l[u] = true;
+        vector<int> st;  // alternating paths from the free left vertices
+        for (int s = 0; s < n; s++) {
+            if (l[s] != -1) continue;
+            vis_l[s] = true;
+            st.push_back(s);
+        }
+        while (!st.empty()) {
+            int u = st.back();
+            st.pop_back();
             for (int v : adj[u]) {
                 if (vis_r[v]) continue;
                 vis_r[v] = true;
-                if (r[v] != -1 && !vis_l[r[v]]) go(r[v]);
+                if (r[v] != -1 && !vis_l[r[v]]) {
+                    vis_l[r[v]] = true;
+                    st.push_back(r[v]);
+                }
             }
-        };
-        for (int u = 0; u < n; u++) if (l[u] == -1 && !vis_l[u]) go(u);
+        }
         vector<int> left, right;
         for (int u = 0; u < n; u++) if (!vis_l[u]) left.push_back(u);
         for (int v = 0; v < m; v++) if (vis_r[v]) right.push_back(v);

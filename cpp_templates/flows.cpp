@@ -59,16 +59,24 @@ struct Flow {
         return level[t] != -1;
     }
 
-    ll dfs(int u, int t, ll pushed) {
-        if (u == t || !pushed) return pushed;
-        for (int &i = ptr[u]; i < (int)adj[u].size(); i++) {
-            Edge &ed = e[adj[u][i]];
-            if (level[ed.to] != level[u] + 1 || ed.cap == ed.f) continue;
-            ll got = dfs(ed.to, t, min(pushed, ed.cap - ed.f));
-            if (got) {
-                ed.f += got;
-                e[adj[u][i] ^ 1].f -= got;
-                return got;
+    ll dfs(int s, int t, ll pushed) {  // iterative: path holds the edge ids from s to u
+        vector<int> path;
+        for (int u = s; pushed;) {
+            if (u == t) {
+                for (int id : path) pushed = min(pushed, e[id].cap - e[id].f);
+                for (int id : path) e[id].f += pushed, e[id ^ 1].f -= pushed;
+                return pushed;
+            }
+            int &i = ptr[u];
+            while (i < (int)adj[u].size() && (level[e[adj[u][i]].to] != level[u] + 1 || e[adj[u][i]].cap == e[adj[u][i]].f)) i++;
+            if (i < (int)adj[u].size()) {
+                path.push_back(adj[u][i]);
+                u = e[adj[u][i]].to;
+            } else {  // dead end: back up one edge and skip it from now on
+                if (path.empty()) return 0;
+                u = e[path.back() ^ 1].to;
+                path.pop_back();
+                ptr[u]++;
             }
         }
         return 0;

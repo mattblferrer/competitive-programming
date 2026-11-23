@@ -124,7 +124,7 @@ ld min_mean_cycle(int n, const vector<array<ll, 3>> &edges) {
 // bridges, articulation points and biconnected components of an undirected graph; multi-edges are handled correctly
 //   Biconnected(n)        empty graph on n vertices, O(n)
 //   add_edge(u, v)        add the undirected edge u - v, returns its id, O(1)
-//   dfs(u, pe)            visit u, entered through edge pe, O(V + E) total
+//   dfs(root)             visit the component of root (iterative, so deep graphs can't overflow the stack), O(V + E) total
 //   run()                 fills is_bridge[id], artics, and blocks (vertex lists), O(V + E)
 //   block_cut_tree(node)  tree whose nodes are the artics then the blocks; node[u] is u's tree node (-1 if isolated), O(V + E)
 //   bridge_tree(comp)     tree of 2-edge-connected components; comp[u] is u's tree node, O(V + E)
@@ -145,33 +145,43 @@ struct Biconnected {
         return m++;
     }
 
-    void dfs(int u, int pe) {
-        disc[u] = low[u] = timer++;
-        stk.push_back(u);
-        int children = 0;
-        bool cut = false;
-        for (auto [v, id] : adj[u]) {
-            if (id == pe) continue;
-            if (disc[v] == -1) {
-                dfs(v, id);
-                children++;
-                low[u] = min(low[u], low[v]);
-                if (disc[u] < low[v]) is_bridge[id] = true;
-                if (disc[u] <= low[v]) {
-                    cut = true;
-                    blocks.push_back({u});
-                    int x;
-                    do {
-                        x = stk.back();
-                        stk.pop_back();
-                        blocks.back().push_back(x);
-                    } while (x != v);
-                }
-            } else {
-                low[u] = min(low[u], disc[v]);
+    void dfs(int root) {
+        // frames {u, edge u was entered by (-1 for root), next index in adj[u], children v with disc[u] <= low[v]}
+        // u is an articulation point if that count is >= 1 (>= 2 for the root, where every child counts)
+        vector<array<int, 4>> call;
+        auto enter = [&](int u, int pe) {
+            disc[u] = low[u] = timer++;
+            stk.push_back(u);
+            call.push_back({u, pe, 0, 0});
+        };
+        enter(root, -1);
+        while (!call.empty()) {
+            auto [u, pe, i, cuts] = call.back();
+            if (i < (int)adj[u].size()) {
+                call.back()[2]++;
+                auto [v, id] = adj[u][i];
+                if (id == pe) continue;
+                if (disc[v] == -1) enter(v, id);
+                else low[u] = min(low[u], disc[v]);
+                continue;
+            }
+            call.pop_back();  // u is finished: return to its parent p through edge pe
+            if (cuts >= (pe == -1 ? 2 : 1)) artics.push_back(u);
+            if (pe == -1) continue;
+            int p = call.back()[0];
+            low[p] = min(low[p], low[u]);
+            if (disc[p] < low[u]) is_bridge[pe] = true;
+            if (disc[p] <= low[u]) {
+                call.back()[3]++;
+                blocks.push_back({p});
+                int x;
+                do {
+                    x = stk.back();
+                    stk.pop_back();
+                    blocks.back().push_back(x);
+                } while (x != u);
             }
         }
-        if (pe == -1 ? children >= 2 : cut) artics.push_back(u);
     }
 
     void run() {
@@ -180,7 +190,7 @@ struct Biconnected {
         is_bridge.assign(m, false);
         for (int u = 0; u < n; u++) {
             if (disc[u] == -1) {
-                dfs(u, -1);
+                dfs(u);
                 stk.clear();
             }
         }
@@ -244,7 +254,10 @@ pair<ll, vector<int>> kruskal(int n, const vector<array<ll, 3>> &edges) {
     iota(p.begin(), p.end(), 0);
     iota(order.begin(), order.end(), 0);
     sort(order.begin(), order.end(), [&](int a, int b) { return edges[a] < edges[b]; });
-    function<int(int)> find_set = [&](int x) { return p[x] == x ? x : p[x] = find_set(p[x]); };
+    auto find_set = [&](int x) {  // path halving, no recursion
+        while (p[x] != x) x = p[x] = p[p[x]];
+        return x;
+    };
     ll total = 0;
     for (int i : order) {
         int u = find_set(edges[i][1]), v = find_set(edges[i][2]);

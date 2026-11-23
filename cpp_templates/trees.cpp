@@ -171,10 +171,8 @@ struct HLD {
 
 // centroid decomposition, 0-indexed; example use: nearest painted vertex
 //   CentroidDecomp(adj)   build the decomposition, O(n log n)
-//   calc_size(u, p)       subtree sizes among unremoved vertices, O(component size)
-//   find_centroid(u, p, total)   centroid of the component of u, O(component size)
-//   add_dist(u, p, c, d)  record centroid c at distance d for every vertex below u, O(component size)
-//   build(u)              decompose the component of u, O(n log n) total
+//   bfs(s)                unremoved component of s in BFS order, filling par[] and dist[] from s, O(component size)
+//   build(u)              decompose the component of u (recursion depth O(log n)), O(n log n) total
 //   paint(u)              mark u as painted, O(log n)
 //   closest(u)            distance to the nearest painted vertex, NO_PAINT if there is none, O(log n)
 struct CentroidDecomp {
@@ -182,32 +180,49 @@ struct CentroidDecomp {
     int n;
     vector<vector<int>> adj;
     vector<char> removed;
-    vector<int> sz, best;
+    vector<int> sz, best, par, dist;
     vector<vector<pair<int, int>>> anc;  // anc[u] = {centroid ancestor, distance to it}
 
-    CentroidDecomp(const vector<vector<int>> &adj): n(adj.size()), adj(adj), removed(n), sz(n), best(n, NO_PAINT), anc(n) {
+    CentroidDecomp(const vector<vector<int>> &adj)
+        : n(adj.size()), adj(adj), removed(n), sz(n), best(n, NO_PAINT), par(n), dist(n), anc(n) {
         if (n) build(0);
     }
 
-    int calc_size(int u, int p) {
-        sz[u] = 1;
-        for (int v : adj[u]) if (v != p && !removed[v]) sz[u] += calc_size(v, u);
-        return sz[u];
+    vector<int> bfs(int s) {
+        vector<int> order{s};
+        par[s] = -1;
+        dist[s] = 0;
+        for (int i = 0; i < (int)order.size(); i++) {
+            int u = order[i];
+            for (int v : adj[u]) {
+                if (v == par[u] || removed[v]) continue;
+                par[v] = u;
+                dist[v] = dist[u] + 1;
+                order.push_back(v);
+            }
+        }
+        return order;
     }
 
-    int find_centroid(int u, int p, int total) {
-        for (int v : adj[u]) if (v != p && !removed[v] && sz[v] * 2 > total) return find_centroid(v, u, total);
-        return u;
-    }
-
-    void add_dist(int u, int p, int c, int d) {
-        anc[u].push_back({c, d});
-        for (int v : adj[u]) if (v != p && !removed[v]) add_dist(v, u, c, d + 1);
-    }
-
-    void build(int u) {
-        int c = find_centroid(u, -1, calc_size(u, -1));
-        add_dist(c, -1, c, 0);
+    void build(int s) {
+        vector<int> order = bfs(s);
+        for (int i = (int)order.size() - 1; i >= 0; i--) {  // subtree sizes, children before parents
+            int u = order[i];
+            sz[u] = 1;
+            for (int v : adj[u]) if (v != par[u] && !removed[v]) sz[u] += sz[v];
+        }
+        int total = order.size(), c = s;
+        for (bool moved = true; moved;) {  // walk toward the heavy child until none has more than half
+            moved = false;
+            for (int v : adj[c]) {
+                if (v != par[c] && !removed[v] && sz[v] * 2 > total) {
+                    c = v;
+                    moved = true;
+                    break;
+                }
+            }
+        }
+        for (int u : bfs(c)) anc[u].push_back({c, dist[u]});
         removed[c] = true;
         for (int v : adj[c]) if (!removed[v]) build(v);
     }
