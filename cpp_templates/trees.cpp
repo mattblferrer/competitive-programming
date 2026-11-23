@@ -4,6 +4,7 @@
 //   HLD             heavy-light decomposition, 0-indexed
 //   CentroidDecomp  centroid decomposition, 0-indexed; example use: nearest painted vertex
 //   TreeCanon       tree isomorphism by canonical ids (AHU); compare ids from the same TreeCanon object
+//   tree_diameter   diameter of a weighted tree; returns {length, path}
 //   SumDist         rerooting DP example: sum of distances from each vertex to all others
 //   rerooting       answer of a tree DP for every choice of root; returns ans[v] for each v
 //   dsu_on_tree     small-to-large on a tree (DSU on tree / sack)
@@ -276,6 +277,35 @@ struct TreeCanon {
         return res;
     }
 };
+
+// diameter of a tree with edge weights >= 0, 0-indexed; adj[u] = {v, w}, use w = 1 for unweighted
+// returns {length, path}, path = the vertices from one end of the diameter to the other, O(n)
+pair<ll, vector<int>> tree_diameter(const vector<vector<pair<int, ll>>> &adj) {
+    int n = adj.size();
+    vector<int> par(n);
+    vector<ll> dist(n);
+    auto farthest = [&](int s) {  // fills par and dist from s, returns the vertex farthest from s
+        fill(par.begin(), par.end(), -1);
+        dist[s] = 0;
+        vector<int> stk{s};
+        int best = s;
+        while (!stk.empty()) {
+            int u = stk.back();
+            stk.pop_back();
+            if (dist[u] > dist[best]) best = u;
+            for (auto [v, w] : adj[u]) {
+                if (v == par[u]) continue;
+                par[v] = u, dist[v] = dist[u] + w;
+                stk.push_back(v);
+            }
+        }
+        return best;
+    };
+    int b = farthest(farthest(0));
+    vector<int> path;
+    for (int v = b; v != -1; v = par[v]) path.push_back(v);
+    return {dist[b], path};
+}
 
 // rerooting DP example: sum of distances from each vertex to all others, T = {sum of distances, vertex count}
 // id = empty merge, merge combines children (need not be invertible), lift moves a value across edge from -> to,

@@ -178,6 +178,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `HLD` | heavy-light decomposition, 0-indexed |
 | `CentroidDecomp` | centroid decomposition, 0-indexed; example use: nearest painted vertex |
 | `TreeCanon` | tree isomorphism by canonical ids (AHU); compare ids from the same TreeCanon object |
+| `tree_diameter` | diameter of a weighted tree; returns {length, path} |
 | `SumDist` | rerooting DP example: sum of distances from each vertex to all others |
 | `rerooting` | answer of a tree DP for every choice of root; returns ans[v] for each v |
 | `dsu_on_tree` | small-to-large on a tree (DSU on tree / sack) |
