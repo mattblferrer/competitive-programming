@@ -305,7 +305,9 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `multiply` | product of integer polynomials a and b, O((n + m) log(n + m)) |
 | `binexp` | a^b mod mod, O(log b) |
 | `NTT` | number theoretic transform, each MOD and ROOT pair is its own type |
+| `garner` | combine residues mod several primes into the value mod `mod` (0 means mod 2^64) |
 | `convolution_any_mod` | product of polynomials a and b mod any modulus below 2^31 |
+| `convolution_mod_2_64` | product of polynomials a and b mod 2^64 |
 
 ### [`polynomial.cpp`](polynomial.cpp)
 

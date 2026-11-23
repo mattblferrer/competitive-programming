@@ -91,26 +91,38 @@ struct NTT {
     }
 };
 
+// Garner/CRT: combine residues r[j][i] mod primes ps[j] into the value mod `mod` (mod = 0 means mod 2^64);
+// exact while each value is below the product of ps, O(len * k^2)
+vector<ull> garner(const vector<vector<ll>> &r, const vector<ll> &ps, ull mod) {
+    int k = ps.size(), len = r[0].size();
+    vector<vector<ll>> pre(k, vector<ll>(k + 1, 1));  // pre[j][t] = ps[0] * ... * ps[t - 1] mod ps[j]
+    vector<ll> inv(k), x(k);
+    vector<ull> pm(k + 1, 1), res(len);  // pm[t] = ps[0] * ... * ps[t - 1] mod `mod`
+    for (int j = 0; j < k; j++) {
+        for (int t = 0; t < k; t++) pre[j][t + 1] = pre[j][t] * (ps[t] % ps[j]) % ps[j];
+        inv[j] = binexp(pre[j][j], ps[j] - 2, ps[j]);
+        pm[j + 1] = mod ? pm[j] * (ps[j] % mod) % mod : pm[j] * ps[j];
+    }
+    for (int i = 0; i < len; i++) {
+        for (int j = 0; j < k; j++) {  // value = x[0] + x[1] * ps[0] + x[2] * ps[0] * ps[1] + ...
+            ll cur = r[j][i];
+            for (int t = 0; t < j; t++) cur = (cur - x[t] * pre[j][t] % ps[j] + ps[j]) % ps[j];
+            x[j] = cur * inv[j] % ps[j];
+            res[i] = mod ? (res[i] + x[j] % mod * pm[j]) % mod : res[i] + x[j] * pm[j];
+        }
+    }
+    return res;
+}
+
 // product of polynomials a and b mod any modulus below 2^31, using three NTT primes and CRT, O((n + m) log(n + m))
 // exact while (n + m) <= 2^23 and min(n, m) * mod^2 < 7.8e25
 vector<ll> convolution_any_mod(vector<ll> a, vector<ll> b, ll mod) {
     if (a.empty() || b.empty()) return {};
-    const ll M1 = 998'244'353, M2 = 469'762'049, M3 = 167'772'161;
     for (ll &x : a) x = (x % mod + mod) % mod;
     for (ll &x : b) x = (x % mod + mod) % mod;
-    vector<ll> r1 = NTT<M1, 3>::multiply(a, b);
-    vector<ll> r2 = NTT<M2, 3>::multiply(a, b);
-    vector<ll> r3 = NTT<M3, 3>::multiply(a, b);
-    const ll inv1_2 = binexp(M1, M2 - 2, M2), inv12_3 = binexp(M1 * M2 % M3, M3 - 2, M3), m12 = M1 % mod * (M2 % mod) % mod;
-    vector<ll> res(r1.size());
-    for (int i = 0; i < (int)r1.size(); i++) {  // Garner: value = x1 + x2 * M1 + x3 * M1 * M2
-        ll x1 = r1[i];
-        ll x2 = (r2[i] - x1 % M2 + M2) % M2 * inv1_2 % M2;
-        ll x3 = (r3[i] - (x1 + x2 * M1) % M3 + M3) % M3 * inv12_3 % M3;
-        res[i] = (x1 + x2 % mod * (M1 % mod)) % mod;
-        res[i] = (res[i] + x3 * m12) % mod;
-    }
-    return res;
+    vector<ull> c = garner({NTT<998'244'353, 3>::multiply(a, b), NTT<469'762'049, 3>::multiply(a, b),
+                            NTT<167'772'161, 3>::multiply(a, b)}, {998'244'353, 469'762'049, 167'772'161}, mod);
+    return vector<ll>(c.begin(), c.end());
 }
 
 void solve() {
