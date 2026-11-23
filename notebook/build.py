@@ -11,6 +11,8 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 # ---------------------------------------------------------------- settings
@@ -20,6 +22,8 @@ PAPER = "a4paper"  # or "letterpaper"
 PAGE_LIMIT = 25  # ICPC regionals usually allow 25 single-sided pages
 CODE_FONT_PT = (6.1, 6.6)  # font size, line spacing for code
 COMPACT = True  # drop blank lines from the code (the template keeps its own)
+CONDENSE = True  # put lines that only close braces ("}", "};", "});") at the end of the line above
+INDENT = 2  # spaces per indent level in the printed code (the templates use 4); None keeps 4
 
 # (section title, [entries]); an entry is a .cpp in cpp_templates/ or a .tex in content/,
 # either bare or as (file, title). A .cpp entry can also be (file, title, [names]) to print
@@ -160,6 +164,65 @@ def compact(text):
     return "\n".join(l for l in text.splitlines() if l.strip()) + "\n"
 
 
+def code_columns():
+    """Characters per code line before listings wraps it, from the page layout in
+    notebook_template.tex (5 mm side margins, 3 mm column gaps, 3 columns) and the code font
+    (Inconsolata, 0.5 em per character)."""
+    paper_mm = {"a4paper": 297, "letterpaper": 279.4}[PAPER]  # landscape width
+    column_pt = (paper_mm - 2 * 5 - 2 * 3) / 3 / 25.4 * 72.27
+    return int(column_pt / (0.5 * CODE_FONT_PT[0]))
+
+
+CLOSERS = re.compile(r"\}[})\];,]*")  # a line that only closes: "}", "};", "});", "}}", "},"
+
+
+def condense(text, width):
+    """Narrow the indentation to INDENT spaces per level, and move each closing-brace-only line
+    to the end of the line above when that line has no comment, is not a # directive, and stays
+    within width. Only whitespace changes, which the assert checks."""
+    out = []
+    for line in text.splitlines():
+        body = line.lstrip(" ")
+        lead = len(line) - len(body)
+        if INDENT is not None:
+            line = " " * (lead // 4 * INDENT + lead % 4) + body
+        prev = out[-1] if out else ""
+        if (out and CLOSERS.fullmatch(body.rstrip()) and "//" not in prev and "/*" not in prev
+                and not prev.lstrip().startswith("#") and not prev.endswith("\\")
+                and len(prev) + 1 + len(body.rstrip()) <= width):
+            out[-1] = prev + " " + body.rstrip()
+        else:
+            out.append(line)
+    res = "\n".join(out) + "\n"
+    assert re.sub(r"\s", "", res) == re.sub(r"\s", "", text), "condense changed more than whitespace"
+    return res
+
+
+def check_condensed(pairs):
+    """Syntax-check each file before and after condensing (with the contest template's preamble
+    in front) and fail if condensing broke one that compiled. Skipped without g++."""
+    gxx = shutil.which("g++")
+    if not gxx or not pairs:
+        if not gxx:
+            print("note: g++ not found, so condensed code was not compile-checked")
+        return
+    header = (TEMPLATES / HEADER_FILE).read_text()
+    header = header[:header.index("#endif") + len("#endif")] + "\n"
+    with tempfile.TemporaryDirectory() as tmp:
+        def compiles(name, code):
+            path = Path(tmp) / name
+            path.write_text(header + code)
+            return subprocess.run([gxx, "-std=c++20", "-fsyntax-only", str(path)],
+                                  capture_output=True).returncode == 0
+
+        jobs = [(f"{i}_{w}.cpp", code) for i, pair in enumerate(pairs) for w, code in zip("ab", pair[1:])]
+        with ThreadPoolExecutor() as ex:
+            ok = list(ex.map(lambda job: compiles(*job), jobs))
+    broken = [fname for i, (fname, _, _) in enumerate(pairs) if ok[2 * i] and not ok[2 * i + 1]]
+    if broken:
+        sys.exit(f"error: condensing broke {', '.join(broken)} (compiles before, not after)")
+
+
 def top_level_names(text):
     names = []
     for line in text.splitlines():
@@ -183,6 +246,8 @@ def build_tex():
     listed = set()
     toc = []
     body = []
+    condensed = []  # (file name, code before, code after)
+    width = code_columns()
     for section, entries in SECTIONS:
         toc.append(rf"\tocsection{{{tex_escape(section)}}}")
         body.append(rf"\section{{{tex_escape(section)}}}")
@@ -206,12 +271,16 @@ def build_tex():
                 code = keep_only(code, only, fname)
             if COMPACT and fname != HEADER_FILE:
                 code = compact(code)
+            if CONDENSE and fname != HEADER_FILE:
+                condensed.append((fname, code, condense(code, width)))
+                code = condensed[-1][2]
             (src_dir / fname).write_text(code, newline="\n")
             names = ", ".join(tex_escape(n) for n in top_level_names(code) if fname != HEADER_FILE)
             toc.append(rf"\tocentry{{{tex_escape(title)}}}{{{label}}}{{{names}}}")
             body.append(rf"\codefile{{{tex_escape(title)}}}{{{tex_escape(fname)}}}{{{label}}}"
                         rf"{{src/{fname}}}")
 
+    check_condensed(condensed)
     for path in sorted(TEMPLATES.glob("*.cpp")):
         if path.name not in listed:
             print(f"note: cpp_templates/{path.name} is not in SECTIONS, so it was left out")

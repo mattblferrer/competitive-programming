@@ -21,6 +21,10 @@ Rebuild after changing a template so the notebook stays in sync. The script:
 
 - drops each file's `#include` / `using` header lines that the contest template already prints once
 - removes blank lines (set `COMPACT = False` to keep them)
+- condenses the code (set `CONDENSE = False` to skip): indents by `INDENT` spaces per level instead of 4, and
+  moves lines that only close braces (`}`, `};`, `});`) to the end of the line above when that fits in a column.
+  Only whitespace changes, the templates themselves are untouched, and if `g++` is installed every file is
+  syntax-checked before and after so a condensed file that stops compiling fails the build
 - warns about templates missing from `SECTIONS` and about going over `PAGE_LIMIT`
 
 To fit a page limit, remove entries from `SECTIONS` or reduce `CODE_FONT_PT`. To print only part of a
