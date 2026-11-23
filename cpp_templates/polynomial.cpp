@@ -7,6 +7,8 @@
 //   kth_term              k-th term (0-indexed) of the recurrence s[i] = c[0] * s[i - 1] + c[1] * s[i - 2] + ...
 //   kth_term_ntt          k-th term of a linear recurrence mod an NTT prime (Bostan-Mori), O(d log d log k)
 //   bernoulli_ntt         Bernoulli numbers B[0..n] mod an NTT prime, with B[1] = -1/2, O(n log n)
+//   shift_samples         h(a), ..., h(a + m - 1) from h(0), ..., h(n - 1) (shift of sampling points), O((n + m) log(n + m))
+//   FactorialMod          n! mod an NTT prime for any n < MOD, block table of (iV)!, O(V) per query
 //   lagrange              value at x of the unique polynomial through (xs[i], ys[i])
 //   lagrange_consecutive  value at x of the unique polynomial with p(i) = ys[i] for i = 0..n-1
 
@@ -433,6 +435,57 @@ vector<ll> bernoulli_ntt(int n) {
     for (int i = 0; i <= n; i++) b[i] = b[i] * fac[i] % MOD;
     return b;
 }
+
+// h(a), h(a + 1), ..., h(a + m - 1) mod MOD for the polynomial h of degree < n given by h[i] = h(i), i = 0..n-1
+// (shift of sampling points: Lagrange interpolation as one convolution), using NTT above; MOD > n, and every
+// a + k - i (0 <= k < m, 0 <= i < n) must be nonzero mod MOD, e.g. a >= n; O((n + m) log(n + m))
+template <ll MOD, ll ROOT>
+vector<ll> shift_samples(const vector<ll> &h, ll a, int m) {
+    int n = h.size(), d = n - 1, L = n + m - 1;
+    a = (a % MOD + MOD) % MOD;
+    vector<ll> ifac(n, 1), f(n), x(L), pre(L + 1, 1), inv(L);
+    for (int i = 1; i < n; i++) ifac[i] = ifac[i - 1] * i % MOD;
+    ll t = binexp(ifac[d], MOD - 2, MOD);
+    for (int i = d; i >= 0; i--) ifac[i] = t, t = t * max(i, 1) % MOD;  // now ifac[i] = 1 / i!
+    for (int i = 0; i < n; i++) {  // h(i) / (i! (d - i)! (-1)^(d - i))
+        f[i] = h[i] * ifac[i] % MOD * ifac[d - i] % MOD;
+        if ((d - i) & 1) f[i] = (MOD - f[i]) % MOD;
+    }
+    for (int j = 0; j < L; j++) x[j] = ((a - d + j) % MOD + MOD) % MOD, pre[j + 1] = pre[j] * x[j] % MOD;
+    t = binexp(pre[L], MOD - 2, MOD);
+    for (int j = L - 1; j >= 0; j--) inv[j] = t * pre[j] % MOD, t = t * x[j] % MOD;  // inv[j] = 1 / x[j]
+    vector<ll> c = NTT<MOD, ROOT>::multiply(f, inv), res(m);
+    ll prod = pre[n];  // (a + k)(a + k - 1)...(a + k - d)
+    for (int k = 0; k < m; k++) {
+        res[k] = c[k + d] * prod % MOD;
+        if (k + 1 < m) prod = prod * x[k + n] % MOD * inv[k] % MOD;
+    }
+    return res;
+}
+
+// n! mod MOD for any 0 <= n < MOD, MOD an NTT prime above 2^20, using shift_samples above
+// g(x) = (Vx + 1)(Vx + 2)...(Vx + V) is sampled at 0..V directly, then shifted to 0..MOD/V, so block[i] = (iV)!
+// construction O(V^2 + (MOD / V) log(MOD / V)), query O(V)
+template <ll MOD, ll ROOT>
+struct FactorialMod {
+    static const int V = 1024;
+    vector<ll> block;
+    FactorialMod() {
+        int K = (MOD - 1) / V + 1;
+        vector<ll> g(V + 1, 1);
+        for (int i = 0; i <= V; i++)
+            for (int j = 1; j <= V; j++) g[i] = g[i] * ((ll)V * i + j) % MOD;
+        vector<ll> rest = shift_samples<MOD, ROOT>(g, V + 1, K - V - 1);
+        g.insert(g.end(), rest.begin(), rest.end());
+        block.assign(K, 1);
+        for (int i = 0; i + 1 < K; i++) block[i + 1] = block[i] * g[i] % MOD;
+    }
+    ll operator()(ll n) const {
+        ll r = block[n / V];
+        for (ll j = n / V * V + 1; j <= n; j++) r = r * j % MOD;
+        return r;
+    }
+};
 
 // value at x of the unique polynomial through (xs[i], ys[i]); xs distinct mod the prime mod, O(n^2 + n log mod)
 ll lagrange(const vector<ll> &xs, const vector<ll> &ys, ll x, ll mod) {
