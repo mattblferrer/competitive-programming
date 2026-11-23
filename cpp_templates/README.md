@@ -56,7 +56,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `SparseTable2D` | static rectangle query for idempotent ops |
 | `RollbackDSU` | DSU with undo, example structure for OfflineDynamic below; D needs Op, snapshot() |
 | `OfflineDynamic` | segment tree over time |
-| `ImplicitTreap` | implicit treap: an array supporting insert/erase at any position with range add |
+| `ImplicitTreap` | implicit treap over a lazy spec: insert/erase anywhere, range update, reverse and fold |
 | `WaveletMatrix` | wavelet matrix: static order statistics on subarrays, online; values can be any integers |
 
 ### [`dsu.cpp`](dsu.cpp)
@@ -90,6 +90,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `Hash` | polynomial hash and reverse hash (substring equality, palindromes) |
 | `AffineComp` | composition of maps x -> ax + b, applied left to right |
 | `MatProd` | K x K matrix product, for DP transitions over a segment |
+| `NoUpdate` | any monoid as a lazy spec with no updates (for LazySegTree, ImplicitTreap) |
 | `AddMin` | range add, range min (AddMax: range max) |
 | `AddMinCount` | range add, range min with count (area of a union of rectangles) |
 | `SetAdd` | range assign and range add, range sum / min / max |

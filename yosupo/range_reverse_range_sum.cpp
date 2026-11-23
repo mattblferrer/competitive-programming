@@ -17,17 +17,39 @@ mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 #define dbg(x)
 #endif
 
-// implicit treap: an array supporting insert/erase at any position with range add, range reverse and range sum (0-indexed)
+struct SumM {
+    using T = ll;
+    static T id() { return 0; }
+    static T op(const T &a, const T &b) { return a + b; }
+};
+
+// any monoid M as a lazy spec with no updates, for structures that expect one (LazySegTree, ImplicitTreap)
+template <class M>
+struct NoUpdate : M {
+    using F = bool;
+    static F fid() { return false; }
+    static typename M::T apply(const F &, const typename M::T &x) { return x; }
+    static F compose(const F &, const F &) { return false; }
+};
+
+// implicit treap: an array supporting insert/erase at any position, range update, range reverse and range fold
+// (0-indexed); ImplicitTreap<S> takes a lazy spec S shaped like LazySegTree's (ready-made ones in monoids.cpp,
+// and NoUpdate<M> there turns any monoid M into one); insert S::leaf(x) when apply needs the length
+// each node keeps its subtree's fold in both directions, so reverse also works when op is not commutative
 //   insert(p, v)      insert v so that it becomes a[p], O(log n) expected
 //   erase(p)          remove a[p], O(log n) expected
 //   get(p)            a[p], O(log n) expected
-//   query(l, r)       sum of a[l..r), O(log n) expected
-//   update(l, r, v)   a[l..r) += v, O(log n) expected
+//   query(l, r)       op over a[l..r), O(log n) expected
+//   update(l, r, f)   apply f to every element of a[l..r), O(log n) expected
 //   reverse(l, r)     reverse a[l..r), O(log n) expected
 //   size()            current length, O(1)
+template <class S>
 struct ImplicitTreap {
+    using T = typename S::T;
+    using F = typename S::F;
     struct Node {
-        ll val, sum, add;
+        T val, sum, rsum;  // rsum = op over the subtree from right to left
+        F lz;  // v's own val, sum, rsum already include lz; its children still need it
         unsigned pri;
         int sz, l, r;
         bool rev;  // v's own children are already swapped; rev means its children still need flipping
@@ -36,27 +58,27 @@ struct ImplicitTreap {
     int root = 0;
     mt19937 gen{(unsigned)chrono::steady_clock::now().time_since_epoch().count()};
 
-    ImplicitTreap(): t(1, Node{0, 0, 0, 0, 0, 0, 0, false}) {}
+    ImplicitTreap(): t(1, Node{S::id(), S::id(), S::id(), S::fid(), 0, 0, 0, 0, false}) {}
 
-    void apply(int v, ll d) {
+    void apply(int v, const F &f) {
         if (!v) return;
-        t[v].val += d;
-        t[v].add += d;
-        t[v].sum += d * t[v].sz;
+        t[v].val = S::apply(f, t[v].val);
+        t[v].sum = S::apply(f, t[v].sum);
+        t[v].rsum = S::apply(f, t[v].rsum);
+        t[v].lz = S::compose(f, t[v].lz);
     }
 
     void flip(int v) {
         if (!v) return;
         swap(t[v].l, t[v].r);
+        swap(t[v].sum, t[v].rsum);
         t[v].rev = !t[v].rev;
     }
 
     void push(int v) {
-        if (t[v].add) {
-            apply(t[v].l, t[v].add);
-            apply(t[v].r, t[v].add);
-            t[v].add = 0;
-        }
+        apply(t[v].l, t[v].lz);
+        apply(t[v].r, t[v].lz);
+        t[v].lz = S::fid();
         if (t[v].rev) {
             flip(t[v].l);
             flip(t[v].r);
@@ -65,8 +87,10 @@ struct ImplicitTreap {
     }
 
     void pull(int v) {
-        t[v].sz = t[t[v].l].sz + 1 + t[t[v].r].sz;
-        t[v].sum = t[t[v].l].sum + t[v].val + t[t[v].r].sum;
+        int l = t[v].l, r = t[v].r;
+        t[v].sz = t[l].sz + 1 + t[r].sz;
+        t[v].sum = S::op(S::op(t[l].sum, t[v].val), t[r].sum);
+        t[v].rsum = S::op(S::op(t[r].rsum, t[v].val), t[l].rsum);
     }
 
     int merge(int a, int b) {
@@ -93,16 +117,15 @@ struct ImplicitTreap {
         if (k <= t[t[v].l].sz) {
             split(t[v].l, k, a, t[v].l);
             b = v;
-        }
-        else {
+        } else {
             split(t[v].r, k - t[t[v].l].sz - 1, t[v].r, b);
             a = v;
         }
         pull(v);
     }
 
-    void insert(int p, ll v) {
-        t.push_back({v, v, 0, gen(), 1, 0, 0, false});
+    void insert(int p, const T &v) {
+        t.push_back({v, v, v, S::fid(), gen(), 1, 0, 0, false});
         int a, b, id = t.size() - 1;
         split(root, p, a, b);
         root = merge(merge(a, id), b);
@@ -115,38 +138,36 @@ struct ImplicitTreap {
         root = merge(a, c);
     }
 
-    ll get(int p) {
+    T get(int p) {
         int v = root;
         while (true) {
             push(v);
             int left = t[t[v].l].sz;
             if (p < left) {
                 v = t[v].l;
-            }
-            else if (p == left) {
+            } else if (p == left) {
                 return t[v].val;
-            }
-            else {
+            } else {
                 p -= left + 1;
                 v = t[v].r;
             }
         }
     }
 
-    ll query(int l, int r) {
+    T query(int l, int r) {
         int a, b, c;
         split(root, r, a, c);
         split(a, l, a, b);
-        ll res = t[b].sum;
+        T res = t[b].sum;
         root = merge(merge(a, b), c);
         return res;
     }
 
-    void update(int l, int r, ll v) {
+    void update(int l, int r, const F &f) {
         int a, b, c;
         split(root, r, a, c);
         split(a, l, a, b);
-        apply(b, v);
+        apply(b, f);
         root = merge(merge(a, b), c);
     }
 
@@ -160,11 +181,10 @@ struct ImplicitTreap {
 
     int size() const { return t[root].sz; }
 };
-
 void solve() {
     ll n, q;
     cin >> n >> q;
-    ImplicitTreap treap;
+    ImplicitTreap<NoUpdate<SumM>> treap;
     for (ll i = 0; i < n; i++) {
         ll ai;
         cin >> ai;

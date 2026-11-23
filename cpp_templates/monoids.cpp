@@ -7,6 +7,7 @@
 //   Hash            polynomial hash and reverse hash (substring equality, palindromes)
 //   AffineComp      composition of maps x -> ax + b, applied left to right
 //   MatProd         K x K matrix product, for DP transitions over a segment
+//   NoUpdate        any monoid as a lazy spec with no updates (for LazySegTree, ImplicitTreap)
 //   AddMin          range add, range min (AddMax: range max)
 //   AddMinCount     range add, range min with count (area of a union of rectangles)
 //   SetAdd          range assign and range add, range sum / min / max
@@ -142,6 +143,15 @@ struct MatProd {
                 for (int j = 0; j < K; j++) c[i][j] += a[i][k] * b[k][j];
         return c;
     }
+};
+
+// any monoid M as a lazy spec with no updates, for structures that expect one (LazySegTree, ImplicitTreap)
+template <class M>
+struct NoUpdate : M {
+    using F = bool;
+    static F fid() { return false; }
+    static typename M::T apply(const F &, const typename M::T &x) { return x; }
+    static F compose(const F &, const F &) { return false; }
 };
 
 // range add, range min / max (the id() checks keep padding at infinity)
