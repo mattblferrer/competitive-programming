@@ -380,9 +380,9 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `lattice_boundary` | number of lattice points on the boundary of a polygon with integer vertices, O(n log C) |
 | `lattice_interior` | number of lattice points strictly inside a polygon with integer vertices (Pick's theorem), O(n log C) |
 | `min_enclosing_circle` | smallest circle containing all points, returned as {center, radius}, O(n) expected |
-| `polygon_diameter` | largest distance between any two points (rotating calipers), O(n log n) |
+| `furthest_pair` | two of the points at the largest distance (diameter, rotating calipers), n >= 1, O(n log n) |
 | `polygon_width` | smallest distance between two parallel lines containing all points between them (rotating calipers), O(n log n) |
-| `closest_pair` | smallest distance between two of the points (line sweep), HUGE_VALL if n < 2, O(n log n) |
+| `closest_pair` | two of the points at the smallest distance (line sweep), n >= 2, O(n log n) |
 | `KDTree` | 2D tree for nearest neighbor queries; the tree reorders its own copy of the points |
 | `Point3` | 3D point / vector with arithmetic, dot, cross, and length, O(1) each |
 | `proj_plane` | projection of p onto the plane ax + by + cz + d = 0, O(1) |

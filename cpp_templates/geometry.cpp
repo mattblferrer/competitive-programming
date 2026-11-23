@@ -35,9 +35,9 @@
 //   lattice_boundary         number of lattice points on the boundary of a polygon with integer vertices, O(n log C)
 //   lattice_interior         number of lattice points strictly inside a polygon with integer vertices (Pick's...
 //   min_enclosing_circle     smallest circle containing all points, returned as {center, radius}, O(n) expected
-//   polygon_diameter         largest distance between any two points (rotating calipers), O(n log n)
+//   furthest_pair            two of the points at the largest distance (diameter, rotating calipers), n >= 1...
 //   polygon_width            smallest distance between two parallel lines containing all points between them...
-//   closest_pair             smallest distance between two of the points (line sweep), HUGE_VALL if n < 2, O(n log n)
+//   closest_pair             two of the points at the smallest distance (line sweep), n >= 2, O(n log n)
 //   KDTree                   2D tree for nearest neighbor queries; the tree reorders its own copy of the points
 //   Point3                   3D point / vector with arithmetic, dot, cross, and length, O(1) each
 //   proj_plane               projection of p onto the plane ax + by + cz + d = 0, O(1)
@@ -330,19 +330,19 @@ pair<Point, ld> min_enclosing_circle(vector<Point> p) {
     return {c, r};
 }
 
-// largest distance between any two points (rotating calipers), O(n log n)
-ld polygon_diameter(const vector<Point> &pts) {
+// two of the points at the largest distance (diameter, rotating calipers), n >= 1, O(n log n)
+// compares squared distances, so exact for integer coordinates up to ~1e9
+pair<Point, Point> furthest_pair(const vector<Point> &pts) {
     vector<Point> h = convex_hull(pts);
     int k = h.size();
-    if (k < 2) return 0;
-    if (k == 2) return dist(h[0], h[1]);
-    ld d = 0;
+    if (k < 3 || fabsl(cross(h[0], h[1], h[2])) < EPS) return {h[0], h.back()};  // collinear: hull is sorted
+    pair<Point, Point> res = {h[0], h[1]};
     for (int i = 0, j = 1; i < k; i++) {
         int ni = (i + 1) % k;
         while (cross(h[i], h[ni], h[(j + 1) % k]) > cross(h[i], h[ni], h[j])) j = (j + 1) % k;
-        d = max({d, dist(h[i], h[j]), dist(h[ni], h[j])});
+        for (Point q : {h[i], h[ni]}) if (norm(q - h[j]) > norm(res.first - res.second)) res = {q, h[j]};
     }
-    return d;
+    return res;
 }
 
 // smallest distance between two parallel lines containing all points between them (rotating calipers), O(n log n)
@@ -359,21 +359,21 @@ ld polygon_width(const vector<Point> &pts) {
     return d;
 }
 
-// smallest distance between two of the points (line sweep), HUGE_VALL if n < 2, O(n log n)
-ld closest_pair(vector<Point> p) {
-    int n = p.size();
-    if (n < 2) return HUGE_VALL;
+// two of the points at the smallest distance (line sweep), n >= 2, O(n log n)
+// compares squared distances, so exact for integer coordinates up to ~1e9
+pair<Point, Point> closest_pair(vector<Point> p) {
     sort(p.begin(), p.end(), [](const Point &a, const Point &b) { return a.y < b.y; });
     set<Point> box;
-    box.insert(p[0]);
-    ld best = HUGE_VALL;
-    for (int l = 0, i = 1; i < n; i++) {
-        while (l < i && p[i].y - p[l].y > best) box.erase(p[l++]);
-        auto it = best == HUGE_VALL ? box.begin() : box.lower_bound(Point(p[i].x - best, -HUGE_VALL));
-        for (; it != box.end() && (best == HUGE_VALL || it->x <= p[i].x + best); it++) best = min(best, dist(p[i], *it));
+    pair<Point, Point> res = {p[0], p[1]};
+    ld best = HUGE_VALL;  // squared
+    for (int l = 0, i = 0; i < (int)p.size(); i++) {
+        ld d = sqrtl(best);
+        while (p[i].y - p[l].y > d) box.erase(p[l++]);
+        for (auto it = box.lower_bound(Point(p[i].x - d, -HUGE_VALL)); it != box.end() && it->x <= p[i].x + d; it++)
+            if (norm(p[i] - *it) < best) best = norm(p[i] - *it), res = {*it, p[i]};
         box.insert(p[i]);
     }
-    return best;
+    return res;
 }
 
 // 2D tree for nearest neighbor queries; the tree reorders its own copy of the points
