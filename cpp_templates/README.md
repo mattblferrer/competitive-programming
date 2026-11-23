@@ -132,7 +132,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 
 | Name | Description |
 | --- | --- |
-| `SCC` | strongly connected components (Tarjan), 0-indexed |
+| `SCC` | strongly connected components (Tarjan, iterative so deep graphs can't overflow the stack), 0-indexed |
 | `TwoSat` | 2-SAT, uses SCC above |
 | `min_mean_cycle` | smallest average edge weight over all directed cycles (Karp) |
 | `Biconnected` | bridges, articulation points and biconnected components of an undirected graph |

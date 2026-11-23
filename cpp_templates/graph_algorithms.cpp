@@ -1,5 +1,5 @@
 // Contents
-//   SCC               strongly connected components (Tarjan), 0-indexed
+//   SCC               strongly connected components (Tarjan, iterative so deep graphs can't overflow the stack), 0-indexed
 //   TwoSat            2-SAT, uses SCC above
 //   min_mean_cycle    smallest average edge weight over all directed cycles (Karp)
 //   Biconnected       bridges, articulation points and biconnected components of an undirected graph
@@ -21,11 +21,11 @@ using ld = long double;
 using pll = pair<ll, ll>;
 const ll INF = 2e18;
 
-// strongly connected components (Tarjan), 0-indexed
+// strongly connected components (Tarjan, iterative so deep graphs can't overflow the stack), 0-indexed
 // component ids are in reverse topological order: an edge u -> v between components has comp[u] > comp[v]
 //   SCC(n)         empty graph on n vertices, O(n)
 //   add_edge(u, v) add the directed edge u -> v, O(1)
-//   dfs(u)         visit u and pop finished components, O(V + E) total
+//   dfs(s)         visit everything reachable from s and pop finished components, O(V + E) total
 //   run()          compute comp[] and returns the number of components, O(V + E)
 struct SCC {
     int n, timer = 0, count = 0;
@@ -36,25 +36,34 @@ struct SCC {
 
     void add_edge(int u, int v) { adj[u].push_back(v); }
 
-    void dfs(int u) {
-        id[u] = low[u] = timer++;
-        st.push_back(u);
-        for (int v : adj[u]) {
-            if (id[v] == -1) {
-                dfs(v);
-                low[u] = min(low[u], low[v]);
-            } else if (comp[v] == -1) {
-                low[u] = min(low[u], id[v]);
+    void dfs(int s) {
+        vector<pair<int, int>> call;  // {vertex, index of its next edge}, the recursion stack
+        auto enter = [&](int u) {
+            id[u] = low[u] = timer++;
+            st.push_back(u);
+            call.push_back({u, 0});
+        };
+        enter(s);
+        while (!call.empty()) {
+            int u = call.back().first, i = call.back().second;
+            if (i < (int)adj[u].size()) {
+                call.back().second++;
+                int v = adj[u][i];
+                if (id[v] == -1) enter(v);
+                else if (comp[v] == -1) low[u] = min(low[u], id[v]);
+                continue;
             }
-        }
-        if (id[u] == low[u]) {
-            int v;
-            do {
-                v = st.back();
-                st.pop_back();
-                comp[v] = count;
-            } while (v != u);
-            count++;
+            call.pop_back();  // u is finished: return to its parent
+            if (!call.empty()) low[call.back().first] = min(low[call.back().first], low[u]);
+            if (id[u] == low[u]) {
+                int v;
+                do {
+                    v = st.back();
+                    st.pop_back();
+                    comp[v] = count;
+                } while (v != u);
+                count++;
+            }
         }
     }
 
