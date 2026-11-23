@@ -394,7 +394,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `Face` | triangular face of a 3D hull, for convex_hull_3d |
 | `convex_hull_3d` | 3D convex hull with integer coordinates, O(n^2) |
 | `in_convex` | true if q is inside or on the convex polygon h (strict hull in CCW order, at least 3 vertices), O(log n) |
-| `sort_by_angle` | sorts p by polar angle around o, from angle 0 up to 2 pi |
+| `sort_by_angle` | sorts p by polar angle around o, counter-clockwise from direction s (default angle 0); atan2 order supported |
 | `minkowski_sum` | Minkowski sum of two convex polygons given as strict hulls in CCW order |
 | `half_plane_intersection` | intersection of half-planes as a CCW polygon |
 | `polygon_union_area` | area of the union of simple polygons, each in CCW order |

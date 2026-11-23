@@ -49,7 +49,7 @@
 //   Face                     triangular face of a 3D hull, for convex_hull_3d
 //   convex_hull_3d           3D convex hull with integer coordinates, O(n^2)
 //   in_convex                true if q is inside or on the convex polygon h (strict hull in CCW order, at least 3...
-//   sort_by_angle            sorts p by polar angle around o, from angle 0 up to 2 pi
+//   sort_by_angle            sorts p by polar angle around o, counter-clockwise from direction s (default angle 0); atan2 order supported
 //   minkowski_sum            Minkowski sum of two convex polygons given as strict hulls in CCW order
 //   half_plane_intersection  intersection of half-planes as a CCW polygon
 //   polygon_union_area       area of the union of simple polygons, each in CCW order
@@ -529,17 +529,21 @@ bool in_convex(Point q, const vector<Point> &h) {
     return cross(h[l], h[l + 1], q) >= -EPS;
 }
 
-// sorts p by polar angle around o, from angle 0 up to 2 pi; ties are nearest first and points equal to o come first, O(n log n)
-void sort_by_angle(vector<Point> &p, Point o = Point()) {
-    auto half = [&](const Point &a) {
-        if (a.x == 0 && a.y == 0) return -1;
-        return a.y > 0 || (a.y == 0 && a.x > 0) ? 0 : 1;
+// sorts p by polar angle around o, counter-clockwise from direction s: angles in [0, 2 pi), or (0, 2 pi] if s_last
+// (points in direction s go last); points equal to o count as direction (1, 0), like atan2(0, 0) = 0; ties nearest first
+// default: from angle 0 up to 2 pi, points equal to o first; atan2 order (-pi, pi]: sort_by_angle(p, o, {-1, 0}, true)
+// exact for integer coordinates up to ~1e9, O(n log n)
+void sort_by_angle(vector<Point> &p, Point o = Point(), Point s = Point(1, 0), bool s_last = false) {
+    auto dir = [&](const Point &a) { return a == o ? Point(1, 0) : a - o; };
+    auto half = [&](const Point &u) {  // 0: angle from s in [0, pi) ((0, pi] if s_last), 1: the rest
+        ld c = cross(s, u), d = dot(s, u);
+        return c > 0 || (c == 0 && (s_last ? d < 0 : d > 0)) ? 0 : 1;
     };
     sort(p.begin(), p.end(), [&](const Point &a, const Point &b) {
-        Point u = a - o, v = b - o;
+        Point u = dir(a), v = dir(b);
         if (half(u) != half(v)) return half(u) < half(v);
         ld c = cross(u, v);
-        return c != 0 ? c > 0 : norm(u) < norm(v);
+        return c != 0 ? c > 0 : norm(a - o) < norm(b - o);
     });
 }
 
