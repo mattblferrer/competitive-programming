@@ -7,6 +7,7 @@
 //   kth_term              k-th term (0-indexed) of the recurrence s[i] = c[0] * s[i - 1] + c[1] * s[i - 2] + ...
 //   kth_term_ntt          k-th term of a linear recurrence mod an NTT prime (Bostan-Mori), O(d log d log k)
 //   bernoulli_ntt         Bernoulli numbers B[0..n] mod an NTT prime, with B[1] = -1/2, O(n log n)
+//   bell_ntt              Bell numbers B[0..n] mod an NTT prime, as exp(e^x - 1), O(n log n)
 //   shift_samples         h(a), ..., h(a + m - 1) from h(0), ..., h(n - 1) (shift of sampling points), O((n + m) log(n + m))
 //   FactorialMod          n! mod an NTT prime for any n < MOD, block table of (iV)!, O(V) per query
 //   lagrange              value at x of the unique polynomial through (xs[i], ys[i])
@@ -432,6 +433,21 @@ vector<ll> bernoulli_ntt(int n) {
     vector<ll> a(n + 1);
     for (int i = 0; i <= n; i++) a[i] = ifac[i + 1];
     vector<ll> b = Poly<MOD, ROOT>::inv(a, n + 1);
+    for (int i = 0; i <= n; i++) b[i] = b[i] * fac[i] % MOD;
+    return b;
+}
+
+// Bell numbers B[0..n] mod an NTT prime MOD > n (number of partitions of a set of i elements), using Poly above
+// sum of B[i] x^i / i! = exp(e^x - 1), O(n log n)
+template <ll MOD, ll ROOT>
+vector<ll> bell_ntt(int n) {
+    vector<ll> fac(n + 1, 1), ifac(n + 1, 1);
+    for (int i = 1; i <= n; i++) fac[i] = fac[i - 1] * i % MOD;
+    ifac[n] = binexp(fac[n], MOD - 2, MOD);
+    for (int i = n; i > 0; i--) ifac[i - 1] = ifac[i] * i % MOD;
+    vector<ll> a = ifac;  // e^x - 1
+    a[0] = 0;
+    vector<ll> b = Poly<MOD, ROOT>::exp(a, n + 1);
     for (int i = 0; i <= n; i++) b[i] = b[i] * fac[i] % MOD;
     return b;
 }

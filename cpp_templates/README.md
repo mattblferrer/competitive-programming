@@ -272,7 +272,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `comb_m` | O(k) nCk mod p without precomputation, useful when n is huge but k is small |
 | `factorial` | exact n! without a modulus (overflows for n > 20), O(n) |
 | `lucas` | nCk mod a prime p (Lucas), O(p) once per p, then O(log_p n) per call |
-| `comb_any` | nCk mod any m (Granville + CRT) |
+| `CombAny` | nCk mod any m (Granville + CRT), O(m) tables, then O(log n) per query per prime power |
 | `OrderTree` | helper for permutations: which of 0..n-1 are still available |
 | `perm_to_factoradic` | factoradic digits of a permutation of 0..n-1 |
 | `factoradic_to_perm` | inverse of perm_to_factoradic, O(n log n) |
@@ -323,6 +323,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `kth_term` | k-th term (0-indexed) of the recurrence s[i] = c[0] * s[i - 1] + c[1] * s[i - 2] + ..., mod a modulus below 2^31 |
 | `kth_term_ntt` | k-th term of a linear recurrence mod an NTT prime (Bostan-Mori), O(d log d log k) |
 | `bernoulli_ntt` | Bernoulli numbers B[0..n] mod an NTT prime, with B[1] = -1/2, O(n log n) |
+| `bell_ntt` | Bell numbers B[0..n] mod an NTT prime, as exp(e^x - 1), O(n log n) |
 | `shift_samples` | h(a), ..., h(a + m - 1) from h(0), ..., h(n - 1) (shift of sampling points), O((n + m) log(n + m)) |
 | `FactorialMod` | n! mod an NTT prime for any n < MOD, block table of (iV)!, O(V) per query |
 | `lagrange` | value at x of the unique polynomial through (xs[i], ys[i]) |

@@ -7,7 +7,7 @@
 //   comb_m              O(k) nCk mod p without precomputation, useful when n is huge but k is small
 //   factorial           exact n! without a modulus (overflows for n > 20), O(n)
 //   lucas               nCk mod a prime p (Lucas), O(p) once per p, then O(log_p n) per call
-//   comb_any            nCk mod any m (Granville + CRT)
+//   CombAny             nCk mod any m (Granville + CRT), O(m) tables, then O(log n) per query per prime power
 //   OrderTree           helper for permutations: which of 0..n-1 are still available
 //   perm_to_factoradic  factoradic digits of a permutation of 0..n-1
 //   factoradic_to_perm  inverse of perm_to_factoradic, O(n log n)
@@ -96,40 +96,50 @@ ll lucas(ll n, ll k, ll p) {
     return res;
 }
 
-// nCk mod any m (Granville + CRT), O(sum of p^e + log n) over the prime powers p^e dividing m; m should be small, m^2 must fit in ll
-ll comb_any(ll n, ll k, ll m) {
-    if (k < 0 || k > n) return 0;
-    ll ans = 0, modulus = 1, rest = m;
-    for (ll p = 2; rest > 1; p++) {
-        if (p * p > rest) p = rest;
-        if (rest % p) continue;
-        ll pe = 1;
-        while (rest % p == 0) {
-            rest /= p;
-            pe *= p;
+// nCk mod any m >= 1 (Granville + CRT over the prime powers p^e dividing m); m should be small, m^2 must fit in ll
+//   CombAny(m)    tables for each p^e, O(m)
+//   (n, k)        nCk mod m for any n, k fitting in ll, O(sum over p^e of log_p n + log m)
+struct CombAny {
+    struct PP { ll p, pe; vector<ll> f; };  // f[i] = product of 1..i without the multiples of p, mod pe
+    ll m;
+    vector<PP> pps;
+
+    CombAny(ll m): m(m) {
+        ll rest = m;
+        for (ll p = 2; rest > 1; p++) {
+            if (p * p > rest) p = rest;
+            if (rest % p) continue;
+            ll pe = 1;
+            while (rest % p == 0) rest /= p, pe *= p;
+            vector<ll> f(pe, 1);
+            for (ll i = 1; i < pe; i++) f[i] = i % p ? f[i - 1] * i % pe : f[i - 1];
+            pps.push_back({p, pe, f});
         }
-        vector<ll> f(pe, 1);  // f[i] = product of 1..i without the multiples of p, mod pe
-        for (ll i = 1; i < pe; i++) f[i] = i % p ? f[i - 1] * i % pe : f[i - 1];
-        ll phi = pe / p * (p - 1);
-        auto fact = [&](ll x, ll &exp) {  // x! = p^exp * (returned unit) mod pe
-            ll r = 1;
-            for (; x > 0; x /= p) {
-                r = r * binexp(f[pe - 1], x / pe, pe) % pe * f[x % pe] % pe;
-                exp += x / p;
-            }
-            return r;
-        };
-        ll en = 0, ek = 0, er = 0;
-        ll a = fact(n, en), b = fact(k, ek), c = fact(n - k, er);
-        ll e = en - ek - er;
-        ll cur = a * binexp(b * c % pe, phi - 1, pe) % pe;
-        cur = cur * binexp(p, e, pe) % pe;
-        ll t = ((cur - ans) % pe + pe) % pe * binexp(modulus % pe, phi - 1, pe) % pe;  // merge with CRT
-        ans += modulus * t;
-        modulus *= pe;
     }
-    return m == 1 ? 0 : ans % m;
-}
+
+    ll operator()(ll n, ll k) const {
+        if (k < 0 || k > n || m == 1) return 0;
+        ll ans = 0, modulus = 1;
+        for (auto &[p, pe, f] : pps) {
+            ll e = 0, phi = pe / p * (p - 1);
+            auto fact = [&](ll x, int sign) {  // unit part of x! mod pe; adds sign * (power of p in x!) to e
+                ll r = 1;
+                for (; x > 0; x /= p) {
+                    r = r * f[x % pe] % pe;
+                    if (x / pe % 2) r = r * f[pe - 1] % pe;  // f[pe - 1] is +-1, so f[pe - 1]^(x / pe) is a sign
+                    e += sign * (x / p);
+                }
+                return r;
+            };
+            ll cur = fact(n, 1) * binexp(fact(k, -1) * fact(n - k, -1) % pe, phi - 1, pe) % pe;
+            cur = cur * binexp(p, e, pe) % pe;
+            ll t = ((cur - ans) % pe + pe) % pe * binexp(modulus % pe, phi - 1, pe) % pe;  // merge with CRT
+            ans += modulus * t;
+            modulus *= pe;
+        }
+        return ans % m;
+    }
+};
 
 // helper for permutations: which of 0..n-1 are still available
 //   OrderTree(n)      all of 0..n-1 available, O(n)
