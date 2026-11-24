@@ -10,7 +10,7 @@
 //   dominator_tree    dominator tree of a directed graph from root (Lengauer-Tarjan), O(E log V)
 //   MaxClique         cliques in a graph on at most N vertices, exponential in the worst case
 //   chromatic_number  fewest colors for a proper vertex coloring (inclusion-exclusion over independent sets)
-//   steiner_tree      weight of the cheapest connected subgraph containing all terminals (Steiner tree)
+//   steiner_tree      cheapest connected subgraph containing all terminals (Steiner tree), as {weight, edge ids}
 //   KShortestWalks    k shortest walks from s to t (Eppstein with a persistent leftist heap)
 //   SimplePaths       k shortest simple paths from s to t (Yen's algorithm): no vertex repeats
 
@@ -599,19 +599,30 @@ int chromatic_number(int n, const vector<pair<int, int>> &edges) {
     return n;
 }
 
-// weight of the cheapest connected subgraph containing all terminals (Steiner tree), INF if impossible; k = number of terminals
-// adj[u] holds {v, w} for both directions of each edge, w >= 0, O(3^k V + 2^k E log V)
-ll steiner_tree(const vector<vector<pair<int, ll>>> &adj, const vector<int> &terminals) {
-    int n = adj.size(), k = terminals.size();
-    if (k == 0) return 0;
-    vector<vector<ll>> dp(1 << k, vector<ll>(n, INF));  // dp[mask][v] = cheapest tree containing mask and v
+// cheapest connected subgraph containing all terminals (Steiner tree): returns {total weight, edge ids}, {INF, {}} if impossible
+// edges are {u, v, w} with w >= 0; k = number of terminals, O(3^k V + 2^k E log V)
+pair<ll, vector<int>> steiner_tree(int n, const vector<array<ll, 3>> &edges, const vector<int> &terminals) {
+    int k = terminals.size();
+    if (k == 0) return {0, {}};
+    vector<vector<pair<int, int>>> adj(n);  // {to, edge id}
+    for (int i = 0; i < (int)edges.size(); i++) {
+        adj[edges[i][0]].push_back({(int)edges[i][1], i});
+        adj[edges[i][1]].push_back({(int)edges[i][0], i});
+    }
+    // dp[mask][v] = cheapest tree containing mask and v; it came from edge via[mask][v] if >= 0,
+    // else from the split sub[mask][v] if > 0, else it is a terminal on its own
+    vector<vector<ll>> dp(1 << k, vector<ll>(n, INF));
+    vector<vector<int>> via(1 << k, vector<int>(n, -1)), sub(1 << k, vector<int>(n, 0));
     for (int i = 0; i < k; i++) dp[1 << i][terminals[i]] = 0;
     for (int mask = 1; mask < (1 << k); mask++) {
         vector<ll> &d = dp[mask];
-        for (int sub = (mask - 1) & mask; sub; sub = (sub - 1) & mask) {
-            if (sub < (mask ^ sub)) continue;  // each split only needs trying once
+        for (int s = (mask - 1) & mask; s; s = (s - 1) & mask) {
+            if (s < (mask ^ s)) continue;  // each split only needs trying once
             for (int v = 0; v < n; v++) {
-                if (dp[sub][v] < INF && dp[mask ^ sub][v] < INF) d[v] = min(d[v], dp[sub][v] + dp[mask ^ sub][v]);
+                if (dp[s][v] < INF && dp[mask ^ s][v] < INF && dp[s][v] + dp[mask ^ s][v] < d[v]) {
+                    d[v] = dp[s][v] + dp[mask ^ s][v];
+                    sub[mask][v] = s;
+                }
             }
         }
         priority_queue<pll, vector<pll>, greater<pll>> pq;
@@ -620,15 +631,33 @@ ll steiner_tree(const vector<vector<pair<int, ll>>> &adj, const vector<int> &ter
             auto [cost, u] = pq.top();
             pq.pop();
             if (cost != d[u]) continue;
-            for (auto [v, w] : adj[u]) {
-                if (cost + w < d[v]) {
-                    d[v] = cost + w;
+            for (auto [v, id] : adj[u]) {
+                if (cost + edges[id][2] < d[v]) {
+                    d[v] = cost + edges[id][2];
+                    via[mask][v] = id;
                     pq.push({d[v], v});
                 }
             }
         }
     }
-    return dp[(1 << k) - 1][terminals[0]];
+    int full = (1 << k) - 1;
+    if (dp[full][terminals[0]] == INF) return {INF, {}};
+    vector<int> used;
+    vector<pair<int, int>> st{{full, terminals[0]}};
+    while (!st.empty()) {
+        auto [mask, v] = st.back();
+        st.pop_back();
+        if (int id = via[mask][v]; id >= 0) {
+            used.push_back(id);
+            st.push_back({mask, int(edges[id][0] ^ edges[id][1] ^ v)});
+        } else if (int s = sub[mask][v]) {
+            st.push_back({s, v});
+            st.push_back({mask ^ s, v});
+        }
+    }
+    sort(used.begin(), used.end());
+    used.erase(unique(used.begin(), used.end()), used.end());  // only zero-weight edges can repeat
+    return {dp[full][terminals[0]], used};
 }
 
 // k shortest walks from s to t (Eppstein with a persistent leftist heap); walks may repeat vertices and edges, weights must be >= 0

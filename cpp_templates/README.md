@@ -145,7 +145,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `dominator_tree` | dominator tree of a directed graph from root (Lengauer-Tarjan), O(E log V) |
 | `MaxClique` | cliques in a graph on at most N vertices, exponential in the worst case |
 | `chromatic_number` | fewest colors for a proper vertex coloring (inclusion-exclusion over independent sets) |
-| `steiner_tree` | weight of the cheapest connected subgraph containing all terminals (Steiner tree) |
+| `steiner_tree` | cheapest connected subgraph containing all terminals (Steiner tree), as {weight, edge ids} |
 | `KShortestWalks` | k shortest walks from s to t (Eppstein with a persistent leftist heap) |
 | `SimplePaths` | k shortest simple paths from s to t (Yen's algorithm): no vertex repeats |
 
