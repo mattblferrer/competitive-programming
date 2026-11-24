@@ -9,7 +9,7 @@
 //   rerooting       answer of a tree DP for every choice of root; returns ans[v] for each v
 //   dsu_on_tree     small-to-large on a tree (DSU on tree / sack)
 //   virtual_tree    virtual tree of the vertices vs, using LCA above; returns {nodes, par}
-//   LinkCutTree     link-cut tree: a forest under link and cut with path sum queries, 0-indexed
+//   LinkCutTree     link-cut tree: a forest under link and cut with path and subtree sum queries, 0-indexed
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -443,7 +443,8 @@ pair<vector<int>, vector<int>> virtual_tree(vector<int> vs, const LCA &l) {
     return {vs, par};
 }
 
-// link-cut tree: a forest under link and cut with path sum queries, 0-indexed; node values start at 0
+// link-cut tree: a forest under link and cut with path and subtree sum queries, 0-indexed; node values start at 0
+// sum is over the splay subtree (a path); sub also counts vir, the sums of the virtual (non-preferred) children
 //   LinkCutTree(n)    n isolated vertices, O(n)
 //   make_root(x)      internal: make internal vertex x the root of its tree, O(log n) amortized
 //   access(x)         internal: expose the root-to-x path, returns the last jump point, O(log n) amortized
@@ -452,12 +453,14 @@ pair<vector<int>, vector<int>> virtual_tree(vector<int> vs, const LCA &l) {
 //   cut(u, v)         remove the edge u - v; false if it doesn't exist, O(log n) amortized
 //   set(v, x)         set the value of v, O(log n) amortized
 //   path_sum(u, v)    sum of the values on the path u - v; re-roots the tree at u; u and v must be connected, O(log n) amortized
+//   subtree_sum(v, p) sum of the values in the subtree of v when the tree is rooted at p (p = v: the whole tree);
+//                     re-roots the tree at p; v and p must be connected, O(log n) amortized
 //   reroot(v)         make v the root of its tree, O(log n) amortized
 //   lca(u, v)         lowest common ancestor for the current root; u and v must be connected, O(log n) amortized
 struct LinkCutTree {
     struct Node {
         int ch[2] = {0, 0}, p = 0;
-        ll val = 0, sum = 0;
+        ll val = 0, sum = 0, vir = 0, sub = 0;
         bool rev = false;
     };
     vector<Node> t;  // internal vertices are 1..n and 0 is null
@@ -470,7 +473,11 @@ struct LinkCutTree {
         return !p || (t[p].ch[0] != x && t[p].ch[1] != x);
     }
 
-    void pull(int x) { t[x].sum = t[t[x].ch[0]].sum + t[x].val + t[t[x].ch[1]].sum; }
+    void pull(int x) {
+        int l = t[x].ch[0], r = t[x].ch[1];
+        t[x].sum = t[l].sum + t[x].val + t[r].sum;
+        t[x].sub = t[l].sub + t[x].val + t[r].sub + t[x].vir;
+    }
 
     void flip(int x) {
         if (!x) return;
@@ -515,6 +522,7 @@ struct LinkCutTree {
         int last = 0;
         for (int y = x; y; y = t[y].p) {
             splay(y);
+            t[y].vir += t[t[y].ch[1]].sub - t[last].sub;  // the old preferred child becomes virtual
             t[y].ch[1] = last;
             pull(y);
             last = y;
@@ -544,7 +552,10 @@ struct LinkCutTree {
     bool link(int u, int v) {
         if (connected(u, v)) return false;
         make_root(u + 1);
+        access(v + 1);
         t[u + 1].p = v + 1;
+        t[v + 1].vir += t[u + 1].sub;
+        pull(v + 1);
         return true;
     }
 
@@ -573,6 +584,12 @@ struct LinkCutTree {
         make_root(u + 1);
         access(v + 1);
         return t[v + 1].sum;
+    }
+
+    ll subtree_sum(int v, int p) {
+        make_root(p + 1);
+        access(v + 1);
+        return t[v + 1].val + t[v + 1].vir;
     }
 
     void reroot(int v) { make_root(v + 1); }

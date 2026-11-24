@@ -185,7 +185,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `rerooting` | answer of a tree DP for every choice of root; returns ans[v] for each v |
 | `dsu_on_tree` | small-to-large on a tree (DSU on tree / sack) |
 | `virtual_tree` | virtual tree of the vertices vs, using LCA above; returns {nodes, par} |
-| `LinkCutTree` | link-cut tree: a forest under link and cut with path sum queries, 0-indexed |
+| `LinkCutTree` | link-cut tree: a forest under link and cut with path and subtree sum queries, 0-indexed |
 
 ## Strings
 
