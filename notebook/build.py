@@ -60,7 +60,9 @@ SECTIONS = [
         ("matrix.cpp", "Matrix"),
         ("linear_algebra.cpp", "Linear Algebra", ["binexp", "gauss_jordan", "solve_linear", "det_mod", "count_spanning_trees", "XorBasis"]),
         ("fft.cpp", "FFT / NTT"),
-        ("polynomial.cpp", "Polynomials"),
+        ("polynomial.cpp", "Polynomials", ["binexp", "NTT", "Poly", "poly_divide_real", "berlekamp_massey", "kth_term",
+                                           "kth_term_ntt", "bernoulli_ntt", "bell_ntt", "shift_samples", "FactorialMod",
+                                           "lagrange", "lagrange_consecutive"]),  # mod_sqrt is printed in Number Theory
         ("bitmask.cpp", "Bitmask Transforms"),
     ]),
     ("Geometry", [

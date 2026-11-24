@@ -318,6 +318,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | Name | Description |
 | --- | --- |
 | `binexp` | a^b mod mod, O(log b) |
+| `mod_sqrt` | a square root of a mod the prime p, -1 if none (copy of the Number Theory one) |
 | `NTT` | number theoretic transform, each MOD and ROOT pair is its own type |
 | `Poly` | polynomial operations mod MOD, using NTT above; a[i] is the coefficient of x^i |
 | `poly_divide_real` | long division of real polynomials: returns {quotient, remainder} of a / b |

@@ -1,5 +1,6 @@
 // Contents
 //   binexp                a^b mod mod, O(log b)
+//   mod_sqrt              a square root of a mod the prime p, -1 if none (copy of the Number Theory one)
 //   NTT                   number theoretic transform, each MOD and ROOT pair is its own type
 //   Poly                  polynomial operations mod MOD, using NTT above; a[i] is the coefficient of x^i
 //   poly_divide_real      long division of real polynomials: returns {quotient, remainder} of a / b
@@ -30,6 +31,40 @@ ll binexp(ll a, ll b, ll mod) {
         b >>= 1;
     }
     return ans;
+}
+
+// copy of mod_sqrt from number_theory.cpp, for Poly::sqrt; left out of the notebook (see Number Theory)
+// a square root of a mod the prime p (Tonelli-Shanks), the smaller of the two; -1 if none exists; p below 2^31, O(log^2 p)
+ll mod_sqrt(ll a, ll p) {
+    a = (a % p + p) % p;
+    if (a == 0 || p == 2) return a;
+    if (binexp(a, (p - 1) / 2, p) != 1) return -1;
+    ll r;
+    if (p % 4 == 3) {
+        r = binexp(a, (p + 1) / 4, p);
+    } else {
+        ll q = p - 1, z = 2;
+        int s = 0;
+        while (q % 2 == 0) {
+            q /= 2;
+            s++;
+        }
+        while (binexp(z, (p - 1) / 2, p) != p - 1) z++;
+        int m = s;
+        ll c = binexp(z, q, p), t = binexp(a, q, p);
+        r = binexp(a, (q + 1) / 2, p);
+        while (t != 1) {
+            int i = 0;
+            for (ll x = t; x != 1; x = x * x % p) i++;
+            ll b = c;
+            for (int j = 0; j < m - i - 1; j++) b = b * b % p;
+            m = i;
+            c = b * b % p;
+            t = t * c % p;
+            r = r * b % p;
+        }
+    }
+    return min(r, p - r);
 }
 
 // number theoretic transform, each MOD and ROOT pair is its own type:
@@ -143,7 +178,7 @@ struct NTT {
 //   sub(a, b)            a - b, O(n)
 //   mul(a, b)            a * b, O(n log n)
 //   inv(a, n)            1 / a mod x^n; requires a[0] != 0, O(n log n)
-//   sqrt(a, n)           square root of a mod x^n; requires a[0] == 1, O(n log n)
+//   sqrt(a, n)           a square root of a mod x^n, empty if none exists; uses mod_sqrt, O(n log n)
 //   divmod(f, g)         {quotient, remainder} of f / g; the leading coefficient of g must be nonzero, O(N log N)
 //   deriv(a)             derivative of a, O(n)
 //   integ(a)             integral of a with constant term 0; requires deg a + 1 < MOD, O(n)
@@ -194,17 +229,22 @@ struct Poly {
     }
 
     static V sqrt(const V &a, int n) {
-        assert(a[0] == 1);
-        V r{1};
-        ll half = (MOD + 1) / 2;
-        for (int m = 1; m < n; m *= 2) {
-            V f(a.begin(), a.begin() + min((int)a.size(), 2 * m));
-            V q = mul(f, inv(r, 2 * m));  // r must be inverted to the new length, not the old one
-            q.resize(2 * m);
-            r.resize(2 * m);
-            for (int i = 0; i < 2 * m; i++) r[i] = (r[i] + q[i]) % MOD * half % MOD;
+        int t = 0;  // a = x^t * b with b[0] != 0: needs t even and b[0] a square, then sqrt(a) = x^(t/2) * sqrt(b)
+        while (t < (int)a.size() && a[t] == 0) t++;
+        if (t >= n || t == (int)a.size()) return V(n, 0);
+        ll s = mod_sqrt(a[t], MOD), half = (MOD + 1) / 2;
+        if (t % 2 || s == -1) return {};
+        V b(a.begin() + t, a.end()), r{s};  // Newton works from any r with r^2 = b[0], not just 1
+        int m = n - t / 2;
+        for (int k = 1; k < m; k *= 2) {
+            V f(b.begin(), b.begin() + min((int)b.size(), 2 * k));
+            V q = mul(f, inv(r, 2 * k));  // r must be inverted to the new length, not the old one
+            q.resize(2 * k);
+            r.resize(2 * k);
+            for (int i = 0; i < 2 * k; i++) r[i] = (r[i] + q[i]) % MOD * half % MOD;
         }
-        r.resize(n);
+        r.resize(m);
+        r.insert(r.begin(), t / 2, 0);
         return r;
     }
 
