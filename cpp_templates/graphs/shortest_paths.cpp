@@ -1,8 +1,10 @@
 // Contents
-//   BellmanFord    single-source shortest paths, negative weights allowed
-//   FloydWarshall  all-pairs shortest paths; adj[i][j] = weight, 0 means no edge
-//   Dijkstra       single-source shortest paths, non-negative weights only
-//   zero_one_bfs   shortest paths from s when every edge weight is 0 or 1 (0-1 BFS), INF if unreachable
+//   topo_sort       Kahn's algorithm, O(V + E); returns vertices in topological order
+//   BellmanFord     single-source shortest paths, negative weights allowed
+//   FloydWarshall   all-pairs shortest paths; adj[i][j] = weight, 0 means no edge
+//   Dijkstra        single-source shortest paths, non-negative weights only
+//   zero_one_bfs    shortest paths from s when every edge weight is 0 or 1 (0-1 BFS), INF if unreachable
+//   min_mean_cycle  smallest average edge weight over all directed cycles (Karp)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -10,6 +12,26 @@ using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
 const ll INF = 2e18;
+
+// Kahn's algorithm, O(V + E); returns vertices in topological order,
+// or an empty vector if the graph has a cycle
+vector<int> topo_sort(const vector<vector<int>> &adj_list) {
+    int n = adj_list.size();
+    vector<int> indeg(n), order;
+    for (auto &edges : adj_list) {
+        for (int v : edges) indeg[v]++;
+    }
+    for (int u = 0; u < n; u++) {
+        if (!indeg[u]) order.push_back(u);
+    }
+    for (int i = 0; i < (int)order.size(); i++) {
+        for (int v : adj_list[order[i]]) {
+            if (--indeg[v] == 0) order.push_back(v);
+        }
+    }
+    if ((int)order.size() < n) return {};
+    return order;
+}
 
 // single-source shortest paths, negative weights allowed
 //   BellmanFord(start, n, edges)   edges: {u, v, w}; pass with move() to avoid copying, O(V)
@@ -131,4 +153,26 @@ vector<ll> zero_one_bfs(const vector<vector<pair<int, int>>> &adj, int s) {
         }
     }
     return dist;
+}
+
+// smallest average edge weight over all directed cycles (Karp), INF if the graph is acyclic, O(VE)
+// edges are {u, v, w}
+ld min_mean_cycle(int n, const vector<array<ll, 3>> &edges) {
+    vector<vector<ll>> dp(n + 1, vector<ll>(n, INF));
+    fill(dp[0].begin(), dp[0].end(), 0);
+    for (int k = 1; k <= n; k++) {
+        for (auto &[u, v, w] : edges) {
+            if (dp[k - 1][u] < INF) dp[k][v] = min(dp[k][v], dp[k - 1][u] + w);
+        }
+    }
+    ld best = INF;
+    for (int u = 0; u < n; u++) {
+        if (dp[n][u] == INF) continue;
+        ld worst = -INF;
+        for (int k = 0; k < n; k++) {
+            if (dp[k][u] < INF) worst = max(worst, (ld)(dp[n][u] - dp[k][u]) / (n - k));
+        }
+        best = min(best, worst);
+    }
+    return best;
 }

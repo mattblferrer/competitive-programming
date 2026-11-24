@@ -1,15 +1,16 @@
 # C++ Templates
 
 Every top-level struct and function in this folder, taken from the `// Contents` block at the top of each file.
+Each folder is one chapter of the notebook; the contest template `new_file.cpp` sits at the top level for quick access.
 
-- [Contest](#contest): [`new_file.cpp`](new_file.cpp), [`stress_gen.cpp`](stress_gen.cpp), [`safe_hash.cpp`](safe_hash.cpp)
-- [Data Structures](#data-structures): [`data_structures.cpp`](data_structures.cpp), [`dsu.cpp`](dsu.cpp), [`segment_tree.cpp`](segment_tree.cpp), [`monoids.cpp`](monoids.cpp), [`persistent_segment_tree.cpp`](persistent_segment_tree.cpp)
-- [Graphs](#graphs): [`graph_search.cpp`](graph_search.cpp), [`shortest_paths.cpp`](shortest_paths.cpp), [`graph_algorithms.cpp`](graph_algorithms.cpp), [`flows.cpp`](flows.cpp), [`min_cost_flow.cpp`](min_cost_flow.cpp), [`matching.cpp`](matching.cpp), [`trees.cpp`](trees.cpp)
-- [Strings](#strings): [`strings.cpp`](strings.cpp)
-- [Math](#math): [`modint.cpp`](modint.cpp), [`big_integer.cpp`](big_integer.cpp), [`hex_big_integer.cpp`](hex_big_integer.cpp), [`number_theory.cpp`](number_theory.cpp), [`combinatorics.cpp`](combinatorics.cpp), [`matrix.cpp`](matrix.cpp), [`linear_algebra.cpp`](linear_algebra.cpp), [`fft.cpp`](fft.cpp), [`polynomial.cpp`](polynomial.cpp), [`bitmask.cpp`](bitmask.cpp)
-- [Geometry](#geometry): [`geometry.cpp`](geometry.cpp)
-- [DP and Search](#dp-and-search): [`binary_ternary_search.cpp`](binary_ternary_search.cpp), [`dp_optimizations.cpp`](dp_optimizations.cpp)
-- [Miscellaneous](#miscellaneous): [`misc.cpp`](misc.cpp)
+- [Contest](#contest): [`new_file.cpp`](new_file.cpp), [`stress_gen.cpp`](contest/stress_gen.cpp), [`safe_hash.cpp`](contest/safe_hash.cpp)
+- [Data Structures](#data-structures): [`dsu.cpp`](data_structures/dsu.cpp), [`fenwick.cpp`](data_structures/fenwick.cpp), [`sparse_table.cpp`](data_structures/sparse_table.cpp), [`segment_tree.cpp`](data_structures/segment_tree.cpp), [`wavelet.cpp`](data_structures/wavelet.cpp), [`treap.cpp`](data_structures/treap.cpp), [`offline.cpp`](data_structures/offline.cpp), [`misc.cpp`](data_structures/misc.cpp), [`monoids.cpp`](data_structures/monoids.cpp), [`persistent_segment_tree.cpp`](data_structures/persistent_segment_tree.cpp)
+- [Graphs](#graphs): [`shortest_paths.cpp`](graphs/shortest_paths.cpp), [`scc.cpp`](graphs/scc.cpp), [`biconnected.cpp`](graphs/biconnected.cpp), [`euler.cpp`](graphs/euler.cpp), [`spanning_trees.cpp`](graphs/spanning_trees.cpp), [`dominator_tree.cpp`](graphs/dominator_tree.cpp), [`np_hard.cpp`](graphs/np_hard.cpp), [`k_shortest_paths.cpp`](graphs/k_shortest_paths.cpp), [`flows.cpp`](graphs/flows.cpp), [`min_cost_flow.cpp`](graphs/min_cost_flow.cpp), [`matching.cpp`](graphs/matching.cpp), [`trees.cpp`](graphs/trees.cpp)
+- [Strings](#strings): [`strings.cpp`](strings/strings.cpp)
+- [Math](#math): [`modint.cpp`](math/modint.cpp), [`number_theory.cpp`](math/number_theory.cpp), [`combinatorics.cpp`](math/combinatorics.cpp), [`matrix.cpp`](math/matrix.cpp), [`linear_algebra.cpp`](math/linear_algebra.cpp), [`fft.cpp`](math/fft.cpp), [`polynomial.cpp`](math/polynomial.cpp), [`bitmask.cpp`](math/bitmask.cpp), [`big_integer.cpp`](math/big_integer.cpp), [`hex_big_integer.cpp`](math/hex_big_integer.cpp), [`simplex.cpp`](math/simplex.cpp)
+- [Geometry](#geometry): [`geometry.cpp`](geometry/geometry.cpp)
+- [DP and Search](#dp-and-search): [`binary_ternary_search.cpp`](dp_search/binary_ternary_search.cpp), [`dp_optimizations.cpp`](dp_search/dp_optimizations.cpp)
+- [Miscellaneous](#miscellaneous): [`sat.cpp`](misc/sat.cpp), [`dlx.cpp`](misc/dlx.cpp), [`misc.cpp`](misc/misc.cpp)
 
 ## Contest
 
@@ -17,7 +18,7 @@ Every top-level struct and function in this folder, taken from the `// Contents`
 
 Contest starting template: includes, type aliases, constants, `dbg` macro and a multi-test `main`.
 
-### [`stress_gen.cpp`](stress_gen.cpp)
+### [`contest/stress_gen.cpp`](contest/stress_gen.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -28,7 +29,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `rnd_tree` | random tree on vertices 1..n as n - 1 edges; shape 0 = uniform parents, 1 = path |
 | `rnd_graph` | random simple graph on vertices 1..n with m edges (no loops or repeats) |
 
-### [`safe_hash.cpp`](safe_hash.cpp)
+### [`contest/safe_hash.cpp`](contest/safe_hash.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -38,34 +39,31 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 
 ## Data Structures
 
-### [`data_structures.cpp`](data_structures.cpp)
-
-| Name | Description |
-| --- | --- |
-| `IndexedSet` | set with order statistics: s.find_by_order(k) (0-indexed iterator) |
-| `Compressor` | coordinate compression |
-| `Fenwick` | Fenwick tree (0-indexed) |
-| `RangeFenwick` | Fenwick tree with range update, point query (0-indexed) |
-| `MinStack` | stack with minimum query |
-| `MinQueue` | queue with minimum query |
-| `MisofTree` | multiset of integers in [0, 2^BITS) |
-| `hilbert_order` | position of (x, y) along a Hilbert curve of order pow; requires x, y < 2^pow, O(pow) |
-| `mo` | Mo's algorithm with Hilbert ordering; queries are {l, r} over [l, r) |
-| `MinOp` | example idempotent op (min) for SparseTable |
-| `SparseTable` | static range query for idempotent ops (min, max, gcd), O(1) |
-| `SparseTable2D` | static rectangle query for idempotent ops |
-| `RollbackDSU` | DSU with undo, example structure for OfflineDynamic below; D needs Op, snapshot() |
-| `OfflineDynamic` | segment tree over time |
-| `ImplicitTreap` | implicit treap over a lazy spec: insert/erase anywhere, range update, reverse and fold |
-| `WaveletMatrix` | wavelet matrix: static order statistics on subarrays, online; values can be any integers |
-
-### [`dsu.cpp`](dsu.cpp)
+### [`data_structures/dsu.cpp`](data_structures/dsu.cpp)
 
 | Name | Description |
 | --- | --- |
 | `DSU` | disjoint set union with path compression and union by size |
+| `RollbackDSU` | DSU with undo, example structure for OfflineDynamic below; D needs Op, snapshot() |
+| `SumDSU` | RollbackDSU with component sums and point adds, for OfflineDynamic |
+| `OfflineDynamic` | segment tree over time |
 
-### [`segment_tree.cpp`](segment_tree.cpp)
+### [`data_structures/fenwick.cpp`](data_structures/fenwick.cpp)
+
+| Name | Description |
+| --- | --- |
+| `Fenwick` | Fenwick tree (0-indexed) |
+| `RangeFenwick` | Fenwick tree with range update, point query (0-indexed) |
+
+### [`data_structures/sparse_table.cpp`](data_structures/sparse_table.cpp)
+
+| Name | Description |
+| --- | --- |
+| `MinOp` | example idempotent op (min) for SparseTable |
+| `SparseTable` | static range query for idempotent ops (min, max, gcd), O(1) |
+| `SparseTable2D` | static rectangle query for idempotent ops |
+
+### [`data_structures/segment_tree.cpp`](data_structures/segment_tree.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -75,10 +73,39 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `LazySegTree` | lazy segment tree (iterative), range update and query on [l, r) |
 | `SegTree2D` | 2D segment tree (iterative), point update |
 | `DynamicSegTree` | implicit segment tree on any integer range [lo, hi) |
-| `MergeSortTree` | merge sort tree: static counting of values in a range, online |
 | `SegTreeBeats` | segment tree beats on [l, r): range chmin, chmax and add with sum, max and min queries |
 
-### [`monoids.cpp`](monoids.cpp)
+### [`data_structures/wavelet.cpp`](data_structures/wavelet.cpp)
+
+| Name | Description |
+| --- | --- |
+| `WaveletMatrix` | wavelet matrix: static order statistics on subarrays, online; values can be any integers |
+| `MergeSortTree` | merge sort tree: static counting of values in a range, online |
+
+### [`data_structures/treap.cpp`](data_structures/treap.cpp)
+
+| Name | Description |
+| --- | --- |
+| `ImplicitTreap` | implicit treap over a lazy spec: insert/erase anywhere, range update, reverse and fold |
+| `IndexedSet` | set with order statistics: s.find_by_order(k) (0-indexed iterator) |
+
+### [`data_structures/offline.cpp`](data_structures/offline.cpp)
+
+| Name | Description |
+| --- | --- |
+| `hilbert_order` | position of (x, y) along a Hilbert curve of order pow; requires x, y < 2^pow, O(pow) |
+| `mo` | Mo's algorithm with Hilbert ordering; queries are {l, r} over [l, r) |
+
+### [`data_structures/misc.cpp`](data_structures/misc.cpp)
+
+| Name | Description |
+| --- | --- |
+| `Compressor` | coordinate compression |
+| `MinStack` | stack with minimum query |
+| `MinQueue` | queue with minimum query |
+| `MisofTree` | multiset of integers in [0, 2^BITS) |
+
+### [`data_structures/monoids.cpp`](data_structures/monoids.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -102,7 +129,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `BitRuns` | range assign / flip on a 0-1 array, count of ones and longest run |
 | `SetMaxSub` | range assign, maximum subarray sum |
 
-### [`persistent_segment_tree.cpp`](persistent_segment_tree.cpp)
+### [`data_structures/persistent_segment_tree.cpp`](data_structures/persistent_segment_tree.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -115,54 +142,79 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 
 ## Graphs
 
-### [`graph_search.cpp`](graph_search.cpp)
+### [`graphs/shortest_paths.cpp`](graphs/shortest_paths.cpp)
 
 | Name | Description |
 | --- | --- |
 | `topo_sort` | Kahn's algorithm, O(V + E); returns vertices in topological order |
-
-### [`shortest_paths.cpp`](shortest_paths.cpp)
-
-| Name | Description |
-| --- | --- |
 | `BellmanFord` | single-source shortest paths, negative weights allowed |
 | `FloydWarshall` | all-pairs shortest paths; adj[i][j] = weight, 0 means no edge |
 | `Dijkstra` | single-source shortest paths, non-negative weights only |
 | `zero_one_bfs` | shortest paths from s when every edge weight is 0 or 1 (0-1 BFS), INF if unreachable |
+| `min_mean_cycle` | smallest average edge weight over all directed cycles (Karp) |
 
-### [`graph_algorithms.cpp`](graph_algorithms.cpp)
+### [`graphs/scc.cpp`](graphs/scc.cpp)
 
 | Name | Description |
 | --- | --- |
 | `SCC` | strongly connected components (Tarjan, iterative so deep graphs can't overflow the stack), 0-indexed |
 | `TwoSat` | 2-SAT, uses SCC above |
-| `min_mean_cycle` | smallest average edge weight over all directed cycles (Karp) |
+
+### [`graphs/biconnected.cpp`](graphs/biconnected.cpp)
+
+| Name | Description |
+| --- | --- |
 | `Biconnected` | bridges, articulation points and biconnected components of an undirected graph |
-| `kruskal` | minimum spanning forest (Kruskal), edges are {w, u, v} |
+
+### [`graphs/euler.cpp`](graphs/euler.cpp)
+
+| Name | Description |
+| --- | --- |
 | `euler_directed` | Euler path/cycle in a directed graph, as {vertices, edge ids} |
 | `euler_undirected` | Euler path/cycle in an undirected graph, as {vertices, edge ids} |
+
+### [`graphs/spanning_trees.cpp`](graphs/spanning_trees.cpp)
+
+| Name | Description |
+| --- | --- |
+| `kruskal` | minimum spanning forest (Kruskal), edges are {w, u, v} |
 | `Arborescence` | minimum spanning arborescence (Chu-Liu/Edmonds) |
+
+### [`graphs/dominator_tree.cpp`](graphs/dominator_tree.cpp)
+
+| Name | Description |
+| --- | --- |
 | `dominator_tree` | dominator tree of a directed graph from root (Lengauer-Tarjan), O(E log V) |
+
+### [`graphs/np_hard.cpp`](graphs/np_hard.cpp)
+
+| Name | Description |
+| --- | --- |
 | `MaxClique` | cliques in a graph on at most N vertices, exponential in the worst case |
 | `chromatic_number` | fewest colors for a proper vertex coloring (inclusion-exclusion over independent sets) |
 | `steiner_tree` | cheapest connected subgraph containing all terminals (Steiner tree), as {weight, edge ids} |
+
+### [`graphs/k_shortest_paths.cpp`](graphs/k_shortest_paths.cpp)
+
+| Name | Description |
+| --- | --- |
 | `KShortestWalks` | k shortest walks from s to t (Eppstein with a persistent leftist heap) |
 | `SimplePaths` | k shortest simple paths from s to t (Yen's algorithm): no vertex repeats |
 
-### [`flows.cpp`](flows.cpp)
+### [`graphs/flows.cpp`](graphs/flows.cpp)
 
 | Name | Description |
 | --- | --- |
 | `Flow` | Dinic's algorithm, O(V^2 E) |
 | `GomoryHu` | all-pairs max flow on an undirected graph (Gomory-Hu tree), uses Flow above |
 
-### [`min_cost_flow.cpp`](min_cost_flow.cpp)
+### [`graphs/min_cost_flow.cpp`](graphs/min_cost_flow.cpp)
 
 | Name | Description |
 | --- | --- |
 | `MinCostFlow` | min cost max flow (successive shortest paths with potentials); negative costs are fine |
 
-### [`matching.cpp`](matching.cpp)
+### [`graphs/matching.cpp`](graphs/matching.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -171,7 +223,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `Blossom` | maximum matching in a general graph (Edmonds' blossom) |
 | `stable_marriage` | stable marriage (Gale-Shapley), O(n^2): men[i] and women[i] are preference lists |
 
-### [`trees.cpp`](trees.cpp)
+### [`graphs/trees.cpp`](graphs/trees.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -189,7 +241,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 
 ## Strings
 
-### [`strings.cpp`](strings.cpp)
+### [`strings/strings.cpp`](strings/strings.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -208,25 +260,13 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 
 ## Math
 
-### [`modint.cpp`](modint.cpp)
+### [`math/modint.cpp`](math/modint.cpp)
 
 | Name | Description |
 | --- | --- |
 | `ModInt` | modular integer with a compile-time modulus |
 
-### [`big_integer.cpp`](big_integer.cpp)
-
-| Name | Description |
-| --- | --- |
-| `BigInt` | arbitrary-precision signed integer in base 1e9 limbs |
-
-### [`hex_big_integer.cpp`](hex_big_integer.cpp)
-
-| Name | Description |
-| --- | --- |
-| `HexBigInt` | arbitrary-precision signed hex integer in base 2^28 limbs (7 hex digits each) |
-
-### [`number_theory.cpp`](number_theory.cpp)
+### [`math/number_theory.cpp`](math/number_theory.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -262,7 +302,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `tetration` | a^^b = a^(a^(...^a)) (b copies of a) mod m, with a^^0 = 1 and 0^0 = 1 |
 | `count_squarefree` | number of squarefree integers in [1, n], n up to 1e18, O(n^(2/5)) |
 
-### [`combinatorics.cpp`](combinatorics.cpp)
+### [`math/combinatorics.cpp`](math/combinatorics.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -280,13 +320,13 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `factoradic_to_perm` | inverse of perm_to_factoradic, O(n log n) |
 | `kth_permutation` | k-th permutation of 0..n-1 in lexicographic order (0-indexed); k is taken mod n! |
 
-### [`matrix.cpp`](matrix.cpp)
+### [`math/matrix.cpp`](math/matrix.cpp)
 
 | Name | Description |
 | --- | --- |
 | `Matrix` | dense matrix with entries mod MOD |
 
-### [`linear_algebra.cpp`](linear_algebra.cpp)
+### [`math/linear_algebra.cpp`](math/linear_algebra.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -301,7 +341,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `count_spanning_trees` | number of spanning trees of a multigraph mod a prime (Kirchhoff), O(n^3) |
 | `XorBasis` | XOR linear basis over values in [0, 2^BITS), BITS <= 62 |
 
-### [`fft.cpp`](fft.cpp)
+### [`math/fft.cpp`](math/fft.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -313,7 +353,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `convolution_any_mod` | product of polynomials a and b mod any modulus below 2^31 |
 | `convolution_mod_2_64` | product of polynomials a and b mod 2^64 |
 
-### [`polynomial.cpp`](polynomial.cpp)
+### [`math/polynomial.cpp`](math/polynomial.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -332,7 +372,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `lagrange` | value at x of the unique polynomial through (xs[i], ys[i]) |
 | `lagrange_consecutive` | value at x of the unique polynomial with p(i) = ys[i] for i = 0..n-1 |
 
-### [`bitmask.cpp`](bitmask.cpp)
+### [`math/bitmask.cpp`](math/bitmask.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -344,9 +384,27 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `and_convolution` | c[k] = sum of a[i] * b[j] over all i & j == k, O(n log n) |
 | `xor_convolution` | c[k] = sum of a[i] * b[j] over all i ^ j == k, O(n log n) |
 
+### [`math/big_integer.cpp`](math/big_integer.cpp)
+
+| Name | Description |
+| --- | --- |
+| `BigInt` | arbitrary-precision signed integer in base 1e9 limbs |
+
+### [`math/hex_big_integer.cpp`](math/hex_big_integer.cpp)
+
+| Name | Description |
+| --- | --- |
+| `HexBigInt` | arbitrary-precision signed hex integer in base 2^28 limbs (7 hex digits each) |
+
+### [`math/simplex.cpp`](math/simplex.cpp)
+
+| Name | Description |
+| --- | --- |
+| `Simplex` | two-phase simplex: maximize c^T x subject to A x <= b, x >= 0; A is m x n |
+
 ## Geometry
 
-### [`geometry.cpp`](geometry.cpp)
+### [`geometry/geometry.cpp`](geometry/geometry.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -407,14 +465,14 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 
 ## DP and Search
 
-### [`binary_ternary_search.cpp`](binary_ternary_search.cpp)
+### [`dp_search/binary_ternary_search.cpp`](dp_search/binary_ternary_search.cpp)
 
 | Name | Description |
 | --- | --- |
 | `ternary_search_int` | smallest x in [lo, hi] minimizing f, O(log(hi - lo)) calls to f; f must fall, then rise |
 | `ternary_search_real` | x in [lo, hi] minimizing a real function that falls and then rises, O(iters) calls to f |
 
-### [`dp_optimizations.cpp`](dp_optimizations.cpp)
+### [`dp_search/dp_optimizations.cpp`](dp_search/dp_optimizations.cpp)
 
 | Name | Description |
 | --- | --- |
@@ -426,11 +484,22 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 
 ## Miscellaneous
 
-### [`misc.cpp`](misc.cpp)
+### [`misc/sat.cpp`](misc/sat.cpp)
 
 | Name | Description |
 | --- | --- |
 | `SAT` | SAT solver (DPLL with watched literals); variables are 1..n, literal -x means "not x" |
+
+### [`misc/dlx.cpp`](misc/dlx.cpp)
+
+| Name | Description |
+| --- | --- |
+| `DLX` | exact cover with dancing links (Algorithm X) |
+
+### [`misc/misc.cpp`](misc/misc.cpp)
+
+| Name | Description |
+| --- | --- |
 | `find_cycle` | Floyd's cycle finding on x0, f(x0), f(f(x0)), ...: returns {mu, lambda} (tail length, cycle length), O(mu + lambda) |
 | `lis` | indices of a longest strictly increasing subsequence of a, O(n log n) |
 | `date_to_int` | day number (Julian day) of a Gregorian date, O(1) |
@@ -438,9 +507,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `int_to_day` | day of the week of a day number, 0 = Monday, O(1) |
 | `cur_time` | current CPU time in seconds, O(1) |
 | `simulated_annealing` | simulated annealing example |
-| `Simplex` | two-phase simplex: maximize c^T x subject to A x <= b, x >= 0; A is m x n |
 | `read_int` | reads the next integer from stdin into x, false at end of input, O(digits) |
 | `next_bit_perm` | next larger integer with the same number of set bits; requires x > 0, O(1) |
 | `is_square` | true if x is a perfect square, O(1) |
 | `simpson` | numeric integral of f over [a, b] by Simpson's rule, O(steps); steps must be even |
-| `DLX` | exact cover with dancing links (Algorithm X) |

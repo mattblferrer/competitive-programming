@@ -5,7 +5,6 @@
 //   LazySegTree     lazy segment tree (iterative), range update and query on [l, r)
 //   SegTree2D       2D segment tree (iterative), point update
 //   DynamicSegTree  implicit segment tree on any integer range [lo, hi)
-//   MergeSortTree   merge sort tree: static counting of values in a range, online
 //   SegTreeBeats    segment tree beats on [l, r): range chmin, chmax and add with sum, max and min queries
 
 #include <bits/stdc++.h>
@@ -264,40 +263,6 @@ struct DynamicSegTree {
         ll m = a + (b - a) / 2;
         return M::op(query_node(t[x].l, a, m, l, r), query_node(t[x].r, m, b, l, r));
     }
-};
-
-// merge sort tree: static counting of values in a range, online
-//   MergeSortTree(a)          build from a, O(n log n)
-//   count_less(l, r, x)       number of i in [l, r) with a[i] < x, O(log^2 n)
-//   count_range(l, r, x, y)   number of i in [l, r) with x <= a[i] < y, O(log^2 n)
-struct MergeSortTree {
-    int n;
-    vector<vector<ll>> t;
-
-    MergeSortTree(const vector<ll> &a): n(a.size()), t(2 * a.size()) {
-        for (int i = 0; i < n; i++) t[n + i] = {a[i]};
-        for (int i = n - 1; i > 0; i--) {
-            t[i].resize(t[2 * i].size() + t[2 * i + 1].size());
-            merge(t[2 * i].begin(), t[2 * i].end(), t[2 * i + 1].begin(), t[2 * i + 1].end(), t[i].begin());
-        }
-    }
-
-    int count_less(int l, int r, ll x) const {
-        int res = 0;
-        for (l += n, r += n; l < r; l >>= 1, r >>= 1) {
-            if (l & 1) {
-                res += lower_bound(t[l].begin(), t[l].end(), x) - t[l].begin();
-                l++;
-            }
-            if (r & 1) {
-                r--;
-                res += lower_bound(t[r].begin(), t[r].end(), x) - t[r].begin();
-            }
-        }
-        return res;
-    }
-
-    int count_range(int l, int r, ll x, ll y) const { return count_less(l, r, y) - count_less(l, r, x); }
 };
 
 // segment tree beats on [l, r): range chmin, chmax and add with sum, max and min queries

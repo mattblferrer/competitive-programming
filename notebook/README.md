@@ -27,9 +27,12 @@ Rebuild after changing a template so the notebook stays in sync. The script:
   syntax-checked before and after so a condensed file that stops compiling fails the build
 - warns about templates missing from `SECTIONS` and about going over `PAGE_LIMIT`
 
+`SECTIONS` entries are paths relative to `cpp_templates/`, whose folders match the notebook's chapters.
 To fit a page limit, remove entries from `SECTIONS` or reduce `CODE_FONT_PT`. To print only part of a
-file, list the names to keep: `("misc.cpp", "SAT Solver", ["SAT"])` keeps just the `SAT` struct and
-its doc comment.
+file, list the names to keep: `("data_structures/dsu.cpp", "DSU", ["DSU", "RollbackDSU", "OfflineDynamic"])`
+keeps just those three components and their doc comments.
 
-The current build fits the 25-page ICPC limit. It leaves out `big_integer.cpp`, `hex_big_integer.cpp`,
-`persistent_segment_tree.cpp`, and everything in `misc.cpp` except the SAT solver.
+The current build fits the 25-page ICPC limit. It leaves out `math/big_integer.cpp`, `math/hex_big_integer.cpp`,
+`math/simplex.cpp`, `data_structures/monoids.cpp`, `data_structures/persistent_segment_tree.cpp`, `misc/dlx.cpp`,
+`misc/misc.cpp`, `SumDSU`, the modular solvers in `math/linear_algebra.cpp`, and the copy of `mod_sqrt` in
+`math/polynomial.cpp` (Number Theory prints it).

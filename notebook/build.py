@@ -25,55 +25,66 @@ COMPACT = True  # drop blank lines from the code (the template keeps its own)
 CONDENSE = True  # put lines that only close braces ("}", "};", "});") at the end of the line above
 INDENT = 2  # spaces per indent level in the printed code (the templates use 4); None keeps 4
 
-# (section title, [entries]); an entry is a .cpp in cpp_templates/ or a .tex in content/,
-# either bare or as (file, title). A .cpp entry can also be (file, title, [names]) to print
-# only the components (structs/functions with their doc comments) that define those names.
+# (section title, [entries]); an entry is a .cpp path relative to cpp_templates/ (whose folders match these
+# chapters) or a .tex in content/, either bare or as (file, title). A .cpp entry can also be (file, title, [names])
+# to print only the components (structs/functions with their doc comments) that define those names.
 # Templates not listed here are reported, not included.
 SECTIONS = [
     ("Contest", [
         ("new_file.cpp", "Template"),
         ("contest.tex", "Commands and Checklist"),
-        ("stress_gen.cpp", "Stress Test Generator"),
-        ("safe_hash.cpp", "Safe Hash"),
+        ("contest/stress_gen.cpp", "Stress Test Generator"),
+        ("contest/safe_hash.cpp", "Safe Hash"),
     ]),
     ("Data Structures", [
-        ("data_structures.cpp", "Data Structures"),
-        ("dsu.cpp", "DSU"),
-        ("segment_tree.cpp", "Segment Trees"),
+        ("data_structures/dsu.cpp", "DSU", ["DSU", "RollbackDSU", "OfflineDynamic"]),
+        ("data_structures/fenwick.cpp", "Fenwick Trees"),
+        ("data_structures/sparse_table.cpp", "Sparse Tables"),
+        ("data_structures/segment_tree.cpp", "Segment Trees"),
+        ("data_structures/wavelet.cpp", "Wavelet Matrix and Merge Sort Tree"),
+        ("data_structures/treap.cpp", "Treap and Ordered Set"),
+        ("data_structures/offline.cpp", "Mo's Algorithm"),
+        ("data_structures/misc.cpp", "Other Structures"),
     ]),
     ("Graphs", [
-        ("graph_search.cpp", "Topological Sort"),
-        ("shortest_paths.cpp", "Shortest Paths"),
-        ("graph_algorithms.cpp", "Graph Algorithms"),
-        ("flows.cpp", "Max Flow"),
-        ("min_cost_flow.cpp", "Min-Cost Flow"),
-        ("matching.cpp", "Matching"),
-        ("trees.cpp", "Trees"),
+        ("graphs/shortest_paths.cpp", "Topological Sort and Shortest Paths"),
+        ("graphs/scc.cpp", "SCC and 2-SAT"),
+        ("graphs/biconnected.cpp", "Biconnected Components"),
+        ("graphs/euler.cpp", "Euler Paths"),
+        ("graphs/spanning_trees.cpp", "Spanning Trees"),
+        ("graphs/dominator_tree.cpp", "Dominator Tree"),
+        ("graphs/np_hard.cpp", "Cliques, Coloring and Steiner Tree"),
+        ("graphs/k_shortest_paths.cpp", "K Shortest Paths"),
+        ("graphs/flows.cpp", "Max Flow"),
+        ("graphs/min_cost_flow.cpp", "Min-Cost Flow"),
+        ("graphs/matching.cpp", "Matching"),
+        ("graphs/trees.cpp", "Trees"),
     ]),
     ("Strings", [
-        ("strings.cpp", "Strings"),
+        ("strings/strings.cpp", "Strings"),
     ]),
     ("Math", [
-        ("modint.cpp", "ModInt"),
-        ("number_theory.cpp", "Number Theory"),
-        ("combinatorics.cpp", "Combinatorics"),
-        ("matrix.cpp", "Matrix"),
-        ("linear_algebra.cpp", "Linear Algebra", ["binexp", "gauss_jordan", "solve_linear", "det_mod", "count_spanning_trees", "XorBasis"]),
-        ("fft.cpp", "FFT / NTT"),
-        ("polynomial.cpp", "Polynomials", ["binexp", "NTT", "Poly", "poly_divide_real", "berlekamp_massey", "kth_term",
-                                           "kth_term_ntt", "bernoulli_ntt", "bell_ntt", "shift_samples", "FactorialMod",
-                                           "lagrange", "lagrange_consecutive"]),  # mod_sqrt is printed in Number Theory
-        ("bitmask.cpp", "Bitmask Transforms"),
+        ("math/modint.cpp", "ModInt"),
+        ("math/number_theory.cpp", "Number Theory"),
+        ("math/combinatorics.cpp", "Combinatorics"),
+        ("math/matrix.cpp", "Matrix"),
+        ("math/linear_algebra.cpp", "Linear Algebra", ["binexp", "gauss_jordan", "solve_linear", "det_mod",
+                                                       "count_spanning_trees", "XorBasis"]),
+        ("math/fft.cpp", "FFT / NTT"),
+        ("math/polynomial.cpp", "Polynomials", ["binexp", "NTT", "Poly", "poly_divide_real", "berlekamp_massey",
+                                                "kth_term", "kth_term_ntt", "bernoulli_ntt", "bell_ntt", "shift_samples",
+                                                "FactorialMod", "lagrange", "lagrange_consecutive"]),  # mod_sqrt: Number Theory
+        ("math/bitmask.cpp", "Bitmask Transforms"),
     ]),
     ("Geometry", [
-        ("geometry.cpp", "Geometry"),
+        ("geometry/geometry.cpp", "Geometry"),
     ]),
     ("DP and Search", [
-        ("binary_ternary_search.cpp", "Binary and Ternary Search"),
-        ("dp_optimizations.cpp", "DP Optimizations"),
+        ("dp_search/binary_ternary_search.cpp", "Binary and Ternary Search"),
+        ("dp_search/dp_optimizations.cpp", "DP Optimizations"),
     ]),
     ("Miscellaneous", [
-        ("misc.cpp", "SAT Solver", ["SAT"]),
+        ("misc/sat.cpp", "SAT Solver"),
     ]),
     ("Theory", [
         ("theory.tex", "Formulas and Facts"),
@@ -276,16 +287,18 @@ def build_tex():
             if CONDENSE and fname != HEADER_FILE:
                 condensed.append((fname, code, condense(code, width)))
                 code = condensed[-1][2]
+            (src_dir / fname).parent.mkdir(parents=True, exist_ok=True)
             (src_dir / fname).write_text(code, newline="\n")
             names = ", ".join(tex_escape(n) for n in top_level_names(code) if fname != HEADER_FILE)
             toc.append(rf"\tocentry{{{tex_escape(title)}}}{{{label}}}{{{names}}}")
-            body.append(rf"\codefile{{{tex_escape(title)}}}{{{tex_escape(fname)}}}{{{label}}}"
+            body.append(rf"\codefile{{{tex_escape(title)}}}{{{tex_escape(Path(fname).name)}}}{{{label}}}"
                         rf"{{src/{fname}}}")
 
     check_condensed(condensed)
-    for path in sorted(TEMPLATES.glob("*.cpp")):
-        if path.name not in listed:
-            print(f"note: cpp_templates/{path.name} is not in SECTIONS, so it was left out")
+    for path in sorted(TEMPLATES.rglob("*.cpp")):
+        rel = path.relative_to(TEMPLATES).as_posix()
+        if rel not in listed:
+            print(f"note: cpp_templates/{rel} is not in SECTIONS, so it was left out")
 
     template = (ROOT / "notebook_template.tex").read_text()
     tex = (template
