@@ -7,6 +7,7 @@
 //   Hash            polynomial hash and reverse hash (substring equality, palindromes)
 //   AffineComp      composition of maps x -> ax + b, applied left to right
 //   MatProd         K x K matrix product, for DP transitions over a segment
+//   Rev             any monoid with op reversed: folds a range right to left
 //   NoUpdate        any monoid as a lazy spec with no updates (for LazySegTree, ImplicitTreap)
 //   AddMin          range add, range min (AddMax: range max)
 //   AddMinCount     range add, range min with count (area of a union of rectangles)
@@ -143,6 +144,14 @@ struct MatProd {
                 for (int j = 0; j < K; j++) c[i][j] += a[i][k] * b[k][j];
         return c;
     }
+};
+
+// any monoid M with op reversed: query(l, r) is op(a[r-1], ..., a[l]), i.e. the range walked right to left
+// (e.g. the upward ranges of HLD::path for a non-commutative op); keeps M's id() and helpers like eval()
+template <class M>
+struct Rev : M {
+    using T = typename M::T;
+    static T op(const T &a, const T &b) { return M::op(b, a); }
 };
 
 // any monoid M as a lazy spec with no updates, for structures that expect one (LazySegTree, ImplicitTreap)

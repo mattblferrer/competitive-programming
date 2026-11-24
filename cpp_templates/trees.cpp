@@ -108,7 +108,9 @@ struct LCA {
 // heavy-light decomposition, 0-indexed; maps paths and subtrees to ranges of pos[] for a segment tree on [l, r)
 //   HLD(adj, root)              preprocess the tree, O(n)
 //   lca(u, v)                   lowest common ancestor, O(log n)
-//   path(u, v, f, skip_lca)     call f(l, r) for each range on the path u - v; skip_lca leaves out the lca (for edge values), O(log n) calls
+//   path(u, v, f, skip_lca)     call f(l, r) or f(l, r, up) for each range on the path u - v, in order from u to v;
+//                               up means the path walks the range from r - 1 down to l (for non-commutative ops);
+//                               skip_lca leaves out the lca (for edge values), O(log n) calls
 //   subtree(u)                  range {l, r} of the subtree of u, O(1)
 struct HLD {
     int n;
@@ -157,13 +159,26 @@ struct HLD {
 
     template <class F>
     void path(int u, int v, F f, bool skip_lca = false) const {
+        auto call = [&](int l, int r, bool up) {
+            if constexpr (is_invocable_v<F, int, int, bool>) f(l, r, up);
+            else f(l, r);
+        };
+        vector<pair<int, int>> down;  // ranges on the v side, called last in reverse
         while (head[u] != head[v]) {
-            if (dep[head[u]] > dep[head[v]]) swap(u, v);
-            f(pos[head[v]], pos[v] + 1);
-            v = par[head[v]];
+            if (dep[head[u]] >= dep[head[v]]) {
+                call(pos[head[u]], pos[u] + 1, true);
+                u = par[head[u]];
+            } else {
+                down.push_back({pos[head[v]], pos[v] + 1});
+                v = par[head[v]];
+            }
         }
-        if (dep[u] > dep[v]) swap(u, v);
-        if (pos[u] + skip_lca < pos[v] + 1) f(pos[u] + skip_lca, pos[v] + 1);
+        if (dep[u] >= dep[v]) {
+            if (pos[v] + skip_lca < pos[u] + 1) call(pos[v] + skip_lca, pos[u] + 1, true);
+        } else if (pos[u] + skip_lca < pos[v] + 1) {
+            call(pos[u] + skip_lca, pos[v] + 1, false);
+        }
+        for (int i = (int)down.size() - 1; i >= 0; i--) call(down[i].first, down[i].second, false);
     }
 
     pair<int, int> subtree(int u) const { return {pos[u], pos[u] + sz[u]}; }

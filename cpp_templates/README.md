@@ -90,6 +90,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `Hash` | polynomial hash and reverse hash (substring equality, palindromes) |
 | `AffineComp` | composition of maps x -> ax + b, applied left to right |
 | `MatProd` | K x K matrix product, for DP transitions over a segment |
+| `Rev` | any monoid with op reversed: folds a range right to left |
 | `NoUpdate` | any monoid as a lazy spec with no updates (for LazySegTree, ImplicitTreap) |
 | `AddMin` | range add, range min (AddMax: range max) |
 | `AddMinCount` | range add, range min with count (area of a union of rectangles) |
