@@ -254,13 +254,14 @@ struct CentroidDecomp {
 };
 
 // tree isomorphism by canonical ids (AHU); compare ids from the same TreeCanon object
-//   rooted(adj, root)   id of the rooted tree: equal ids means isomorphic, O(n log n)
+//   rooted(adj, root)   ids of the subtree of every vertex when rooted at root (the tree's id is [root]):
+//                       equal ids means isomorphic, and ids are 0..ids.size()-1 in order of first appearance, O(n log n)
 //   centers(adj)        the 1 or 2 centers of the tree, O(n)
 //   unrooted(adj)       id of the unrooted tree: equal ids means isomorphic, O(n log n)
 struct TreeCanon {
     map<vector<int>, int> ids;
 
-    int rooted(const vector<vector<int>> &adj, int root) {
+    vector<int> rooted(const vector<vector<int>> &adj, int root) {
         int n = adj.size();
         vector<int> order{root}, par(n, -1), id(n);
         for (int i = 0; i < (int)order.size(); i++) {
@@ -277,7 +278,7 @@ struct TreeCanon {
             sort(kids.begin(), kids.end());
             id[u] = ids.try_emplace(kids, ids.size()).first->second;
         }
-        return id[root];
+        return id;
     }
 
     vector<int> centers(const vector<vector<int>> &adj) {
@@ -303,7 +304,7 @@ struct TreeCanon {
 
     int unrooted(const vector<vector<int>> &adj) {
         int res = INT_MAX;
-        for (int c : centers(adj)) res = min(res, rooted(adj, c));
+        for (int c : centers(adj)) res = min(res, rooted(adj, c)[c]);
         return res;
     }
 };
