@@ -3,7 +3,7 @@
 //   gauss_jordan          reduces a to reduced row echelon form using its first cols columns, returns the rank
 //   solve_linear          solves A x = b; free variables are set to 0; returns false if there is no solution
 //   gauss_jordan_mod      reduces a to reduced row echelon form mod a prime p < 2^31 using its first cols columns
-//   solve_linear_mod      solves A x = b mod a prime p < 2^31; free variables are set to 0
+//   solve_linear_mod      solves A x = b mod a prime p < 2^31; free variables are set to 0; also a basis of A x = 0
 //   inverse_mod           inverse of a square matrix mod a prime p < 2^31; returns false if it is singular, O(n^3)
 //   solve_xor             solves A x = b over GF(2) (XOR equations) with m <= N variables
 //   det_mod               determinant of a square matrix mod a prime, O(n^3)
@@ -105,16 +105,27 @@ int gauss_jordan_mod(vector<vector<ll>> &a, int cols, ll p, ll &det) {
 
 // solves A x = b mod a prime p < 2^31; free variables are set to 0
 // returns -1 if there is no solution, else the number of free variables (there are p^that solutions), O(n * m * min(n, m))
-int solve_linear_mod(vector<vector<ll>> a, const vector<ll> &b, ll p, vector<ll> &x) {
+// basis gets one solution of A x = 0 per free variable: every solution is x plus a combination of them
+int solve_linear_mod(vector<vector<ll>> a, const vector<ll> &b, ll p, vector<ll> &x, vector<vector<ll>> &basis) {
     int n = a.size(), m = n ? a[0].size() : 0;
     for (int i = 0; i < n; i++) a[i].push_back(b[i]);
     ll det;
     int rank = gauss_jordan_mod(a, m, p, det);
     for (int i = rank; i < n; i++) if (a[i][m]) return -1;
     x.assign(m, 0);
+    vector<int> row(m, -1);  // row[c] = the row whose pivot is in column c
     for (int i = 0, c = 0; i < rank; i++, c++) {
         while (a[i][c] == 0) c++;
         x[c] = a[i][m];
+        row[c] = i;
+    }
+    basis.clear();
+    for (int f = 0; f < m; f++) {  // free variable f = 1, the other free ones 0, then solve for the pivots
+        if (row[f] != -1) continue;
+        vector<ll> d(m, 0);
+        d[f] = 1;
+        for (int c = 0; c < m; c++) if (row[c] != -1) d[c] = (p - a[row[c]][f]) % p;
+        basis.push_back(d);
     }
     return m - rank;
 }
