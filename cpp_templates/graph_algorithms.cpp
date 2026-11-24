@@ -4,8 +4,8 @@
 //   min_mean_cycle    smallest average edge weight over all directed cycles (Karp)
 //   Biconnected       bridges, articulation points and biconnected components of an undirected graph
 //   kruskal           minimum spanning forest (Kruskal), edges are {w, u, v}
-//   euler_directed    Euler path/cycle in a directed graph, as a vertex list of length E + 1
-//   euler_undirected  Euler path/cycle in an undirected graph, as a vertex list of length E + 1
+//   euler_directed    Euler path/cycle in a directed graph, as {vertices, edge ids}
+//   euler_undirected  Euler path/cycle in an undirected graph, as {vertices, edge ids}
 //   Arborescence      minimum spanning arborescence (Chu-Liu/Edmonds)
 //   dominator_tree    dominator tree of a directed graph from root (Lengauer-Tarjan), O(E log V)
 //   MaxClique         cliques in a graph on at most N vertices, exponential in the worst case
@@ -269,12 +269,15 @@ pair<ll, vector<int>> kruskal(int n, const vector<array<ll, 3>> &edges) {
     return {total, chosen};
 }
 
-// Euler path/cycle in a directed graph, as a vertex list of length E + 1; empty if none exists, O(V + E)
-vector<int> euler_directed(int n, const vector<pair<int, int>> &edges) {
-    vector<vector<int>> adj(n);
+// Euler path/cycle in a directed graph as {vertices, edge ids}: edge ids[i] goes from vertices[i] to vertices[i + 1]
+// so there are E + 1 vertices and E edge ids; both are empty if no Euler path exists, O(V + E)
+pair<vector<int>, vector<int>> euler_directed(int n, const vector<pair<int, int>> &edges) {
+    int m = edges.size();
+    vector<vector<pair<int, int>>> adj(n);  // {to, edge id}
     vector<int> in(n), out(n);
-    for (auto [u, v] : edges) {
-        adj[u].push_back(v);
+    for (int i = 0; i < m; i++) {
+        auto [u, v] = edges[i];
+        adj[u].push_back({v, i});
         out[u]++;
         in[v]++;
     }
@@ -293,26 +296,30 @@ vector<int> euler_directed(int n, const vector<pair<int, int>> &edges) {
     }
     if (n == 0 || (start == -1) != (end == -1)) return {};
     if (start == -1) start = any == -1 ? 0 : any;
-    vector<int> st{start}, path;
+    vector<pair<int, int>> st{{start, -1}};  // {vertex, edge used to reach it}
+    vector<int> verts, ids;
     while (!st.empty()) {
-        int u = st.back();
+        int u = st.back().first;
         if (adj[u].empty()) {
-            path.push_back(u);
+            verts.push_back(u);
+            if (st.back().second != -1) ids.push_back(st.back().second);
             st.pop_back();
         } else {
             st.push_back(adj[u].back());
             adj[u].pop_back();
         }
     }
-    reverse(path.begin(), path.end());
-    if (path.size() != edges.size() + 1) return {};
-    return path;
+    if ((int)ids.size() != m) return {};
+    reverse(verts.begin(), verts.end());
+    reverse(ids.begin(), ids.end());
+    return {verts, ids};
 }
 
-// Euler path/cycle in an undirected graph, as a vertex list of length E + 1; empty if none exists, O(V + E)
-vector<int> euler_undirected(int n, const vector<pair<int, int>> &edges) {
+// Euler path/cycle in an undirected graph as {vertices, edge ids}: edge ids[i] joins vertices[i] and vertices[i + 1]
+// so there are E + 1 vertices and E edge ids; both are empty if no Euler path exists, O(V + E)
+pair<vector<int>, vector<int>> euler_undirected(int n, const vector<pair<int, int>> &edges) {
     int m = edges.size();
-    vector<vector<pair<int, int>>> adj(n);
+    vector<vector<pair<int, int>>> adj(n);  // {to, edge id}
     vector<int> deg(n);
     for (int i = 0; i < m; i++) {
         auto [u, v] = edges[i];
@@ -330,21 +337,23 @@ vector<int> euler_undirected(int n, const vector<pair<int, int>> &edges) {
     if (n == 0 || (odd != 0 && odd != 2)) return {};
     if (start == -1) start = 0;
     vector<char> used(m, false);
-    vector<int> st{start}, path;
+    vector<pair<int, int>> st{{start, -1}};  // {vertex, edge used to reach it}
+    vector<int> verts, ids;
     while (!st.empty()) {
-        int u = st.back();
+        int u = st.back().first;
         while (!adj[u].empty() && used[adj[u].back().second]) adj[u].pop_back();
         if (adj[u].empty()) {
-            path.push_back(u);
+            verts.push_back(u);
+            if (st.back().second != -1) ids.push_back(st.back().second);
             st.pop_back();
         } else {
             auto [v, id] = adj[u].back();
             used[id] = true;
-            st.push_back(v);
+            st.push_back({v, id});
         }
     }
-    if ((int)path.size() != m + 1) return {};
-    return path;
+    if ((int)ids.size() != m) return {};
+    return {verts, ids};
 }
 
 // minimum spanning arborescence (Chu-Liu/Edmonds): every vertex is reachable from root by chosen edges
