@@ -166,6 +166,8 @@ struct MinQueue {
 //   insert(x)    add one copy of x, O(BITS)
 //   erase(x)     remove one copy of x; x must be present, O(BITS)
 //   nth(k)       k-th smallest element (0-indexed); requires k < size, O(BITS)
+//   rank(x)      number of elements < x, for x < 2^BITS, O(BITS); with nth: successor = nth(rank(x)), predecessor = nth(rank(x + 1) - 1)
+//   cnt[0][x]    number of copies of x
 template <int BITS = 20>
 struct MisofTree {
     vector<vector<int>> cnt;
@@ -191,6 +193,12 @@ struct MisofTree {
                 res |= 1;
             }
         }
+        return res;
+    }
+
+    int rank(int x) const {
+        int res = 0;
+        for (int i = 0; i < BITS; i++, x >>= 1) if (x & 1) res += cnt[i][x - 1];  // the left sibling is all smaller
         return res;
     }
 };
