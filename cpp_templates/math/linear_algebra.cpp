@@ -1,19 +1,21 @@
 // Contents
-//   binexp                a^b mod mod, O(log b)
-//   gauss_jordan          reduces a to reduced row echelon form using its first cols columns, returns the rank
-//   solve_linear          solves A x = b; free variables are set to 0; returns false if there is no solution
-//   gauss_jordan_mod      reduces a to reduced row echelon form mod a prime p < 2^31 using its first cols columns
-//   solve_linear_mod      solves A x = b mod a prime p < 2^31; free variables are set to 0; also a basis of A x = 0
-//   inverse_mod           inverse of a square matrix mod a prime p < 2^31; returns false if it is singular, O(n^3)
-//   solve_xor             solves A x = b over GF(2) (XOR equations) with m <= N variables
-//   det_mod               determinant of a square matrix mod a prime, O(n^3)
-//   count_spanning_trees  number of spanning trees of a multigraph mod a prime (Kirchhoff), O(n^3)
-//   charpoly_mod          characteristic polynomial det(xI - A) mod a prime (Hessenberg form), O(n^3)
-//   BitMatrix             n x m matrix over GF(2) with rows packed into 64-bit words; gauss gives the RREF
-//   det_mod2              determinant of a square matrix over GF(2), O(n^3 / 64)
-//   inverse_mod2          inverse of a square matrix over GF(2); false if it is singular, O(n^3 / 64)
-//   mul_mod2              product of an n x m and an m x l matrix over GF(2), O(n * m * l / 64)
-//   XorBasis              XOR linear basis over values in [0, 2^BITS), BITS <= 62
+//   binexp                         a^b mod mod, O(log b)
+//   gauss_jordan                   reduces a to reduced row echelon form using its first cols columns, returns the rank
+//   solve_linear                   solves A x = b; free variables are set to 0; returns false if there is no solution
+//   gauss_jordan_mod               reduces a to reduced row echelon form mod a prime p < 2^31 using its first cols columns
+//   solve_linear_mod               solves A x = b mod a prime p < 2^31; free variables are set to 0; also a basis of A x = 0
+//   inverse_mod                    inverse of a square matrix mod a prime p < 2^31; returns false if it is singular, O(n^3)
+//   solve_xor                      solves A x = b over GF(2) (XOR equations) with m <= N variables
+//   det_mod                        determinant of a square matrix mod a prime, O(n^3)
+//   count_spanning_trees           number of spanning trees of a multigraph mod a prime (Kirchhoff), O(n^3)
+//   count_spanning_trees_directed  number of spanning arborescences rooted at r of a directed multigraph mod a prime, O(n^3)
+//   charpoly_mod                   characteristic polynomial det(xI - A) mod a prime (Hessenberg form), O(n^3)
+//   BitMatrix                      n x m matrix over GF(2) with rows packed into 64-bit words; gauss gives the RREF
+//   det_mod2                       determinant of a square matrix over GF(2), O(n^3 / 64)
+//   inverse_mod2                   inverse of a square matrix over GF(2); false if it is singular, O(n^3 / 64)
+//   solve_mod2                     solves A x = b over GF(2): one solution and a basis of A x = 0, O(n * m * rank / 64)
+//   mul_mod2                       product of an n x m and an m x l matrix over GF(2), O(n * m * l / 64)
+//   XorBasis                       XOR linear basis over values in [0, 2^BITS), BITS <= 62
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -215,6 +217,20 @@ ll count_spanning_trees(int n, const vector<pair<int, int>> &edges, ll p) {
     return det_mod(lap, p);
 }
 
+// number of spanning arborescences rooted at r (every vertex reachable from r) of a directed multigraph mod a prime,
+// edges are {u, v} for u -> v and self-loops are ignored; matrix-tree theorem on the in-degree Laplacian, O(n^3)
+ll count_spanning_trees_directed(int n, const vector<pair<int, int>> &edges, int r, ll p) {
+    vector<vector<ll>> lap(n, vector<ll>(n, 0));
+    for (auto [u, v] : edges) {
+        if (u == v) continue;
+        lap[v][v]++;
+        lap[u][v]--;
+    }
+    lap.erase(lap.begin() + r);
+    for (auto &row : lap) row.erase(row.begin() + r);
+    return n == 1 ? 1 % p : det_mod(lap, p);
+}
+
 // characteristic polynomial det(xI - A) mod a prime p, coefficients of x^0..x^n (monic), O(n^3)
 // A is first reduced to upper Hessenberg form H by similarity, then det(xI - H) is expanded along the last column:
 // P[i + 1] = (x - H[i][i]) P[i] - sum over k < i of H[k][i] H[k + 1][k] ... H[i][i - 1] P[k]
@@ -305,6 +321,31 @@ bool inverse_mod2(const BitMatrix &a, BitMatrix &inv) {
     if ((int)aug.gauss(n).size() < n) return false;
     inv = BitMatrix(n, n);
     for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) if (aug.get(i, n + j)) inv.flip(i, j);
+    return true;
+}
+
+// solves A x = b over GF(2), using BitMatrix above: false if there is no solution, else x is one solution (free
+// variables 0) and the rows of kernel are a basis of A x = 0 (all solutions are x + any sum of them), O(n * m * rank / 64)
+bool solve_mod2(const BitMatrix &a, const vector<int> &b, vector<int> &x, BitMatrix &kernel) {
+    int n = a.n, m = a.m;
+    BitMatrix aug(n, m + 1);  // [A | b]
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) if (a.get(i, j)) aug.flip(i, j);
+        if (b[i]) aug.flip(i, m);
+    }
+    vector<int> piv = aug.gauss(m);
+    int r = piv.size();
+    for (int i = r; i < n; i++) if (aug.get(i, m)) return false;
+    x.assign(m, 0);
+    vector<char> is_piv(m);
+    for (int i = 0; i < r; i++) x[piv[i]] = aug.get(i, m), is_piv[piv[i]] = 1;
+    kernel = BitMatrix(m - r, m);
+    for (int f = 0, k = 0; f < m; f++) {  // free variable f = 1, the other free variables 0
+        if (is_piv[f]) continue;
+        kernel.flip(k, f);
+        for (int i = 0; i < r; i++) if (aug.get(i, f)) kernel.flip(k, piv[i]);
+        k++;
+    }
     return true;
 }
 

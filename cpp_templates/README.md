@@ -389,10 +389,12 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `solve_xor` | solves A x = b over GF(2) (XOR equations) with m <= N variables |
 | `det_mod` | determinant of a square matrix mod a prime, O(n^3) |
 | `count_spanning_trees` | number of spanning trees of a multigraph mod a prime (Kirchhoff), O(n^3) |
+| `count_spanning_trees_directed` | number of spanning arborescences rooted at r of a directed multigraph mod a prime, O(n^3) |
 | `charpoly_mod` | characteristic polynomial det(xI - A) mod a prime (Hessenberg form), O(n^3) |
 | `BitMatrix` | n x m matrix over GF(2) with rows packed into 64-bit words; gauss gives the RREF |
 | `det_mod2` | determinant of a square matrix over GF(2), O(n^3 / 64) |
 | `inverse_mod2` | inverse of a square matrix over GF(2); false if it is singular, O(n^3 / 64) |
+| `solve_mod2` | solves A x = b over GF(2): one solution and a basis of A x = 0, O(n * m * rank / 64) |
 | `mul_mod2` | product of an n x m and an m x l matrix over GF(2), O(n * m * l / 64) |
 | `XorBasis` | XOR linear basis over values in [0, 2^BITS), BITS <= 62 |
 
