@@ -44,7 +44,7 @@ SECTIONS = [
         ("data_structures/segment_tree.cpp", "Segment Trees"),
         ("data_structures/wavelet.cpp", "Wavelet Matrix and Merge Sort Tree"),
         ("data_structures/treap.cpp", "Treap and Ordered Set"),
-        ("data_structures/offline.cpp", "Mo's Algorithm"),
+        ("data_structures/offline.cpp", "Mo's Algorithm", ["-range_inversions"]),
         ("data_structures/misc.cpp", "Other Structures", ["-FoldDeque"]),
     ]),
     ("Graphs", [

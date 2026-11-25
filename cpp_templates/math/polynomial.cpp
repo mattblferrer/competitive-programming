@@ -12,6 +12,7 @@
 //   taylor_shift          a(x + c) mod MOD (Taylor shift), O(n log n)
 //   stirling1_ntt         signed Stirling numbers of the first kind s(n, k), k = 0..n, mod an NTT prime, O(n log n)
 //   stirling2_ntt         Stirling numbers of the second kind S(n, k), k = 0..n, mod an NTT prime, O(n log n)
+//   partition_ntt         partition numbers p(0..n) mod an NTT prime, O(n log n)
 //   shift_samples         h(a), ..., h(a + m - 1) from h(0), ..., h(n - 1) (shift of sampling points), O((n + m) log(n + m))
 //   FactorialMod          n! mod an NTT prime for any n < MOD, block table of (iV)!, O(V) per query
 //   lagrange              value at x of the unique polynomial through (xs[i], ys[i])
@@ -549,6 +550,19 @@ vector<ll> stirling2_ntt(int n) {
     vector<ll> c = NTT<MOD, ROOT>::multiply(a, b);
     c.resize(n + 1);
     return c;
+}
+
+// partition numbers p(0..n) mod an NTT prime MOD, using Poly above: 1 / (sum of p(i) x^i) = product of (1 - x^k)
+// = sum over all integers k of (-1)^k x^(k(3k - 1) / 2) (Euler's pentagonal theorem), so one inverse, O(n log n)
+template <ll MOD, ll ROOT>
+vector<ll> partition_ntt(int n) {
+    vector<ll> a(n + 1);
+    for (ll k = 0; k * (3 * k - 1) / 2 <= n; k++) {
+        ll sign = k & 1 ? MOD - 1 : 1;
+        a[k * (3 * k - 1) / 2] = sign;
+        if (k && k * (3 * k + 1) / 2 <= n) a[k * (3 * k + 1) / 2] = sign;
+    }
+    return Poly<MOD, ROOT>::inv(a, n + 1);
 }
 
 // h(a), h(a + 1), ..., h(a + m - 1) mod MOD for the polynomial h of degree < n given by h[i] = h(i), i = 0..n-1
