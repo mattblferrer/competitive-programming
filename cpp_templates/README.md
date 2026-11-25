@@ -350,6 +350,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `sb_lca` | lowest common ancestor of a/b and c/d in the Stern-Brocot tree, O(log) |
 | `sb_ancestor` | ancestor of a/b at depth k in the Stern-Brocot tree (1/1 has depth 0), {-1, -1} if none, O(log) |
 | `rational_approx` | closest fractions <= x/y and >= x/y with numerator and denominator in [1, n], O(log) |
+| `multiplicative_sum` | sum of a multiplicative f over [1, n] mod any mod below ~3e9 (Min_25 sieve), f(p) a polynomial, n up to ~1e11 |
 
 ### [`math/combinatorics.cpp`](math/combinatorics.cpp)
 

@@ -69,7 +69,8 @@ SECTIONS = [
     ("Math", [
         ("math/modint.cpp", "ModInt"),
         ("math/number_theory.cpp", "Number Theory", ["-count_primes", "-totient_sum", "-gaussian_gcd", "-two_square_sum",
-                                                     "-sb_path", "-sb_bounds", "-sb_lca", "-sb_ancestor", "-rational_approx"]),
+                                                     "-sb_path", "-sb_bounds", "-sb_lca", "-sb_ancestor", "-rational_approx",
+                                                     "-multiplicative_sum"]),
         ("math/combinatorics.cpp", "Combinatorics"),
         ("math/matrix.cpp", "Matrix"),
         ("math/linear_algebra.cpp", "Linear Algebra", ["binexp", "gauss_jordan", "solve_linear", "det_mod",
