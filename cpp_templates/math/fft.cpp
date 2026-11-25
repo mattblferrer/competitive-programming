@@ -6,6 +6,7 @@
 //   garner               combine residues mod several primes into the value mod `mod` (0 means mod 2^64)
 //   convolution_any_mod  product of polynomials a and b mod any modulus below 2^31
 //   convolution_mod_2_64 product of polynomials a and b mod 2^64
+//   wildcard_match       res[i] = 1 if s[i, i + |t|) matches t, where `wild` matches any character
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -229,4 +230,36 @@ vector<ull> convolution_mod_2_64(const vector<ull> &a, const vector<ull> &b) {
                    NTT<1'004'535'809, 3>::multiply(red(a, 1'004'535'809), red(b, 1'004'535'809)),
                    NTT<2'013'265'921, 31>::multiply(red(a, 2'013'265'921), red(b, 2'013'265'921))},
                   {998'244'353, 469'762'049, 754'974'721, 1'004'535'809, 2'013'265'921}, 0);
+}
+
+// res[i] = 1 if s[i, i + |t|) matches t, where `wild` (in either string) matches any character; using NTT above
+// window sum of a * b * (a - b)^2 is 0 on a match, with wild = 0 and each character a random nonzero value mod p
+// (random so no fixed test can force a false match; about n / p chance of any error), O(n log n)
+vector<int> wildcard_match(const string &s, const string &t, char wild = '*') {
+    constexpr ull p = 998'244'353;
+    static mt19937_64 gen(chrono::steady_clock::now().time_since_epoch().count());
+    int n = s.size(), m = t.size(), sz = 1;
+    if (m > n) return {};
+    while (sz < n) sz <<= 1;  // cyclic convolution of size >= n is enough: wrapped terms land below index m - 1
+    ull val[256];
+    for (ull &v : val) v = gen() % (p - 1) + 1;
+    val[(unsigned char)wild] = 0;
+    vector<vector<unsigned>> A(3, vector<unsigned>(sz)), B = A;  // powers 1, 2, 3 of s and of reversed t
+    for (int i = 0; i < n; i++) {
+        ull x = val[(unsigned char)s[i]];
+        A[0][i] = x, A[1][i] = x * x % p, A[2][i] = A[1][i] * x % p;
+    }
+    for (int i = 0; i < m; i++) {
+        ull x = val[(unsigned char)t[m - 1 - i]];
+        B[0][i] = x, B[1][i] = x * x % p, B[2][i] = B[1][i] * x % p;
+    }
+    for (int k = 0; k < 3; k++) NTT<p, 3>::ntt(A[k]), NTT<p, 3>::ntt(B[k]);
+    vector<unsigned> c(sz);
+    for (int i = 0; i < sz; i++) {
+        c[i] = ((ull)A[0][i] * B[2][i] + (ull)A[2][i] * B[0][i] + (p - 2) * A[1][i] % p * B[1][i]) % p;
+    }
+    NTT<p, 3>::ntt(c, true);
+    vector<int> res(n - m + 1);
+    for (int i = 0; i <= n - m; i++) res[i] = c[m - 1 + i] == 0;
+    return res;
 }

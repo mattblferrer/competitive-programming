@@ -59,7 +59,7 @@ SECTIONS = [
         ("graphs/flows.cpp", "Max Flow"),
         ("graphs/min_cost_flow.cpp", "Min-Cost Flow"),
         ("graphs/matching.cpp", "Matching"),
-        ("graphs/trees.cpp", "Trees", ["-cartesian_tree"]),
+        ("graphs/trees.cpp", "Trees", ["-cartesian_tree", "-tree_distance_counts"]),
         ("graphs/rerooting.cpp", "Rerooting", ["SumDist", "rerooting"]),  # MaxDist, PathComposite: more examples
         ("graphs/link_cut_tree.cpp", "Link-Cut Tree"),
     ]),
@@ -73,7 +73,7 @@ SECTIONS = [
         ("math/matrix.cpp", "Matrix"),
         ("math/linear_algebra.cpp", "Linear Algebra", ["binexp", "gauss_jordan", "solve_linear", "det_mod",
                                                        "count_spanning_trees", "XorBasis"]),
-        ("math/fft.cpp", "FFT / NTT"),
+        ("math/fft.cpp", "FFT / NTT", ["-wildcard_match"]),
         ("math/polynomial.cpp", "Polynomials", ["binexp", "NTT", "Poly", "poly_divide_real", "berlekamp_massey",
                                                 "kth_term", "kth_term_ntt", "bernoulli_ntt", "bell_ntt", "shift_samples",
                                                 "FactorialMod", "lagrange", "lagrange_consecutive"]),  # mod_sqrt: Number Theory

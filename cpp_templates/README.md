@@ -240,6 +240,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `dsu_on_tree` | small-to-large on a tree (DSU on tree / sack) |
 | `virtual_tree` | virtual tree of the vertices vs, using LCA above; returns {nodes, par} |
 | `cartesian_tree` | parent of each index in the Cartesian tree of a (minimum at the root), -1 for the root |
+| `tree_distance_counts` | cnt[d] = number of unordered pairs of vertices at distance d, O(n log^2 n); uses multiply (FFT) |
 
 ### [`graphs/rerooting.cpp`](graphs/rerooting.cpp)
 
@@ -389,6 +390,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `garner` | combine residues mod several primes into the value mod `mod` (0 means mod 2^64) |
 | `convolution_any_mod` | product of polynomials a and b mod any modulus below 2^31 |
 | `convolution_mod_2_64` | product of polynomials a and b mod 2^64 |
+| `wildcard_match` | res[i] = 1 if s[i, i + \|t\|) matches t, where `wild` matches any character |
 
 ### [`math/polynomial.cpp`](math/polynomial.cpp)
 

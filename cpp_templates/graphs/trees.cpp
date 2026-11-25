@@ -1,13 +1,14 @@
 // Contents
-//   BinaryLift      binary lifting on a rooted tree, 0-indexed
-//   LCA             lowest common ancestor with O(1) queries (sparse table over DFS order), 0-indexed
-//   HLD             heavy-light decomposition, 0-indexed
-//   CentroidDecomp  centroid decomposition, 0-indexed; example use: nearest painted vertex
-//   TreeCanon       tree isomorphism by canonical ids (AHU); compare ids from the same TreeCanon object
-//   tree_diameter   diameter of a weighted tree; returns {length, path}
-//   dsu_on_tree     small-to-large on a tree (DSU on tree / sack)
-//   virtual_tree    virtual tree of the vertices vs, using LCA above; returns {nodes, par}
-//   cartesian_tree  parent of each index in the Cartesian tree of a (minimum at the root), -1 for the root
+//   BinaryLift            binary lifting on a rooted tree, 0-indexed
+//   LCA                   lowest common ancestor with O(1) queries (sparse table over DFS order), 0-indexed
+//   HLD                   heavy-light decomposition, 0-indexed
+//   CentroidDecomp        centroid decomposition, 0-indexed; example use: nearest painted vertex
+//   TreeCanon             tree isomorphism by canonical ids (AHU); compare ids from the same TreeCanon object
+//   tree_diameter         diameter of a weighted tree; returns {length, path}
+//   dsu_on_tree           small-to-large on a tree (DSU on tree / sack)
+//   virtual_tree          virtual tree of the vertices vs, using LCA above; returns {nodes, par}
+//   cartesian_tree        parent of each index in the Cartesian tree of a (minimum at the root), -1 for the root
+//   tree_distance_counts  cnt[d] = number of unordered pairs of vertices at distance d, O(n log^2 n); uses multiply (FFT)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -412,4 +413,67 @@ vector<int> cartesian_tree(const vector<ll> &a) {
         st.push_back(i);
     }
     return par;
+}
+
+// cnt[d] = number of unordered pairs u != v at distance d in a tree, d = 0..n-1 (cnt[0] = 0); uses multiply (FFT)
+// centroid decomposition: square the depth counts around each centroid, minus the square inside each child subtree
+// (pairs whose path does not pass through the centroid), O(n log^2 n)
+vector<ll> multiply(const vector<ll> &a, const vector<ll> &b);  // exact integer product, from fft.cpp
+vector<ll> tree_distance_counts(const vector<vector<int>> &adj) {
+    int n = adj.size();
+    vector<ll> cnt(n);
+    vector<char> removed(n);
+    vector<int> par(n), dep(n), sz(n), todo{0};
+    auto bfs = [&](int s, int p, int d) {  // unremoved component of s in BFS order, filling par[] and dep[]
+        vector<int> order{s};
+        par[s] = p, dep[s] = d;
+        for (int i = 0; i < (int)order.size(); i++) {
+            int u = order[i];
+            for (int v : adj[u]) {
+                if (v == par[u] || removed[v]) continue;
+                par[v] = u, dep[v] = dep[u] + 1;
+                order.push_back(v);
+            }
+        }
+        return order;
+    };
+    auto count = [&](const vector<int> &order, int sign) {  // add sign * (ordered pairs by depth sum)
+        vector<ll> a(dep[order.back()] + 1);
+        for (int u : order) a[dep[u]]++;
+        vector<ll> sq = multiply(a, a);
+        if (sq.size() > cnt.size()) cnt.resize(sq.size());
+        for (int d = 0; d < (int)sq.size(); d++) cnt[d] += sign * sq[d];
+    };
+    while (n && !todo.empty()) {
+        int s = todo.back();
+        todo.pop_back();
+        vector<int> order = bfs(s, -1, 0);
+        for (int i = (int)order.size() - 1; i >= 0; i--) {  // subtree sizes, children before parents
+            int u = order[i];
+            sz[u] = 1;
+            for (int v : adj[u]) if (v != par[u] && !removed[v]) sz[u] += sz[v];
+        }
+        int total = order.size(), c = s;
+        for (bool moved = true; moved;) {  // walk toward the heavy child until none has more than half
+            moved = false;
+            for (int v : adj[c]) {
+                if (v != par[c] && !removed[v] && sz[v] * 2 > total) {
+                    c = v;
+                    moved = true;
+                    break;
+                }
+            }
+        }
+        count(bfs(c, -1, 0), 1);
+        removed[c] = true;
+        for (int v : adj[c]) {
+            if (removed[v]) continue;
+            count(bfs(v, c, 1), -1);
+            todo.push_back(v);
+        }
+    }
+    cnt.resize(n);
+    for (ll &x : cnt) x /= 2;
+    if (n) cnt[0] = 0;
+    return cnt;
 }
