@@ -34,7 +34,7 @@ keeps just those three components and their doc comments, and `["-name", ...]` k
 
 The current build fits the 25-page ICPC limit. It leaves out `math/big_integer.cpp`, `math/hex_big_integer.cpp`,
 `math/simplex.cpp`, `data_structures/monoids.cpp`, `data_structures/persistent_segment_tree.cpp`, `misc/dlx.cpp`,
-`misc/misc.cpp`, `graphs/euler_tour_tree.cpp`, `graphs/triangles.cpp`, the modular solvers in
+`misc/misc.cpp`, `graphs/euler_tour_tree.cpp`, `graphs/cycles.cpp`, `graphs/triangles.cpp`, the modular solvers in
 `math/linear_algebra.cpp`, the copy of `mod_sqrt` in `math/polynomial.cpp` (Number Theory prints it), the extra
 rerooting examples (`MaxDist`, `PathComposite`), and `SumDSU`, `PotentialDSU`, `FoldDeque`, `Fenwick2D`,
 `count_primes`, `subset_convolution`, `cartesian_tree` and `manhattan_mst_edges`.
