@@ -32,6 +32,8 @@
 //   count_squarefree    number of squarefree integers in [1, n], n up to 1e18, O(n^(2/5))
 //   count_primes        number of primes <= n (Lucy_Hedgehog), n up to about 1e11, O(n^(3/4))
 //   totient_sum         sum of phi(i) for i in [1, n] mod mod, n up to about 1e11, O(n^(2/3))
+//   gaussian_gcd        a gcd of two Gaussian integers {re, im} (unique up to units), O(log)
+//   two_square_sum      all pairs (a, b) of integers >= 0 with a^2 + b^2 = n, n up to ~1e18; uses factorize, gaussian_gcd
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -694,4 +696,65 @@ ll totient_sum(ll n, ll mod) {
         big[i] = (res + mod) % mod;
     }
     return n <= lim ? small[n] : big[1];
+}
+
+// a gcd of the Gaussian integers x = x.first + x.second i and y (unique up to the units 1, i, -1, -i); Euclid with the
+// quotient rounded to the nearest Gaussian integer, so the remainder's norm at most halves; components up to ~1e18, O(log)
+pll gaussian_gcd(pll x, pll y) {
+    auto rdiv = [](__int128 a, __int128 b) {  // nearest integer to a / b for b > 0
+        __int128 t = 2 * a + b, q = t / (2 * b);
+        return t % (2 * b) && t < 0 ? q - 1 : q;
+    };
+    while (y.first || y.second) {
+        __int128 n = (__int128)y.first * y.first + (__int128)y.second * y.second;
+        __int128 re = rdiv((__int128)x.first * y.first + (__int128)x.second * y.second, n);  // x * conj(y) / n
+        __int128 im = rdiv((__int128)x.second * y.first - (__int128)x.first * y.second, n);
+        pll r((ll)(x.first - (re * y.first - im * y.second)), (ll)(x.second - (re * y.second + im * y.first)));
+        x = y;
+        y = r;
+    }
+    return x;
+}
+
+// all pairs (a, b) of integers >= 0 with a^2 + b^2 = n, sorted, n up to ~1e18; uses factorize and gaussian_gcd above
+// a + bi runs over products of (1 + i)^e2, q^(e / 2) for each prime q = 3 mod 4 (none if e is odd) and, for each prime
+// p = 1 mod 4, pi^t conj(pi)^(e - t) with pi = gcd(p, x + i), x^2 = -1 mod p; then over the 4 units, O(n^(1/4) + answers)
+vector<pll> two_square_sum(ll n) {
+    if (n == 0) return {{0, 0}};
+    auto mul = [](pll x, pll y) {
+        return pll((ll)((__int128)x.first * y.first - (__int128)x.second * y.second),
+                   (ll)((__int128)x.first * y.second + (__int128)x.second * y.first));
+    };
+    vector<ll> f = factorize(n);
+    vector<pll> cur{{1, 0}};
+    for (size_t i = 0, j; i < f.size(); i = j) {
+        ll p = f[i];
+        for (j = i; j < f.size() && f[j] == p; j++) {}
+        int e = j - i;
+        if (p % 4 == 3 && e % 2) return {};
+        if (p % 4 != 1) {
+            pll z = p == 2 ? pll(1, 1) : pll(p, 0);
+            for (int t = 0; t < (p == 2 ? e : e / 2); t++) for (pll &c : cur) c = mul(c, z);
+            continue;
+        }
+        auto pw = [&](ll a, ll k) {
+            ll r = 1;
+            for (; k; k >>= 1, a = (ll)((__int128)a * a % p)) if (k & 1) r = (ll)((__int128)r * a % p);
+            return r;
+        };
+        ll c = 2;
+        while (pw(c, (p - 1) / 2) != p - 1) c++;  // c is a non-residue, so c^((p - 1) / 4) squares to -1
+        pll g = gaussian_gcd({p, 0}, {pw(c, (p - 1) / 4), 1}), h(g.first, -g.second);
+        vector<pll> pg(e + 1, {1, 0}), ph(e + 1, {1, 0}), nxt;
+        for (int t = 1; t <= e; t++) pg[t] = mul(pg[t - 1], g), ph[t] = mul(ph[t - 1], h);
+        for (pll z : cur) for (int t = 0; t <= e; t++) nxt.push_back(mul(z, mul(pg[t], ph[e - t])));
+        cur = nxt;
+    }
+    vector<pll> res;
+    for (pll z : cur) {
+        for (int u = 0; u < 4; u++, z = pll(-z.second, z.first)) if (z.first >= 0 && z.second >= 0) res.push_back(z);
+    }
+    sort(res.begin(), res.end());
+    res.erase(unique(res.begin(), res.end()), res.end());
+    return res;
 }

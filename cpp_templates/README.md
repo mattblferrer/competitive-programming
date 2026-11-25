@@ -341,6 +341,8 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `count_squarefree` | number of squarefree integers in [1, n], n up to 1e18, O(n^(2/5)) |
 | `count_primes` | number of primes <= n (Lucy_Hedgehog), n up to about 1e11, O(n^(3/4)) |
 | `totient_sum` | sum of phi(i) for i in [1, n] mod mod, n up to about 1e11, O(n^(2/3)) |
+| `gaussian_gcd` | a gcd of two Gaussian integers {re, im} (unique up to units), O(log) |
+| `two_square_sum` | all pairs (a, b) of integers >= 0 with a^2 + b^2 = n, n up to ~1e18; uses factorize, gaussian_gcd |
 
 ### [`math/combinatorics.cpp`](math/combinatorics.cpp)
 
