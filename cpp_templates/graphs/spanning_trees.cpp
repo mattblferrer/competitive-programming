@@ -31,75 +31,94 @@ pair<ll, vector<int>> kruskal(int n, const vector<array<ll, 3>> &edges) {
     return {total, chosen};
 }
 
-// minimum spanning arborescence (Chu-Liu/Edmonds): every vertex is reachable from root by chosen edges
-// call find_min only once per object, since it contracts the graph
+// minimum spanning arborescence (Chu-Liu/Edmonds, Tarjan's version with mergeable heaps): every vertex is reachable
+// from root by chosen edges; call find_min only once per object, since it uses up the heaps
 //   Arborescence(n)     empty graph on n vertices, O(n)
-//   add_edge(u, v, w)   add the directed edge u -> v, returns its id, O(1)
-//   find_min(root)      for each vertex, the id of the edge entering it (-1 for root); empty if impossible, O(VE)
+//   add_edge(u, v, w)   add the directed edge u -> v, returns its id, O(log E)
+//   find_min(root)      for each vertex, the id of the edge entering it (-1 for root); empty if impossible, O(E log E)
+// find_min follows cheapest entering edges from each vertex until it reaches the root's tree or closes a cycle; a cycle
+// is contracted (DSU) with its heaps merged and charged its chosen weights, and contractions are undone at the end
 struct Arborescence {
     struct Edge { int from, to; ll w; };
-    struct UnionFind {
-        vector<int> p;
-        UnionFind(int n = 0): p(n, -1) {}
-        int find(int x) { return p[x] < 0 ? x : p[x] = find(p[x]); }
-        void unite(int x, int y) {
-            x = find(x), y = find(y);
-            if (x == y) return;
-            if (p[x] > p[y]) swap(x, y);
-            p[x] += p[y];
-            p[y] = x;
-        }
-    };
     int n;
     vector<Edge> e;
-    UnionFind uf;
-    vector<vector<pair<int, ll>>> adj;  // adj[v] = edges entering v, as {edge id, current weight}
+    vector<int> heap, lc, rc, rk;  // leftist heap of edge ids entering each vertex; rk = length of the right spine
+    vector<ll> key, lazy;          // key = weight minus what was charged so far, lazy = pending add for the subtree
 
-    Arborescence(int n = 0): n(n), uf(n), adj(n) {}
+    Arborescence(int n = 0): n(n), heap(n, -1) {}
+
+    void push(int x) {
+        for (int c : {lc[x], rc[x]}) if (c >= 0) lazy[c] += lazy[x];
+        key[x] += lazy[x];
+        lazy[x] = 0;
+    }
+
+    int merge(int a, int b) {  // recurses down right spines only, so O(log E) deep
+        if (a < 0 || b < 0) return a < 0 ? b : a;
+        push(a), push(b);
+        if (key[b] < key[a]) swap(a, b);
+        rc[a] = merge(rc[a], b);
+        if (lc[a] < 0 || rk[lc[a]] < rk[rc[a]]) swap(lc[a], rc[a]);
+        rk[a] = rc[a] < 0 ? 1 : rk[rc[a]] + 1;
+        return a;
+    }
 
     int add_edge(int u, int v, ll w) {
+        int id = e.size();
         e.push_back({u, v, w});
-        adj[v].push_back({(int)e.size() - 1, w});
-        return e.size() - 1;
+        lc.push_back(-1), rc.push_back(-1), rk.push_back(1), key.push_back(w), lazy.push_back(0);
+        heap[v] = merge(heap[v], id);
+        return id;
     }
 
     vector<int> find_min(int r) {
-        vector<int> vis(n, -1), par(n, -1);
-        vector<ll> mn(n, INF);
-        for (int i = 0; i < n; i++) {
-            if (uf.find(i) != i) continue;
-            int at = i;
-            while (at != r && vis[at] == -1) {
-                vis[at] = i;
-                for (auto [id, w] : adj[at]) {
-                    if (w < mn[at] && uf.find(e[id].from) != at) {
-                        mn[at] = w;
-                        par[at] = id;
-                    }
+        vector<int> p(n, -1), seen(n, -1), path(n), q(n), in(n, -1);  // p = DSU without path compression, for undo
+        vector<pair<int, int>> hist;                                   // {merged root, its old p}
+        vector<tuple<int, int, vector<int>>> cycles;                   // {contracted vertex, hist size, cycle edges}
+        auto find = [&](int x) {
+            while (p[x] >= 0) x = p[x];
+            return x;
+        };
+        auto join = [&](int a, int b) {
+            a = find(a), b = find(b);
+            if (a == b) return false;
+            if (p[a] > p[b]) swap(a, b);
+            hist.push_back({b, p[b]});
+            p[a] += p[b], p[b] = a;
+            return true;
+        };
+        seen[r] = r;
+        for (int s = 0; s < n; s++) {
+            int u = s, len = 0;
+            while (seen[u] < 0) {
+                if (heap[u] < 0) return {};
+                int x = heap[u];
+                push(x);
+                heap[u] = merge(lc[x], rc[x]);
+                if (heap[u] >= 0) lazy[heap[u]] -= key[x];  // charge the chosen weight to the other entering edges
+                q[len] = x, path[len++] = u, seen[u] = s;
+                u = find(e[x].from);
+                if (seen[u] == s) {  // closed a cycle: contract it into one vertex
+                    int h = -1, end = len, t = hist.size(), w;
+                    do h = merge(h, heap[w = path[--len]]);
+                    while (join(u, w));
+                    u = find(u), heap[u] = h, seen[u] = -1;
+                    cycles.push_back({u, t, vector<int>(q.begin() + len, q.begin() + end)});
                 }
-                if (par[at] == -1) return {};
-                at = uf.find(e[par[at]].from);
             }
-            if (at == r || vis[at] != i) continue;
-            UnionFind before = uf;  // found a cycle: contract it and solve the smaller graph
-            vector<int> seq;
-            do {
-                seq.push_back(at);
-                at = uf.find(e[par[at]].from);
-            } while (at != seq.front());
-            for (int v : seq) uf.unite(v, seq[0]);
-            int c = uf.find(seq[0]);
-            vector<pair<int, ll>> merged;
-            for (int v : seq) for (auto [id, w] : adj[v]) merged.push_back({id, w - mn[v]});
-            adj[c] = merged;
-            vector<int> rest = find_min(r);
-            if (rest.empty()) return rest;
-            int use = rest[c];
-            rest[at = before.find(e[use].to)] = use;
-            for (int v : seq) if (v != at) rest[v] = par[v];
-            return rest;
+            for (int i = 0; i < len; i++) in[find(e[q[i]].to)] = q[i];
         }
-        return par;
+        for (int k = (int)cycles.size() - 1; k >= 0; k--) {  // expand, last contracted first
+            auto &[u, t, cyc] = cycles[k];
+            for (; (int)hist.size() > t; hist.pop_back()) {
+                auto [b, old] = hist.back();
+                p[p[b]] -= old, p[b] = old;
+            }
+            int keep = in[u];  // the edge entering the cycle stays, the cycle edge into the same vertex goes
+            for (int x : cyc) in[find(e[x].to)] = x;
+            in[find(e[keep].to)] = keep;
+        }
+        return in;
     }
 };
 
