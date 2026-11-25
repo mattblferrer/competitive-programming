@@ -27,7 +27,8 @@ INDENT = 2  # spaces per indent level in the printed code (the templates use 4);
 
 # (section title, [entries]); an entry is a .cpp path relative to cpp_templates/ (whose folders match these
 # chapters) or a .tex in content/, either bare or as (file, title). A .cpp entry can also be (file, title, [names])
-# to print only the components (structs/functions with their doc comments) that define those names.
+# to print only the components (structs/functions with their doc comments) that define those names, or
+# ["-name", ...] to print every component except those.
 # Templates not listed here are reported, not included.
 SECTIONS = [
     ("Contest", [
@@ -38,27 +39,27 @@ SECTIONS = [
     ]),
     ("Data Structures", [
         ("data_structures/dsu.cpp", "DSU", ["DSU", "RollbackDSU", "OfflineDynamic"]),
-        ("data_structures/fenwick.cpp", "Fenwick Trees"),
+        ("data_structures/fenwick.cpp", "Fenwick Trees", ["-Fenwick2D"]),
         ("data_structures/sparse_table.cpp", "Sparse Tables"),
         ("data_structures/segment_tree.cpp", "Segment Trees"),
         ("data_structures/wavelet.cpp", "Wavelet Matrix and Merge Sort Tree"),
         ("data_structures/treap.cpp", "Treap and Ordered Set"),
         ("data_structures/offline.cpp", "Mo's Algorithm"),
-        ("data_structures/misc.cpp", "Other Structures"),
+        ("data_structures/misc.cpp", "Other Structures", ["-FoldDeque"]),
     ]),
     ("Graphs", [
         ("graphs/shortest_paths.cpp", "Topological Sort and Shortest Paths"),
         ("graphs/scc.cpp", "SCC and 2-SAT"),
         ("graphs/biconnected.cpp", "Biconnected Components"),
         ("graphs/euler.cpp", "Euler Paths"),
-        ("graphs/spanning_trees.cpp", "Spanning Trees"),
+        ("graphs/spanning_trees.cpp", "Spanning Trees", ["-manhattan_mst_edges"]),
         ("graphs/dominator_tree.cpp", "Dominator Tree"),
         ("graphs/np_hard.cpp", "Cliques, Coloring and Steiner Tree"),
         ("graphs/k_shortest_paths.cpp", "K Shortest Paths"),
         ("graphs/flows.cpp", "Max Flow"),
         ("graphs/min_cost_flow.cpp", "Min-Cost Flow"),
         ("graphs/matching.cpp", "Matching"),
-        ("graphs/trees.cpp", "Trees"),
+        ("graphs/trees.cpp", "Trees", ["-cartesian_tree"]),
         ("graphs/rerooting.cpp", "Rerooting", ["SumDist", "rerooting"]),  # MaxDist, PathComposite: more examples
         ("graphs/link_cut_tree.cpp", "Link-Cut Tree"),
     ]),
@@ -67,7 +68,7 @@ SECTIONS = [
     ]),
     ("Math", [
         ("math/modint.cpp", "ModInt"),
-        ("math/number_theory.cpp", "Number Theory"),
+        ("math/number_theory.cpp", "Number Theory", ["-count_primes"]),
         ("math/combinatorics.cpp", "Combinatorics"),
         ("math/matrix.cpp", "Matrix"),
         ("math/linear_algebra.cpp", "Linear Algebra", ["binexp", "gauss_jordan", "solve_linear", "det_mod",
@@ -76,7 +77,7 @@ SECTIONS = [
         ("math/polynomial.cpp", "Polynomials", ["binexp", "NTT", "Poly", "poly_divide_real", "berlekamp_massey",
                                                 "kth_term", "kth_term_ntt", "bernoulli_ntt", "bell_ntt", "shift_samples",
                                                 "FactorialMod", "lagrange", "lagrange_consecutive"]),  # mod_sqrt: Number Theory
-        ("math/bitmask.cpp", "Bitmask Transforms"),
+        ("math/bitmask.cpp", "Bitmask Transforms", ["-subset_convolution"]),
     ]),
     ("Geometry", [
         ("geometry/geometry.cpp", "Geometry"),
@@ -155,7 +156,8 @@ def strip_preamble(text, shared):
 
 def keep_only(text, wanted, fname):
     """Keep the top-level blocks (a column-0 comment after a blank line starts one) that
-    define any name in wanted, plus whatever comes before the first block."""
+    define any name in wanted, plus whatever comes before the first block. If every name in
+    wanted starts with "-", keep every block except the ones that define those names."""
     blocks = [[]]
     prev = ""
     for line in text.splitlines():
@@ -166,9 +168,15 @@ def keep_only(text, wanted, fname):
     head, rest = blocks[0], blocks[1:]
     if head and head[0].startswith("//"):  # the file starts with a block, not a header
         head, rest = [], blocks
-    kept = [b for b in rest if set(top_level_names("\n".join(b))) & set(wanted)]
-    found = {n for b in kept for n in top_level_names("\n".join(b))}
-    missing = [n for n in wanted if n not in found]
+    if all(w.startswith("-") for w in wanted):
+        drop = {w[1:] for w in wanted}
+        kept = [b for b in rest if not set(top_level_names("\n".join(b))) & drop]
+        found = {n for b in rest for n in top_level_names("\n".join(b))}
+        missing = [n for n in drop if n not in found]
+    else:
+        kept = [b for b in rest if set(top_level_names("\n".join(b))) & set(wanted)]
+        found = {n for b in kept for n in top_level_names("\n".join(b))}
+        missing = [n for n in wanted if n not in found]
     if missing:
         sys.exit(f"error: {fname} has no top-level {', '.join(missing)} (listed in SECTIONS)")
     return "\n".join(head + [l for b in kept for l in b]).strip("\n") + "\n"

@@ -30,9 +30,11 @@ Rebuild after changing a template so the notebook stays in sync. The script:
 `SECTIONS` entries are paths relative to `cpp_templates/`, whose folders match the notebook's chapters.
 To fit a page limit, remove entries from `SECTIONS` or reduce `CODE_FONT_PT`. To print only part of a
 file, list the names to keep: `("data_structures/dsu.cpp", "DSU", ["DSU", "RollbackDSU", "OfflineDynamic"])`
-keeps just those three components and their doc comments.
+keeps just those three components and their doc comments, and `["-name", ...]` keeps everything except those.
 
 The current build fits the 25-page ICPC limit. It leaves out `math/big_integer.cpp`, `math/hex_big_integer.cpp`,
 `math/simplex.cpp`, `data_structures/monoids.cpp`, `data_structures/persistent_segment_tree.cpp`, `misc/dlx.cpp`,
-`misc/misc.cpp`, `SumDSU`, the modular solvers in `math/linear_algebra.cpp`, and the copy of `mod_sqrt` in
-`math/polynomial.cpp` (Number Theory prints it).
+`misc/misc.cpp`, `graphs/euler_tour_tree.cpp`, `graphs/triangles.cpp`, the modular solvers in
+`math/linear_algebra.cpp`, the copy of `mod_sqrt` in `math/polynomial.cpp` (Number Theory prints it), the extra
+rerooting examples (`MaxDist`, `PathComposite`), and `SumDSU`, `PotentialDSU`, `FoldDeque`, `Fenwick2D`,
+`count_primes`, `subset_convolution`, `cartesian_tree` and `manhattan_mst_edges`.
