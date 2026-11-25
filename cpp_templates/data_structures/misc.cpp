@@ -2,6 +2,7 @@
 //   Compressor      coordinate compression
 //   MinStack        stack with minimum query
 //   MinQueue        queue with minimum query
+//   FoldDeque       deque with the fold of a monoid over all its elements in order (two stacks)
 //   MisofTree       multiset of integers in [0, 2^BITS)
 
 #include <bits/stdc++.h>
@@ -72,6 +73,52 @@ struct MinQueue {
         if (out.empty()) return in.min();
         return std::min(in.min(), out.min());
     }
+};
+
+// deque with the fold of a monoid M (like the ones in monoids.cpp) over all its elements, front to back
+// two stacks, each keeping the fold of everything below; an empty side takes half of the other
+// as a queue (push_back, pop_front) it is the classic two-stack queue
+//   push_front(x), push_back(x)   add x at that end, O(1)
+//   pop_front(), pop_back()       remove from that end; the deque must not be empty, O(1) amortized
+//   fold()                        op over all elements from front to back, M::id() if empty, O(1)
+//   size()                        number of elements, O(1)
+template <class M>
+struct FoldDeque {
+    using T = typename M::T;
+    vector<T> fv, fa, bv, ba;  // front stack (top = front) and back stack (top = back): values and folds
+
+    void push_front(const T &x) {
+        fv.push_back(x);
+        fa.push_back(M::op(x, fa.empty() ? M::id() : fa.back()));
+    }
+
+    void push_back(const T &x) {
+        bv.push_back(x);
+        ba.push_back(M::op(ba.empty() ? M::id() : ba.back(), x));
+    }
+
+    void rebuild(bool front) {  // split all elements in half between the two stacks
+        vector<T> all(fv.rbegin(), fv.rend());
+        all.insert(all.end(), bv.begin(), bv.end());
+        fv.clear(), fa.clear(), bv.clear(), ba.clear();
+        int k = all.size(), m = front ? (k + 1) / 2 : k / 2;  // the side being popped gets at least one
+        for (int i = m - 1; i >= 0; i--) push_front(all[i]);
+        for (int i = m; i < k; i++) push_back(all[i]);
+    }
+
+    void pop_front() {
+        if (fv.empty()) rebuild(true);
+        fv.pop_back(), fa.pop_back();
+    }
+
+    void pop_back() {
+        if (bv.empty()) rebuild(false);
+        bv.pop_back(), ba.pop_back();
+    }
+
+    T fold() const { return M::op(fa.empty() ? M::id() : fa.back(), ba.empty() ? M::id() : ba.back()); }
+
+    int size() const { return fv.size() + bv.size(); }
 };
 
 // multiset of integers in [0, 2^BITS)

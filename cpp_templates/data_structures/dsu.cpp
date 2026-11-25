@@ -1,5 +1,6 @@
 // Contents
 //   DSU             disjoint set union with path compression and union by size
+//   PotentialDSU    DSU with potentials: value(u) - value(v) under constraints, for any additive group
 //   RollbackDSU     DSU with undo, example structure for OfflineDynamic below; D needs Op, snapshot()
 //   SumDSU          RollbackDSU with component sums and point adds, for OfflineDynamic
 //   OfflineDynamic  segment tree over time
@@ -38,6 +39,52 @@ struct DSU {
     }
 
     bool is_connected(int a, int b) { return find_set(a) == find_set(b); }
+};
+
+// DSU with potentials: keeps value(u) - value(v) for u, v in the same set, under constraints value(u) - value(v) = x
+// T is any additive group (+, -, == and T() as zero): ll, ModInt, ...; union by size keeps find's recursion shallow
+//   PotentialDSU(n)    n singleton sets, O(n)
+//   find(v)            root of v's set, O(log n)
+//   connected(u, v)    true if u and v are in the same set, O(log n)
+//   diff(u, v)         value(u) - value(v); u and v must be connected, O(log n)
+//   merge(u, v, x)     add the constraint value(u) - value(v) = x; false if it contradicts the others, O(log n)
+template <class T>
+struct PotentialDSU {
+    vector<int> p, sz;
+    vector<T> pot;  // pot[v] = value(v) - value(p[v])
+
+    PotentialDSU(int n = 0): p(n), sz(n, 1), pot(n) { iota(p.begin(), p.end(), 0); }
+
+    int find(int v) {
+        if (p[v] == v) return v;
+        int r = find(p[v]);
+        pot[v] = pot[v] + pot[p[v]];
+        p[v] = r;
+        return r;
+    }
+
+    bool connected(int u, int v) { return find(u) == find(v); }
+
+    T diff(int u, int v) {
+        find(u);
+        find(v);
+        return pot[u] - pot[v];
+    }
+
+    bool merge(int u, int v, T x) {
+        int ru = find(u), rv = find(v);
+        if (ru == rv) return pot[u] - pot[v] == x;
+        if (sz[ru] < sz[rv]) {
+            p[ru] = rv;
+            pot[ru] = x - pot[u] + pot[v];
+            sz[rv] += sz[ru];
+        } else {
+            p[rv] = ru;
+            pot[rv] = pot[u] - pot[v] - x;
+            sz[ru] += sz[rv];
+        }
+        return true;
+    }
 };
 
 // DSU with undo, example structure for OfflineDynamic below; D needs Op, snapshot(), apply(op), rollback(s)

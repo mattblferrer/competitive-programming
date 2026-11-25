@@ -3,7 +3,7 @@
 //   PersistentSegTree      persistent segment tree, point update, query on [l, r)
 //   Spec                   example lazy spec (range add, range sum) for PersistentLazySegTree
 //   PersistentLazySegTree  persistent lazy segment tree, range update and query on [l, r)
-//   LeqCounter             counts values <= x in any subarray, online; values can be any integers
+//   LeqCounter             counts and sums the values <= x in any subarray, online; values can be any integers
 //   UniqueCounter          counts distinct values in any subarray, online; uses LeqCounter above
 
 #include <bits/stdc++.h>
@@ -202,14 +202,15 @@ struct PersistentLazySegTree {
     }
 };
 
-// counts values <= x in any subarray, online; values can be any integers
+// counts and sums the values <= x in any subarray, online; values can be any integers
 //   LeqCounter(a)      build from a, O(n log n)
 //   count(l, r, x)     number of i in [l, r) with a[i] <= x, O(log n)
+//   sum(l, r, x)       sum of the a[i] <= x with i in [l, r), O(log n)
 struct LeqCounter {
-    struct Count {
-        using T = int;
-        static T id() { return 0; }
-        static T op(const T &a, const T &b) { return a + b; }
+    struct Count {  // {count, sum}
+        using T = pll;
+        static T id() { return {0, 0}; }
+        static T op(const T &a, const T &b) { return {a.first + b.first, a.second + b.second}; }
     };
     vector<ll> sorted_vals;
     PersistentSegTree<Count> tree;
@@ -221,14 +222,18 @@ struct LeqCounter {
         sort(order.begin(), order.end(), [&](int i, int j) { return a[i] < a[j]; });
         for (int i : order) {
             sorted_vals.push_back(a[i]);
-            tree.set(tree.roots.size() - 1, i, 1);
+            tree.set(tree.roots.size() - 1, i, {1, a[i]});
         }
     }
 
-    int count(int l, int r, ll x) const {
+    pll query(int l, int r, ll x) const {
         int ver = upper_bound(sorted_vals.begin(), sorted_vals.end(), x) - sorted_vals.begin();
         return tree.query(ver, l, r);
     }
+
+    int count(int l, int r, ll x) const { return query(l, r, x).first; }
+
+    ll sum(int l, int r, ll x) const { return query(l, r, x).second; }
 };
 
 // counts distinct values in any subarray, online; uses LeqCounter above

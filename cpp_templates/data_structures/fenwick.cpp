@@ -1,6 +1,7 @@
 // Contents
 //   Fenwick         Fenwick tree (0-indexed)
 //   RangeFenwick    Fenwick tree with range update, point query (0-indexed)
+//   Fenwick2D       2D Fenwick tree over points known in advance: point add, rectangle sum
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -74,4 +75,44 @@ struct RangeFenwick {
     }
 
     ll get(int i) const { return f.sum(i + 1); }
+};
+
+// 2D Fenwick tree over a set of points known in advance (offline): add weight to a point, sum over a rectangle
+// each node of a Fenwick tree over x keeps the sorted y's it covers and a Fenwick tree (above) over them
+//   Fenwick2D(pts)            pts = {x, y} of every point that will ever get weight (repeats are fine), O(n log n)
+//   add(x, y, w)              add w at (x, y), which must be in pts, O(log^2 n)
+//   sum(xl, yl, xr, yr)       sum of the weights at xl <= x < xr and yl <= y < yr, O(log^2 n)
+struct Fenwick2D {
+    vector<ll> xs;
+    vector<vector<ll>> ys;
+    vector<Fenwick> fen;
+
+    Fenwick2D(const vector<pll> &pts) {
+        for (auto [x, y] : pts) xs.push_back(x);
+        sort(xs.begin(), xs.end());
+        xs.erase(unique(xs.begin(), xs.end()), xs.end());
+        int n = xs.size();
+        ys.resize(n + 1);
+        for (auto [x, y] : pts)
+            for (int i = lower_bound(xs.begin(), xs.end(), x) - xs.begin() + 1; i <= n; i += i & -i) ys[i].push_back(y);
+        for (int i = 1; i <= n; i++) {
+            sort(ys[i].begin(), ys[i].end());
+            ys[i].erase(unique(ys[i].begin(), ys[i].end()), ys[i].end());
+            fen.emplace_back(ys[i].size());
+        }
+    }
+
+    static int pos(const vector<ll> &v, ll y) { return lower_bound(v.begin(), v.end(), y) - v.begin(); }
+
+    void add(ll x, ll y, ll w) {
+        for (int i = pos(xs, x) + 1; i <= (int)xs.size(); i += i & -i) fen[i - 1].add(pos(ys[i], y), w);
+    }
+
+    ll prefix(ll xr, ll yl, ll yr) const {  // x < xr, yl <= y < yr
+        ll res = 0;
+        for (int i = pos(xs, xr); i > 0; i -= i & -i) res += fen[i - 1].sum(pos(ys[i], yl), pos(ys[i], yr));
+        return res;
+    }
+
+    ll sum(ll xl, ll yl, ll xr, ll yr) const { return prefix(xr, yl, yr) - prefix(xl, yl, yr); }
 };

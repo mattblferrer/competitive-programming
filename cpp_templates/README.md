@@ -44,6 +44,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | Name | Description |
 | --- | --- |
 | `DSU` | disjoint set union with path compression and union by size |
+| `PotentialDSU` | DSU with potentials: value(u) - value(v) under constraints, for any additive group |
 | `RollbackDSU` | DSU with undo, example structure for OfflineDynamic below; D needs Op, snapshot() |
 | `SumDSU` | RollbackDSU with component sums and point adds, for OfflineDynamic |
 | `OfflineDynamic` | segment tree over time |
@@ -54,6 +55,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | --- | --- |
 | `Fenwick` | Fenwick tree (0-indexed) |
 | `RangeFenwick` | Fenwick tree with range update, point query (0-indexed) |
+| `Fenwick2D` | 2D Fenwick tree over points known in advance: point add, rectangle sum |
 
 ### [`data_structures/sparse_table.cpp`](data_structures/sparse_table.cpp)
 
@@ -103,6 +105,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `Compressor` | coordinate compression |
 | `MinStack` | stack with minimum query |
 | `MinQueue` | queue with minimum query |
+| `FoldDeque` | deque with the fold of a monoid over all its elements in order (two stacks) |
 | `MisofTree` | multiset of integers in [0, 2^BITS) |
 
 ### [`data_structures/monoids.cpp`](data_structures/monoids.cpp)
@@ -137,7 +140,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `PersistentSegTree` | persistent segment tree, point update, query on [l, r) |
 | `Spec` | example lazy spec (range add, range sum) for PersistentLazySegTree |
 | `PersistentLazySegTree` | persistent lazy segment tree, range update and query on [l, r) |
-| `LeqCounter` | counts values <= x in any subarray, online; values can be any integers |
+| `LeqCounter` | counts and sums the values <= x in any subarray, online; values can be any integers |
 | `UniqueCounter` | counts distinct values in any subarray, online; uses LeqCounter above |
 
 ## Graphs
