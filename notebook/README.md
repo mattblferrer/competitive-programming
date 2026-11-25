@@ -45,5 +45,6 @@ rerooting examples (`MaxDist`, `PathComposite`), and `SumDSU`, `PotentialDSU`, `
 `complement_components`, `multiplicative_sum`, `delaunay_edges`, `TriangleCounter`,
 `count_spanning_trees_directed`, `charpoly_mod`, `BitMatrix`, `det_mod2`, `inverse_mod2`, `solve_mod2`,
 `mul_mod2`, `RangeMode`, `LinkCutPath`, `rect_add_rect_sum`,
-`WeightedBlossom`, `XorTrie`, `derangements`, `distinct_subsequences` and
-`rect_union_area` (with its copies of `MinCount` and `AddMinCount` in `data_structures/segment_tree.cpp`).
+`WeightedBlossom`, `XorTrie`, `derangements`, `distinct_subsequences`,
+`rect_union_area` (with its copies of `MinCount` and `AddMinCount` in `data_structures/segment_tree.cpp`) and
+`SortableSegTree`.

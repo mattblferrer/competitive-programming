@@ -80,6 +80,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `SegTree2D` | 2D segment tree (iterative), point update |
 | `DynamicSegTree` | implicit segment tree on any integer range [lo, hi) |
 | `SegTreeBeats` | segment tree beats on [l, r): range chmin, chmax and add with sum, max and min queries |
+| `SortableSegTree` | sequence of (key, value) pairs: point set, sort a range by key, fold a range |
 
 ### [`data_structures/wavelet.cpp`](data_structures/wavelet.cpp)
 

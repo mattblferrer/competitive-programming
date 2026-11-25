@@ -9,6 +9,7 @@
 //   SegTree2D       2D segment tree (iterative), point update
 //   DynamicSegTree  implicit segment tree on any integer range [lo, hi)
 //   SegTreeBeats    segment tree beats on [l, r): range chmin, chmax and add with sum, max and min queries
+//   SortableSegTree sequence of (key, value) pairs: point set, sort a range by key, fold a range
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -464,4 +465,137 @@ struct SegTreeBeats {
     ll sum(int l, int r) { return n ? fold(1, 0, n, l, r, 0, [&](ll a, int k) { return a + t[k].sum; }) : 0; }
     ll max_val(int l, int r) { return fold(1, 0, n, l, r, -LIM, [&](ll a, int k) { return max(a, t[k].mx); }); }
     ll min_val(int l, int r) { return fold(1, 0, n, l, r, LIM, [&](ll a, int k) { return min(a, t[k].mn); }); }
+};
+
+// sortable segment tree: a sequence of (key, value) pairs with point set, sorting a range by key and folding a range,
+// for any monoid M (op need not commute), using SegTree above; keys are ints in [0, K) (compress them), distinct
+// among the current elements. the sequence is kept as runs sorted by key, each a segment tree over the keys holding
+// its fold in both key orders, and the outer SegTree holds each run's fold at its first position; sorting merges
+// runs (segment tree merge), and a run is cut in two by rank where an operation starts or ends
+// amortized O(log n + log K) per call, O((n + q) log K) memory
+//   SortableSegTree(K, key, val)   element i is (key[i], val[i]), O(n log K)
+//   set(i, k, v)                   element i becomes (k, v)
+//   sort(l, r, desc)               sort [l, r) by key, increasing (decreasing if desc)
+//   query(l, r)                    op over [l, r) in the current order
+template <class M>
+struct SortableSegTree {
+    using T = typename M::T;
+    struct Node { int l, r, cnt; T fwd, bwd; };  // fold in increasing / decreasing key order
+    int n, K;
+    vector<Node> t;  // t[0] is the empty node
+    vector<int> freed, root;  // root[s] = key tree of the run starting at s
+    vector<char> desc;
+    std::set<int> starts;
+    SegTree<M> outer;
+
+    SortableSegTree(int K, const vector<int> &key, const vector<T> &val)
+        : n(key.size()), K(K), t(1, Node{0, 0, 0, M::id(), M::id()}), root(n), desc(n, 0), outer(val) {
+        for (int i = 0; i < n; i++) {
+            root[i] = leaf(key[i], val[i]);
+            starts.insert(i);
+        }
+    }
+
+    int alloc() {
+        if (freed.empty()) {
+            t.push_back(t[0]);
+            return t.size() - 1;
+        }
+        int x = freed.back();
+        freed.pop_back();
+        t[x] = t[0];
+        return x;
+    }
+
+    void release(int x) {
+        if (!x) return;
+        release(t[x].l);
+        release(t[x].r);
+        freed.push_back(x);
+    }
+
+    int leaf(int k, const T &v) {  // a key tree with the single element (k, v)
+        int res = alloc(), x = res;
+        for (int lo = 0, hi = K;;) {
+            t[x].cnt = 1;
+            t[x].fwd = t[x].bwd = v;
+            if (hi - lo == 1) return res;
+            int mid = (lo + hi) / 2, c = alloc();
+            if (k < mid) t[x].l = c, hi = mid;
+            else t[x].r = c, lo = mid;
+            x = c;
+        }
+    }
+
+    void pull(int x) {
+        const Node &a = t[t[x].l], &b = t[t[x].r];
+        t[x].cnt = a.cnt + b.cnt;
+        t[x].fwd = M::op(a.fwd, b.fwd);
+        t[x].bwd = M::op(b.bwd, a.bwd);
+    }
+
+    int merge(int a, int b) {  // the keys are distinct, so two leaves never meet
+        if (!a || !b) return a | b;
+        t[a].l = merge(t[a].l, t[b].l);
+        t[a].r = merge(t[a].r, t[b].r);
+        freed.push_back(b);
+        pull(a);
+        return a;
+    }
+
+    pair<int, int> split(int a, int k) {  // {the k smallest keys, the rest}
+        if (!a || k <= 0) return {0, a};
+        if (k >= t[a].cnt) return {a, 0};
+        int b = alloc(), c = t[a].l;
+        if (k <= t[c].cnt) {
+            auto [x, y] = split(c, k);
+            t[b].l = y, t[b].r = t[a].r, t[a].l = x, t[a].r = 0;
+        } else {
+            auto [x, y] = split(t[a].r, k - t[c].cnt);
+            t[b].r = y, t[a].r = x;
+        }
+        pull(a);
+        pull(b);
+        return {a, b};
+    }
+
+    T fold(int s) const { return desc[s] ? t[root[s]].bwd : t[root[s]].fwd; }
+
+    void cut(int i) {  // make a run start at i
+        if (i >= n || starts.count(i)) return;
+        int s = *prev(starts.upper_bound(i)), k = i - s;
+        auto [x, y] = split(root[s], desc[s] ? t[root[s]].cnt - k : k);
+        if (desc[s]) swap(x, y);  // a decreasing run keeps its largest keys first
+        root[s] = x, root[i] = y, desc[i] = desc[s];
+        starts.insert(i);
+        outer.set(s, fold(s));
+        outer.set(i, fold(i));
+    }
+
+    void set(int i, int k, const T &v) {
+        cut(i);
+        cut(i + 1);
+        release(root[i]);
+        root[i] = leaf(k, v);
+        desc[i] = 0;
+        outer.set(i, v);
+    }
+
+    void sort(int l, int r, bool d = false) {
+        if (l >= r) return;
+        cut(l);
+        cut(r);
+        for (auto it = starts.upper_bound(l); it != starts.end() && *it < r; it = starts.erase(it)) {
+            root[l] = merge(root[l], root[*it]);
+            outer.set(*it, M::id());
+        }
+        desc[l] = d;
+        outer.set(l, fold(l));
+    }
+
+    T query(int l, int r) {
+        cut(l);
+        cut(r);
+        return outer.query(l, r);
+    }
 };
