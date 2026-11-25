@@ -17,60 +17,87 @@ mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
 #define dbg(x)
 #endif
 
-// sum of a multiplicative f over [1, n] mod mod (Min_25 sieve), n up to ~1e11; mod need not be prime, only below ~3e9
-// so products fit in ll; f(p) on primes must be the polynomial coef[0] + coef[1] p + coef[2] p^2 + coef[3] p^3 (at
-// most 4 terms), and fpe(p, e) gives f(p^e) mod mod
-// first g[v] = sum of f(p) over primes p <= v for every v = n / i (Lucy's sieve, once per power of p), then
-// S(v, j) = sum of f(i) over 2 <= i <= v whose smallest prime factor is >= primes[j], by recursion, O(n^(3/4) / log n)
+// sum of a multiplicative f over [1, n] mod mod (Min_25 sieve), n up to ~1e12 (1e13 takes ~30 s); mod need not be
+// prime, only below ~3e9 so products fit in 64 bits; f(p) on primes must be the polynomial coef[0] + coef[1] p +
+// coef[2] p^2 + coef[3] p^3 (at most 4 terms), and fpe(p, e) gives f(p^e) already reduced mod mod
+// first g_d[v] = sum of p^d over primes p <= v for every v = n / i (Lucy's sieve, all d in one pass), then the sum over
+// composites by recursion on the smallest prime factor, O(n^(3/4) / log n); v = n / i is stored at index i if i <= sq
+// and at v otherwise, so lookups need no division (or one exact double division), and % mod is a Barrett reduction
 template <class F>
 ll multiplicative_sum(ll n, const vector<ll> &coef, F fpe, ll mod) {
     ll sq = sqrtl(n);
     while (sq * sq > n) sq--;
     while ((sq + 1) * (sq + 1) <= n) sq++;
-    vector<ll> vals, primes;
-    for (ll i = 1; i <= n; i = n / (n / i) + 1) vals.push_back(n / i);  // decreasing
-    int m = vals.size();
-    vector<int> lo(sq + 1), hi(sq + 1);  // index of v in vals: lo[v] if v <= sq, else hi[n / v]
-    for (int i = 0; i < m; i++) (vals[i] <= sq ? lo[vals[i]] : hi[n / vals[i]]) = i;
-    auto id = [&](ll v) { return v <= sq ? lo[v] : hi[n / v]; };
+    int nc = coef.size();
+    ull M = mod, im = ~0ULL / M;
+    auto red = [&](ull x) -> ull {  // x mod M for x < 2^63
+        ull r = x - (ull)((unsigned __int128)x * im >> 64) * M;
+        return r >= M ? r - M : r;
+    };
+    auto sub = [&](ull x, ull y) { return x >= y ? x - y : x + M - y; };
+    auto power_sum = [&](ull v, int d) -> ull {  // sum of i^d for i in [1, v] mod M
+        ull a = v, b = v + 1, c = 2 * v + 1;
+        (a % 2 ? b : a) /= 2;  // a b = v (v + 1) / 2
+        if (d == 0) return v % M;
+        ull t = red(a % M * (b % M));
+        if (d == 1) return t;
+        if (d == 3) return red(t * t);
+        (a % 3 == 0 ? a : b % 3 == 0 ? b : c) /= 3;  // a b c = v (v + 1) (2v + 1) / 6
+        return red(red(a % M * (b % M)) * (c % M));
+    };
+    // gs[v * nc + d] for small v <= sq, gl[i * nc + d] for large v = n / i, i <= sq: sum of p^d over primes p in [2, v]
+    vector<ull> gs((sq + 1) * nc), gl((sq + 1) * nc), pw(nc), sp(nc);
+    for (ll v = 1; v <= sq; v++) {
+        for (int d = 0; d < nc; d++) {
+            gs[v * nc + d] = sub(power_sum(v, d), 1);
+            gl[v * nc + d] = sub(power_sum(n / v, d), 1);
+        }
+    }
+    vector<ll> primes;
     vector<char> comp(sq + 1);
     for (ll p = 2; p <= sq; p++) {
         if (comp[p]) continue;
         primes.push_back(p);
         for (ll q = p * p; q <= sq; q += p) comp[q] = 1;
-    }
-    auto power_sum = [&](ll v, int k) -> ll {  // sum of i^k for i in [1, v] mod mod
-        __int128 V = v;
-        if (k == 0) return v % mod;
-        if (k == 1) return (ll)(V * (V + 1) / 2 % mod);
-        if (k == 2) return (ll)(V * (V + 1) * (2 * V + 1) / 6 % mod);
-        ll t = (ll)(V * (V + 1) / 2 % mod);
-        return t * t % mod;
-    };
-    vector<ll> G(m), g(m);
-    for (int k = 0; k < (int)coef.size(); k++) {
-        for (int i = 0; i < m; i++) g[i] = (power_sum(vals[i], k) + mod - 1) % mod;  // i = 2..v
-        for (ll p : primes) {
-            ll pk = 1, before = g[id(p - 1)];
-            for (int t = 0; t < k; t++) pk = pk * (p % mod) % mod;
-            for (int i = 0; i < m && vals[i] >= p * p; i++) {
-                g[i] = (g[i] - pk * ((g[id(vals[i] / p)] - before + mod) % mod) % mod + mod) % mod;
-            }
+        for (int d = 0; d < nc; d++) {
+            pw[d] = d ? red(pw[d - 1] * (p % M)) : 1;
+            sp[d] = gs[(p - 1) * nc + d];  // sum over primes < p
         }
-        for (int i = 0; i < m; i++) G[i] = (G[i] + (coef[k] % mod + mod) % mod * g[i]) % mod;
+        for (ll i = 1, lim = min(sq, n / (p * p)); i <= lim; i++) {
+            ll ip = i * p;
+            const ull *src = ip <= sq ? &gl[ip * nc] : &gs[(ll)((double)n / ip) * nc];
+            for (int d = 0; d < nc; d++) gl[i * nc + d] = sub(gl[i * nc + d], red(pw[d] * sub(src[d], sp[d])));
+        }
+        for (ll v = sq; v >= p * p; v--) {
+            const ull *src = &gs[v / p * nc];
+            for (int d = 0; d < nc; d++) gs[v * nc + d] = sub(gs[v * nc + d], red(pw[d] * sub(src[d], sp[d])));
+        }
     }
-    auto S = [&](auto &self, ll v, int j) -> ll {
-        if (j && primes[j - 1] >= v) return 0;
-        ll res = (G[id(v)] - (j ? G[id(primes[j - 1])] : 0) + mod) % mod;  // the primes in [primes[j], v]
-        for (int i = j; i < (int)primes.size() && primes[i] * primes[i] <= v; i++) {
-            ll p = primes[i], pe = p;
-            for (int e = 1; pe * p <= v; e++, pe *= p) {
-                res = (res + fpe(p, e) % mod * self(self, v / pe, i + 1) + fpe(p, e + 1)) % mod;
+    vector<ull> cm(nc), Gs(sq + 1), Gl(sq + 1);  // G = sum of f(p) over primes p <= v
+    for (int d = 0; d < nc; d++) cm[d] = (coef[d] % mod + mod) % mod;
+    for (ll v = 1; v <= sq; v++) {
+        for (int d = 0; d < nc; d++) {
+            Gs[v] = red(Gs[v] + cm[d] * gs[v * nc + d]);
+            Gl[v] = red(Gl[v] + cm[d] * gl[v * nc + d]);
+        }
+    }
+    int P = primes.size();
+    auto G = [&](ll v, ll x) { return x <= sq ? Gl[x] : Gs[v]; };  // G at v = n / x, no division
+    // S(v, x, j) = sum of f(m) over 2 <= m <= v = n / x whose smallest prime factor is >= primes[j]; a child with no
+    // composite left (next prime squared > w) is a difference of G, so it is not called
+    auto S = [&](auto &self, ll v, ll x, int j) -> ull {
+        ull res = sub(G(v, x), j ? Gs[primes[j - 1]] : 0);  // the primes in [primes[j], v]
+        for (int i = j; i < P && primes[i] * primes[i] <= v; i++) {
+            ll p = primes[i], w = v / p, xe = x * p;  // w = v / p^e, xe = x p^e
+            for (int e = 1; w >= p; e++, w /= p, xe *= p) {
+                bool leaf = i + 1 == P || primes[i + 1] * primes[i + 1] > w;
+                ull rest = leaf ? sub(G(w, xe), Gs[p]) : self(self, w, xe, i + 1);
+                res = red(res + red(fpe(p, e) * rest) + fpe(p, e + 1));
             }
         }
         return res;
     };
-    return (S(S, n, 0) + 1) % mod;
+    return (S(S, n, 1, 0) + 1) % M;
 }
 
 void solve() {
