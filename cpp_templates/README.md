@@ -229,6 +229,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `HopcroftKarp` | maximum bipartite matching (Hopcroft-Karp); left vertices 0..n-1, right vertices 0..m-1 |
 | `hungarian` | minimum cost assignment (Hungarian) of every row to a distinct column |
 | `Blossom` | maximum matching in a general graph (Edmonds' blossom) |
+| `WeightedBlossom` | maximum weight matching in a general graph (Edmonds' blossom with dual variables), O(n^3) |
 | `stable_marriage` | stable marriage (Gale-Shapley), O(n^2): men[i] and women[i] are preference lists |
 
 ### [`graphs/trees.cpp`](graphs/trees.cpp)

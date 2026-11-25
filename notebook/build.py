@@ -58,7 +58,7 @@ SECTIONS = [
         ("graphs/k_shortest_paths.cpp", "K Shortest Paths"),
         ("graphs/flows.cpp", "Max Flow"),
         ("graphs/min_cost_flow.cpp", "Min-Cost Flow"),
-        ("graphs/matching.cpp", "Matching"),
+        ("graphs/matching.cpp", "Matching", ["-WeightedBlossom"]),
         ("graphs/trees.cpp", "Trees", ["-cartesian_tree", "-tree_distance_counts"]),
         ("graphs/rerooting.cpp", "Rerooting", ["SumDist", "rerooting"]),  # MaxDist, PathComposite: more examples
         ("graphs/link_cut_tree.cpp", "Link-Cut Tree", ["-LinkCutPath"]),
