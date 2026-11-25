@@ -1,16 +1,17 @@
 // Contents
-//   prefix_function    prefix function, O(n)
-//   kmp                start indices of all occurrences of f in s, O(|s| + |f|)
-//   Booth              Booth's algorithm for the lexicographically smallest rotation in O(n)
-//   z_function         Z function, O(n): z[i] = length of the longest common prefix of s and s[i..]; z[0] = n
-//   Trie               trie over sequences of any comparable type, L = sequence length
-//   PersistentXorTrie  persistent binary trie
-//   SuffixArray        suffix array and LCP array
-//   AhoCorasick        Aho-Corasick automaton: KMP for many patterns over the alphabet [BASE, BASE + ALPHA)
-//   Eertree            palindromic tree (eertree) over lowercase letters
-//   RollingHash        polynomial rolling hash mod 2^61 - 1 with a random base
-//   manacher           Manacher's algorithm, O(n); returns {d1, d2}
-//   SuffixAutomaton    suffix automaton over lowercase letters
+//   prefix_function       prefix function, O(n)
+//   kmp                   start indices of all occurrences of f in s, O(|s| + |f|)
+//   Booth                 Booth's algorithm for the lexicographically smallest rotation in O(n)
+//   z_function            Z function, O(n): z[i] = length of the longest common prefix of s and s[i..]; z[0] = n
+//   Trie                  trie over sequences of any comparable type, L = sequence length
+//   PersistentXorTrie     persistent binary trie
+//   SuffixArray           suffix array and LCP array
+//   AhoCorasick           Aho-Corasick automaton: KMP for many patterns over the alphabet [BASE, BASE + ALPHA)
+//   Eertree               palindromic tree (eertree) over lowercase letters
+//   RollingHash           polynomial rolling hash mod 2^61 - 1 with a random base
+//   manacher              Manacher's algorithm, O(n); returns {d1, d2}
+//   SuffixAutomaton       suffix automaton over lowercase letters
+//   lyndon_factorization  Lyndon factorization (Duval): boundaries of the factors, which are nonincreasing Lyndon words, O(n)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -546,3 +547,20 @@ struct SuffixAutomaton {
         return best;
     }
 };
+
+// Lyndon factorization (Duval): returns 0 = a[0] < a[1] < ... < a[k] = n so that the s[a[i], a[i + 1]) are Lyndon
+// words (strictly smaller than all their proper rotations) in nonincreasing order, O(n)
+template <class S>
+vector<int> lyndon_factorization(const S &s) {
+    int n = s.size();
+    vector<int> res{0};
+    for (int i = 0; i < n;) {
+        int j = i + 1, k = i;  // s[i, j) is a prefix of repeated copies of a Lyndon word of length j - k
+        while (j < n && s[k] <= s[j]) {
+            k = s[k] < s[j] ? i : k + 1;
+            j++;
+        }
+        for (; i <= k; i += j - k) res.push_back(i + j - k);
+    }
+    return res;
+}

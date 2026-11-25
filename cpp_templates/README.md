@@ -295,6 +295,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `RollingHash` | polynomial rolling hash mod 2^61 - 1 with a random base |
 | `manacher` | Manacher's algorithm, O(n); returns {d1, d2} |
 | `SuffixAutomaton` | suffix automaton over lowercase letters |
+| `lyndon_factorization` | Lyndon factorization (Duval): boundaries of the factors, which are nonincreasing Lyndon words, O(n) |
 
 ## Math
 
