@@ -9,6 +9,9 @@
 //   kth_term_ntt          k-th term of a linear recurrence mod an NTT prime (Bostan-Mori), O(d log d log k)
 //   bernoulli_ntt         Bernoulli numbers B[0..n] mod an NTT prime, with B[1] = -1/2, O(n log n)
 //   bell_ntt              Bell numbers B[0..n] mod an NTT prime, as exp(e^x - 1), O(n log n)
+//   taylor_shift          a(x + c) mod MOD (Taylor shift), O(n log n)
+//   stirling1_ntt         signed Stirling numbers of the first kind s(n, k), k = 0..n, mod an NTT prime, O(n log n)
+//   stirling2_ntt         Stirling numbers of the second kind S(n, k), k = 0..n, mod an NTT prime, O(n log n)
 //   shift_samples         h(a), ..., h(a + m - 1) from h(0), ..., h(n - 1) (shift of sampling points), O((n + m) log(n + m))
 //   FactorialMod          n! mod an NTT prime for any n < MOD, block table of (iV)!, O(V) per query
 //   lagrange              value at x of the unique polynomial through (xs[i], ys[i])
@@ -490,6 +493,62 @@ vector<ll> bell_ntt(int n) {
     vector<ll> b = Poly<MOD, ROOT>::exp(a, n + 1);
     for (int i = 0; i <= n; i++) b[i] = b[i] * fac[i] % MOD;
     return b;
+}
+
+// a(x + c) mod MOD (Taylor shift), MOD a prime > deg a, using NTT above
+// b[k] k! = sum over i >= k of a[i] i! c^(i - k) / (i - k)!, one convolution with the second factor reversed, O(n log n)
+template <ll MOD, ll ROOT>
+vector<ll> taylor_shift(vector<ll> a, ll c) {
+    int n = a.size();
+    if (!n) return a;
+    vector<ll> fac(n, 1), ifac(n, 1), b(n);
+    for (int i = 1; i < n; i++) fac[i] = fac[i - 1] * i % MOD;
+    ifac[n - 1] = binexp(fac[n - 1], MOD - 2, MOD);
+    for (int i = n - 1; i > 0; i--) ifac[i - 1] = ifac[i] * i % MOD;
+    c = (c % MOD + MOD) % MOD;
+    for (ll i = 0, pw = 1; i < n; i++, pw = pw * c % MOD) {
+        a[i] = a[i] * fac[i] % MOD;
+        b[n - 1 - i] = pw * ifac[i] % MOD;
+    }
+    vector<ll> prod = NTT<MOD, ROOT>::multiply(a, b);
+    for (int k = 0; k < n; k++) a[k] = prod[n - 1 + k] * ifac[k] % MOD;
+    return a;
+}
+
+// signed Stirling numbers of the first kind s(n, k), k = 0..n, mod an NTT prime MOD > n, using taylor_shift above:
+// x(x - 1)...(x - n + 1) = sum of s(n, k) x^k, and (-1)^(n - k) s(n, k) counts permutations of n with k cycles
+// doubling over the bits of n: f_2m(x) = f_m(x) f_m(x - m) and f_(m + 1)(x) = f_m(x) (x - m), O(n log n)
+template <ll MOD, ll ROOT>
+vector<ll> stirling1_ntt(int n) {
+    vector<ll> f{1};
+    int m = 0;
+    for (int b = n ? __lg(n) : -1; b >= 0; b--) {
+        if (m) f = NTT<MOD, ROOT>::multiply(f, taylor_shift<MOD, ROOT>(f, -m)), m *= 2;
+        if (n >> b & 1) {
+            f.push_back(0);
+            for (int i = m + 1; i > 0; i--) f[i] = (f[i - 1] + (MOD - m) * f[i]) % MOD;
+            f[0] = (MOD - m) * f[0] % MOD;
+            m++;
+        }
+    }
+    return f;
+}
+
+// Stirling numbers of the second kind S(n, k), k = 0..n, mod an NTT prime MOD > n (partitions of n elements into k
+// non-empty sets), using NTT above: S(n, k) = sum over i of i^n / i! * (-1)^(k - i) / (k - i)!, O(n log n)
+template <ll MOD, ll ROOT>
+vector<ll> stirling2_ntt(int n) {
+    vector<ll> fac(n + 1, 1), ifac(n + 1, 1), a(n + 1), b(n + 1);
+    for (int i = 1; i <= n; i++) fac[i] = fac[i - 1] * i % MOD;
+    ifac[n] = binexp(fac[n], MOD - 2, MOD);
+    for (int i = n; i > 0; i--) ifac[i - 1] = ifac[i] * i % MOD;
+    for (int i = 0; i <= n; i++) {
+        a[i] = binexp(i, n, MOD) * ifac[i] % MOD;
+        b[i] = i & 1 ? MOD - ifac[i] : ifac[i];
+    }
+    vector<ll> c = NTT<MOD, ROOT>::multiply(a, b);
+    c.resize(n + 1);
+    return c;
 }
 
 // h(a), h(a + 1), ..., h(a + m - 1) mod MOD for the polynomial h of degree < n given by h[i] = h(i), i = 0..n-1

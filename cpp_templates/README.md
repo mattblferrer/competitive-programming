@@ -407,6 +407,9 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `kth_term_ntt` | k-th term of a linear recurrence mod an NTT prime (Bostan-Mori), O(d log d log k) |
 | `bernoulli_ntt` | Bernoulli numbers B[0..n] mod an NTT prime, with B[1] = -1/2, O(n log n) |
 | `bell_ntt` | Bell numbers B[0..n] mod an NTT prime, as exp(e^x - 1), O(n log n) |
+| `taylor_shift` | a(x + c) mod MOD (Taylor shift), O(n log n) |
+| `stirling1_ntt` | signed Stirling numbers of the first kind s(n, k), k = 0..n, mod an NTT prime, O(n log n) |
+| `stirling2_ntt` | Stirling numbers of the second kind S(n, k), k = 0..n, mod an NTT prime, O(n log n) |
 | `shift_samples` | h(a), ..., h(a + m - 1) from h(0), ..., h(n - 1) (shift of sampling points), O((n + m) log(n + m)) |
 | `FactorialMod` | n! mod an NTT prime for any n < MOD, block table of (iV)!, O(V) per query |
 | `lagrange` | value at x of the unique polynomial through (xs[i], ys[i]) |
