@@ -82,7 +82,7 @@ SECTIONS = [
         ("math/bitmask.cpp", "Bitmask Transforms", ["-subset_convolution"]),
     ]),
     ("Geometry", [
-        ("geometry/geometry.cpp", "Geometry"),
+        ("geometry/geometry.cpp", "Geometry", ["-delaunay_edges", "-TriangleCounter"]),
     ]),
     ("DP and Search", [
         ("dp_search/binary_ternary_search.cpp", "Binary and Ternary Search"),

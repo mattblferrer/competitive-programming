@@ -518,6 +518,8 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `minkowski_sum` | Minkowski sum of two convex polygons given as strict hulls in CCW order |
 | `half_plane_intersection` | intersection of half-planes as a CCW polygon |
 | `polygon_union_area` | area of the union of simple polygons, each in CCW order |
+| `delaunay_edges` | Delaunay triangulation edges of integer points (they contain a Euclidean MST), O(n log n) |
+| `TriangleCounter` | number of points strictly inside triangles of given points, O(n^2 m) build, O(1) per query |
 
 ## DP and Search
 
