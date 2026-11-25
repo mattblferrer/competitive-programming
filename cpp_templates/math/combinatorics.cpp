@@ -12,6 +12,8 @@
 //   perm_to_factoradic  factoradic digits of a permutation of 0..n-1
 //   factoradic_to_perm  inverse of perm_to_factoradic, O(n log n)
 //   kth_permutation     k-th permutation of 0..n-1 in lexicographic order (0-indexed); k is taken mod n!
+//   derangements        derangements (Montmort numbers) d[0..n] mod any mod, O(n)
+//   distinct_subsequences  number of distinct non-empty subsequences of a sequence mod mod, O(n log n)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -206,4 +208,28 @@ vector<int> kth_permutation(int n, ll k) {
         k /= i;
     }
     return factoradic_to_perm(d);
+}
+
+// derangements (Montmort numbers) mod any mod >= 1: d[k] = permutations of k elements with no fixed point, k = 0..n,
+// from d[k] = (k - 1)(d[k - 1] + d[k - 2]); n * mod must fit in ll, O(n)
+vector<ll> derangements(int n, ll mod) {
+    vector<ll> d(n + 1, 0);
+    d[0] = 1 % mod;
+    for (ll k = 2; k <= n; k++) d[k] = (k - 1) * ((d[k - 1] + d[k - 2]) % mod) % mod;
+    return d;
+}
+
+// number of distinct non-empty subsequences of a (a string, or a vector of any comparable type) mod mod; add 1 for
+// the empty one. f counts them with the empty one: appending x doubles f, minus the ones that already ended in x,
+// which number f just before x last appeared, O(n log n)
+template <class S>
+ll distinct_subsequences(const S &a, ll mod) {
+    map<typename S::value_type, ll> last;  // last[x] = f just before the latest x
+    ll f = 1 % mod;
+    for (const auto &x : a) {
+        ll g = (2 * f - last[x] + mod) % mod;
+        last[x] = f;
+        f = g;
+    }
+    return (f - 1 + mod) % mod;
 }

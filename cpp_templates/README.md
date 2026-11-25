@@ -373,6 +373,8 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `perm_to_factoradic` | factoradic digits of a permutation of 0..n-1 |
 | `factoradic_to_perm` | inverse of perm_to_factoradic, O(n log n) |
 | `kth_permutation` | k-th permutation of 0..n-1 in lexicographic order (0-indexed); k is taken mod n! |
+| `derangements` | derangements (Montmort numbers) d[0..n] mod any mod, O(n) |
+| `distinct_subsequences` | number of distinct non-empty subsequences of a sequence mod mod, O(n log n) |
 
 ### [`math/matrix.cpp`](math/matrix.cpp)
 
