@@ -45,4 +45,4 @@ rerooting examples (`MaxDist`, `PathComposite`), and `SumDSU`, `PotentialDSU`, `
 `complement_components`, `multiplicative_sum`, `delaunay_edges`, `TriangleCounter`,
 `count_spanning_trees_directed`, `charpoly_mod`, `BitMatrix`, `det_mod2`, `inverse_mod2`, `solve_mod2`,
 `mul_mod2`, `RangeMode`, `LinkCutPath`, `rect_add_rect_sum`,
-`WeightedBlossom`, `derangements` and `distinct_subsequences`.
+`WeightedBlossom`, `XorTrie`, `derangements` and `distinct_subsequences`.

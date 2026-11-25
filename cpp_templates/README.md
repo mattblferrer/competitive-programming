@@ -294,6 +294,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `z_function` | Z function, O(n): z[i] = length of the longest common prefix of s and s[i..]; z[0] = n |
 | `Trie` | trie over sequences of any comparable type, L = sequence length |
 | `PersistentXorTrie` | persistent binary trie |
+| `XorTrie` | binary trie over a multiset: insert, erase, min and max xor |
 | `SuffixArray` | suffix array and LCP array |
 | `AhoCorasick` | Aho-Corasick automaton: KMP for many patterns over the alphabet [BASE, BASE + ALPHA) |
 | `Eertree` | palindromic tree (eertree) over lowercase letters |
