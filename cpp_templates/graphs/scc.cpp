@@ -1,6 +1,7 @@
 // Contents
-//   SCC             strongly connected components (Tarjan, iterative so deep graphs can't overflow the stack), 0-indexed
-//   TwoSat          2-SAT, uses SCC above
+//   SCC                    strongly connected components (Tarjan, iterative so deep graphs can't overflow the stack), 0-indexed
+//   TwoSat                 2-SAT, uses SCC above
+//   complement_components  connected components of the complement of a simple graph, O(n + m)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -85,3 +86,25 @@ struct TwoSat {
         return true;
     }
 };
+
+// connected components of the complement of a simple undirected graph, 0-indexed; BFS that only scans vertices not
+// yet visited, keeping the ones adjacent to the current vertex for later (each kept vertex is paid for by an edge), O(n + m)
+vector<vector<int>> complement_components(const vector<vector<int>> &adj) {
+    int n = adj.size();
+    vector<int> left(n), mark(n, -1);
+    iota(left.begin(), left.end(), 0);
+    vector<vector<int>> comps;
+    while (!left.empty()) {
+        vector<int> comp{left.back()};
+        left.pop_back();
+        for (size_t i = 0; i < comp.size(); i++) {
+            int u = comp[i];
+            for (int v : adj[u]) mark[v] = u;
+            vector<int> keep;
+            for (int v : left) (mark[v] == u ? keep : comp).push_back(v);
+            left.swap(keep);
+        }
+        comps.push_back(comp);
+    }
+    return comps;
+}

@@ -163,6 +163,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | --- | --- |
 | `SCC` | strongly connected components (Tarjan, iterative so deep graphs can't overflow the stack), 0-indexed |
 | `TwoSat` | 2-SAT, uses SCC above |
+| `complement_components` | connected components of the complement of a simple graph, O(n + m) |
 
 ### [`graphs/biconnected.cpp`](graphs/biconnected.cpp)
 

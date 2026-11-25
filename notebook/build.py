@@ -49,7 +49,7 @@ SECTIONS = [
     ]),
     ("Graphs", [
         ("graphs/shortest_paths.cpp", "Topological Sort and Shortest Paths"),
-        ("graphs/scc.cpp", "SCC and 2-SAT"),
+        ("graphs/scc.cpp", "SCC and 2-SAT", ["-complement_components"]),
         ("graphs/biconnected.cpp", "Biconnected Components"),
         ("graphs/euler.cpp", "Euler Paths"),
         ("graphs/spanning_trees.cpp", "Spanning Trees", ["-manhattan_mst_edges"]),
