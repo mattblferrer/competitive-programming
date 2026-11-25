@@ -59,6 +59,7 @@ SECTIONS = [
         ("graphs/min_cost_flow.cpp", "Min-Cost Flow"),
         ("graphs/matching.cpp", "Matching"),
         ("graphs/trees.cpp", "Trees"),
+        ("graphs/rerooting.cpp", "Rerooting", ["SumDist", "rerooting"]),  # MaxDist, PathComposite: more examples
         ("graphs/link_cut_tree.cpp", "Link-Cut Tree"),
     ]),
     ("Strings", [

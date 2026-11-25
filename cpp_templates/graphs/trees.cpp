@@ -5,8 +5,6 @@
 //   CentroidDecomp  centroid decomposition, 0-indexed; example use: nearest painted vertex
 //   TreeCanon       tree isomorphism by canonical ids (AHU); compare ids from the same TreeCanon object
 //   tree_diameter   diameter of a weighted tree; returns {length, path}
-//   SumDist         rerooting DP example: sum of distances from each vertex to all others
-//   rerooting       answer of a tree DP for every choice of root; returns ans[v] for each v
 //   dsu_on_tree     small-to-large on a tree (DSU on tree / sack)
 //   virtual_tree    virtual tree of the vertices vs, using LCA above; returns {nodes, par}
 
@@ -335,52 +333,6 @@ pair<ll, vector<int>> tree_diameter(const vector<vector<pair<int, ll>>> &adj) {
     vector<int> path;
     for (int v = b; v != -1; v = par[v]) path.push_back(v);
     return {dist[b], path};
-}
-
-// rerooting DP example: sum of distances from each vertex to all others, T = {sum of distances, vertex count}
-// id = empty merge, merge combines children (need not be invertible), lift moves a value across edge from -> to,
-// finish adds vertex v to the merged children; use from and to to look up edge weights
-struct SumDist {
-    using T = pll;
-    static T id() { return {0, 0}; }
-    static T merge(const T &a, const T &b) { return {a.first + b.first, a.second + b.second}; }
-    static T lift(const T &x, int, int) { return {x.first + x.second, x.second}; }
-    static T finish(const T &x, int) { return {x.first, x.second + 1}; }
-};
-
-// answer of a tree DP for every choice of root; returns ans[v] for each v, S shaped like SumDist above, O(n)
-template <class S>
-vector<typename S::T> rerooting(const vector<vector<int>> &adj) {
-    using T = typename S::T;
-    int n = adj.size();
-    vector<int> order{0}, par(n, -1);
-    for (int i = 0; i < (int)order.size(); i++) {
-        for (int v : adj[order[i]]) {
-            if (v == par[order[i]]) continue;
-            par[v] = order[i];
-            order.push_back(v);
-        }
-    }
-    vector<T> down(n, S::id()), up(n, S::id()), ans(n);  // up[v] = what v's parent contributes to v
-    for (int i = n - 1; i >= 0; i--) {
-        int v = order[i];
-        T cur = S::id();
-        for (int u : adj[v]) if (u != par[v]) cur = S::merge(cur, S::lift(down[u], u, v));
-        down[v] = S::finish(cur, v);
-    }
-    for (int v : order) {
-        int k = adj[v].size();
-        vector<T> pre(k + 1, S::id()), suf(k + 1, S::id());  // allows merge to have no inverse
-        auto value = [&](int u) { return u == par[v] ? up[v] : S::lift(down[u], u, v); };
-        for (int i = 0; i < k; i++) pre[i + 1] = S::merge(pre[i], value(adj[v][i]));
-        for (int i = k - 1; i >= 0; i--) suf[i] = S::merge(value(adj[v][i]), suf[i + 1]);
-        ans[v] = S::finish(pre[k], v);
-        for (int i = 0; i < k; i++) {
-            int u = adj[v][i];
-            if (u != par[v]) up[u] = S::lift(S::finish(S::merge(pre[i], suf[i + 1]), v), v, u);
-        }
-    }
-    return ans;
 }
 
 // small-to-large on a tree (DSU on tree / sack): subtree queries in O(n log n) add/remove calls
