@@ -5,7 +5,7 @@ Each folder is one chapter of the notebook; the contest template `new_file.cpp` 
 
 - [Contest](#contest): [`new_file.cpp`](new_file.cpp), [`stress_gen.cpp`](contest/stress_gen.cpp), [`safe_hash.cpp`](contest/safe_hash.cpp)
 - [Data Structures](#data-structures): [`dsu.cpp`](data_structures/dsu.cpp), [`fenwick.cpp`](data_structures/fenwick.cpp), [`sparse_table.cpp`](data_structures/sparse_table.cpp), [`segment_tree.cpp`](data_structures/segment_tree.cpp), [`wavelet.cpp`](data_structures/wavelet.cpp), [`treap.cpp`](data_structures/treap.cpp), [`offline.cpp`](data_structures/offline.cpp), [`misc.cpp`](data_structures/misc.cpp), [`monoids.cpp`](data_structures/monoids.cpp), [`persistent_segment_tree.cpp`](data_structures/persistent_segment_tree.cpp)
-- [Graphs](#graphs): [`shortest_paths.cpp`](graphs/shortest_paths.cpp), [`scc.cpp`](graphs/scc.cpp), [`biconnected.cpp`](graphs/biconnected.cpp), [`euler.cpp`](graphs/euler.cpp), [`spanning_trees.cpp`](graphs/spanning_trees.cpp), [`dominator_tree.cpp`](graphs/dominator_tree.cpp), [`np_hard.cpp`](graphs/np_hard.cpp), [`k_shortest_paths.cpp`](graphs/k_shortest_paths.cpp), [`flows.cpp`](graphs/flows.cpp), [`min_cost_flow.cpp`](graphs/min_cost_flow.cpp), [`matching.cpp`](graphs/matching.cpp), [`trees.cpp`](graphs/trees.cpp), [`rerooting.cpp`](graphs/rerooting.cpp), [`link_cut_tree.cpp`](graphs/link_cut_tree.cpp), [`euler_tour_tree.cpp`](graphs/euler_tour_tree.cpp)
+- [Graphs](#graphs): [`shortest_paths.cpp`](graphs/shortest_paths.cpp), [`scc.cpp`](graphs/scc.cpp), [`biconnected.cpp`](graphs/biconnected.cpp), [`euler.cpp`](graphs/euler.cpp), [`spanning_trees.cpp`](graphs/spanning_trees.cpp), [`dominator_tree.cpp`](graphs/dominator_tree.cpp), [`np_hard.cpp`](graphs/np_hard.cpp), [`k_shortest_paths.cpp`](graphs/k_shortest_paths.cpp), [`flows.cpp`](graphs/flows.cpp), [`min_cost_flow.cpp`](graphs/min_cost_flow.cpp), [`matching.cpp`](graphs/matching.cpp), [`trees.cpp`](graphs/trees.cpp), [`rerooting.cpp`](graphs/rerooting.cpp), [`link_cut_tree.cpp`](graphs/link_cut_tree.cpp), [`euler_tour_tree.cpp`](graphs/euler_tour_tree.cpp), [`triangles.cpp`](graphs/triangles.cpp)
 - [Strings](#strings): [`strings.cpp`](strings/strings.cpp)
 - [Math](#math): [`modint.cpp`](math/modint.cpp), [`number_theory.cpp`](math/number_theory.cpp), [`combinatorics.cpp`](math/combinatorics.cpp), [`matrix.cpp`](math/matrix.cpp), [`linear_algebra.cpp`](math/linear_algebra.cpp), [`fft.cpp`](math/fft.cpp), [`polynomial.cpp`](math/polynomial.cpp), [`bitmask.cpp`](math/bitmask.cpp), [`big_integer.cpp`](math/big_integer.cpp), [`hex_big_integer.cpp`](math/hex_big_integer.cpp), [`simplex.cpp`](math/simplex.cpp)
 - [Geometry](#geometry): [`geometry.cpp`](geometry/geometry.cpp)
@@ -182,6 +182,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | --- | --- |
 | `kruskal` | minimum spanning forest (Kruskal), edges are {w, u, v} |
 | `Arborescence` | minimum spanning arborescence (Chu-Liu/Edmonds) |
+| `manhattan_mst_edges` | at most 4n candidate edges {w, i, j} containing a Manhattan MST; pass them to kruskal |
 
 ### [`graphs/dominator_tree.cpp`](graphs/dominator_tree.cpp)
 
@@ -238,6 +239,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `tree_diameter` | diameter of a weighted tree; returns {length, path} |
 | `dsu_on_tree` | small-to-large on a tree (DSU on tree / sack) |
 | `virtual_tree` | virtual tree of the vertices vs, using LCA above; returns {nodes, par} |
+| `cartesian_tree` | parent of each index in the Cartesian tree of a (minimum at the root), -1 for the root |
 
 ### [`graphs/rerooting.cpp`](graphs/rerooting.cpp)
 
@@ -259,6 +261,12 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | Name | Description |
 | --- | --- |
 | `EulerTourTree` | a forest under link and cut, with component sums and subtree add / subtree sum, 0-indexed |
+
+### [`graphs/triangles.cpp`](graphs/triangles.cpp)
+
+| Name | Description |
+| --- | --- |
+| `enumerate_triangles` | calls f(a, b, c) once for every triangle of a simple undirected graph, O(E sqrt E) |
 
 ## Strings
 
@@ -322,6 +330,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `bernoulli` | Bernoulli numbers B[0..n] mod a prime p > n + 1, with B[1] = -1/2, O(n^2) |
 | `tetration` | a^^b = a^(a^(...^a)) (b copies of a) mod m, with a^^0 = 1 and 0^0 = 1 |
 | `count_squarefree` | number of squarefree integers in [1, n], n up to 1e18, O(n^(2/5)) |
+| `count_primes` | number of primes <= n (Lucy_Hedgehog), n up to about 1e11, O(n^(3/4)) |
 
 ### [`math/combinatorics.cpp`](math/combinatorics.cpp)
 
@@ -404,6 +413,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `or_convolution` | c[k] = sum of a[i] * b[j] over all i \| j == k, O(n log n) |
 | `and_convolution` | c[k] = sum of a[i] * b[j] over all i & j == k, O(n log n) |
 | `xor_convolution` | c[k] = sum of a[i] * b[j] over all i ^ j == k, O(n log n) |
+| `subset_convolution` | c[k] = sum of a[i] * b[j] over i \| j == k and i & j == 0, mod a prime, O(n^2 2^n) |
 
 ### [`math/big_integer.cpp`](math/big_integer.cpp)
 

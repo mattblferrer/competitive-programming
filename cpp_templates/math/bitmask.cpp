@@ -1,11 +1,12 @@
 // Contents
-//   sos_subset       SOS DP: a[mask] becomes the sum of a[sub] over all submasks sub of mask (undone if...
-//   sos_superset     SOS DP: a[mask] becomes the sum of a[sup] over all supermasks sup of mask (undone if...
-//   xor_transform    Walsh-Hadamard transform (inverse if invert, including the 1/n scaling), O(n log n)
-//   pad_to_power     pads a and b with zeros to a common power of 2 length (at least 1), O(n)
-//   or_convolution   c[k] = sum of a[i] * b[j] over all i | j == k, O(n log n)
-//   and_convolution  c[k] = sum of a[i] * b[j] over all i & j == k, O(n log n)
-//   xor_convolution  c[k] = sum of a[i] * b[j] over all i ^ j == k, O(n log n)
+//   sos_subset          SOS DP: a[mask] becomes the sum of a[sub] over all submasks sub of mask (undone if...
+//   sos_superset        SOS DP: a[mask] becomes the sum of a[sup] over all supermasks sup of mask (undone if...
+//   xor_transform       Walsh-Hadamard transform (inverse if invert, including the 1/n scaling), O(n log n)
+//   pad_to_power        pads a and b with zeros to a common power of 2 length (at least 1), O(n)
+//   or_convolution      c[k] = sum of a[i] * b[j] over all i | j == k, O(n log n)
+//   and_convolution     c[k] = sum of a[i] * b[j] over all i & j == k, O(n log n)
+//   xor_convolution     c[k] = sum of a[i] * b[j] over all i ^ j == k, O(n log n)
+//   subset_convolution  c[k] = sum of a[i] * b[j] over i | j == k and i & j == 0, mod a prime, O(n^2 2^n)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -104,4 +105,43 @@ vector<T> xor_convolution(vector<T> a, vector<T> b) {
     for (int i = 0; i < n; i++) a[i] = a[i] * b[i];
     xor_transform(a, true);
     return a;
+}
+
+// subset convolution: c[k] = sum of a[i] * b[j] over all i | j == k with i & j == 0, mod mod (below 2^31)
+// a and b have size 2^n; zeta transforms split by popcount (rank), multiplied rank by rank, O(n^2 2^n)
+vector<ll> subset_convolution(const vector<ll> &a, const vector<ll> &b, ll mod) {
+    int N = a.size(), n = __lg(N), R = n + 1;
+    assert(N == (1 << n) && b.size() == a.size());
+    unsigned m = mod;
+    vector<unsigned> f((size_t)N * R), g((size_t)N * R);  // f[mask * R + rank]
+    for (int s = 0; s < N; s++) {
+        f[(size_t)s * R + __builtin_popcount(s)] = a[s] % mod;
+        g[(size_t)s * R + __builtin_popcount(s)] = b[s] % mod;
+    }
+    auto zeta = [&](vector<unsigned> &h, bool invert) {
+        for (int bit = 1; bit < N; bit <<= 1) {
+            for (int s = 0; s < N; s++) {
+                if (!(s & bit)) continue;
+                unsigned *x = &h[(size_t)s * R], *y = &h[(size_t)(s ^ bit) * R];
+                if (invert) for (int r = 0; r < R; r++) x[r] = x[r] >= y[r] ? x[r] - y[r] : x[r] + m - y[r];
+                else for (int r = 0; r < R; r++) x[r] = x[r] + y[r] >= m ? x[r] + y[r] - m : x[r] + y[r];
+            }
+        }
+    };
+    zeta(f, false);
+    zeta(g, false);
+    vector<unsigned> prod(R);
+    for (int s = 0; s < N; s++) {
+        unsigned *x = &f[(size_t)s * R], *y = &g[(size_t)s * R];
+        for (int k = 0; k < R; k++) {
+            unsigned long long acc = 0;
+            for (int i = 0; i <= k; i++) acc = (acc + (unsigned long long)x[i] * y[k - i]) % m;
+            prod[k] = acc;
+        }
+        copy(prod.begin(), prod.end(), x);
+    }
+    zeta(f, true);
+    vector<ll> c(N);
+    for (int s = 0; s < N; s++) c[s] = f[(size_t)s * R + __builtin_popcount(s)];
+    return c;
 }

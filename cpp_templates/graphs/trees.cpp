@@ -7,6 +7,7 @@
 //   tree_diameter   diameter of a weighted tree; returns {length, path}
 //   dsu_on_tree     small-to-large on a tree (DSU on tree / sack)
 //   virtual_tree    virtual tree of the vertices vs, using LCA above; returns {nodes, par}
+//   cartesian_tree  parent of each index in the Cartesian tree of a (minimum at the root), -1 for the root
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -393,4 +394,22 @@ pair<vector<int>, vector<int>> virtual_tree(vector<int> vs, const LCA &l) {
     vector<int> par(vs.size(), -1);
     for (int i = 1; i < (int)vs.size(); i++) par[i] = l.lca(vs[i - 1], vs[i]);
     return {vs, par};
+}
+
+// parent of each index in the Cartesian tree of a: the minimum is the root, and each side of it recursively
+// (equal values: the leftmost is the ancestor); -1 for the root, O(n)
+vector<int> cartesian_tree(const vector<ll> &a) {
+    int n = a.size();
+    vector<int> par(n, -1), st;
+    for (int i = 0; i < n; i++) {
+        int last = -1;
+        while (!st.empty() && a[st.back()] > a[i]) {
+            last = st.back();
+            st.pop_back();
+        }
+        if (last != -1) par[last] = i;
+        if (!st.empty()) par[i] = st.back();
+        st.push_back(i);
+    }
+    return par;
 }

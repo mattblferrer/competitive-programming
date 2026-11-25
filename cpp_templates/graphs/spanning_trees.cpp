@@ -1,6 +1,7 @@
 // Contents
-//   kruskal         minimum spanning forest (Kruskal), edges are {w, u, v}
-//   Arborescence    minimum spanning arborescence (Chu-Liu/Edmonds)
+//   kruskal              minimum spanning forest (Kruskal), edges are {w, u, v}
+//   Arborescence         minimum spanning arborescence (Chu-Liu/Edmonds)
+//   manhattan_mst_edges  at most 4n candidate edges {w, i, j} containing a Manhattan MST; pass them to kruskal
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -101,3 +102,31 @@ struct Arborescence {
         return par;
     }
 };
+
+// at most 4n candidate edges {w, i, j} (w = Manhattan distance) that contain a Manhattan MST of the points
+// (x[i], y[i]); kruskal(n, manhattan_mst_edges(x, y)) gives the MST. For each point, the nearest point in each
+// of the 8 octants around it suffices; each pass sweeps one octant (then the points are reflected), O(n log n)
+vector<array<ll, 3>> manhattan_mst_edges(vector<ll> x, vector<ll> y) {
+    int n = x.size();
+    vector<int> id(n);
+    iota(id.begin(), id.end(), 0);
+    vector<array<ll, 3>> edges;
+    for (int pass = 0; pass < 4; pass++) {
+        sort(id.begin(), id.end(), [&](int i, int j) { return x[i] + y[i] < x[j] + y[j]; });
+        map<ll, int> open;  // -y -> point still waiting for its nearest neighbour in this octant
+        for (int i : id) {
+            for (auto it = open.lower_bound(-y[i]); it != open.end(); it = open.erase(it)) {
+                int j = it->second;
+                ll dx = x[i] - x[j], dy = y[i] - y[j];
+                if (dy > dx) break;
+                edges.push_back({dx + dy, i, j});
+            }
+            open[-y[i]] = i;
+        }
+        for (int i = 0; i < n; i++) {
+            if (pass % 2) x[i] = -x[i];
+            else swap(x[i], y[i]);
+        }
+    }
+    return edges;
+}

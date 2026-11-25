@@ -30,6 +30,7 @@
 //   bernoulli           Bernoulli numbers B[0..n] mod a prime p > n + 1, with B[1] = -1/2, O(n^2)
 //   tetration           a^^b = a^(a^(...^a)) (b copies of a) mod m, with a^^0 = 1 and 0^0 = 1
 //   count_squarefree    number of squarefree integers in [1, n], n up to 1e18, O(n^(2/5))
+//   count_primes        number of primes <= n (Lucy_Hedgehog), n up to about 1e11, O(n^(3/4))
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -645,4 +646,25 @@ ll count_squarefree(ll n) {
         ans += mertens(x) - M[D];
     }
     return ans;
+}
+
+// number of primes <= n (Lucy_Hedgehog), n up to about 1e11, O(n^(3/4)) time and O(sqrt n) memory
+// lo[i] and hi[i] count the numbers in [2, i] and [2, n / i] that survive sieving by the primes so far
+ll count_primes(ll n) {
+    if (n < 2) return 0;
+    ll r = sqrtl(n);
+    while (r * r > n) r--;
+    while ((r + 1) * (r + 1) <= n) r++;
+    vector<ll> lo(r + 1), hi(r + 1);
+    for (ll i = 1; i <= r; i++) {
+        lo[i] = i - 1;
+        hi[i] = n / i - 1;
+    }
+    for (ll p = 2; p <= r; p++) {
+        if (lo[p] == lo[p - 1]) continue;  // p is not prime
+        ll before = lo[p - 1], sq = p * p, top = min(r, n / sq);
+        for (ll i = 1; i <= top; i++) hi[i] -= (i * p <= r ? hi[i * p] : lo[n / (i * p)]) - before;
+        for (ll i = r; i >= sq; i--) lo[i] -= lo[i / p] - before;
+    }
+    return hi[1];
 }
