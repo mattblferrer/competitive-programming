@@ -44,4 +44,4 @@ rerooting examples (`MaxDist`, `PathComposite`), and `SumDSU`, `PotentialDSU`, `
 `min_plus_convex_convex`, `min_plus_convex_arbitrary`, `min_plus_concave_arbitrary`,
 `complement_components`, `multiplicative_sum`, `delaunay_edges`, `TriangleCounter`,
 `count_spanning_trees_directed`, `charpoly_mod`, `BitMatrix`, `det_mod2`, `inverse_mod2`, `solve_mod2`,
-`mul_mod2`, `RangeMode` and `LinkCutPath`.
+`mul_mod2`, `RangeMode`, `LinkCutPath` and `rect_add_rect_sum`.

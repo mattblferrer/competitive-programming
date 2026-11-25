@@ -39,7 +39,7 @@ SECTIONS = [
     ]),
     ("Data Structures", [
         ("data_structures/dsu.cpp", "DSU", ["DSU", "RollbackDSU", "OfflineDynamic"]),
-        ("data_structures/fenwick.cpp", "Fenwick Trees", ["-Fenwick2D"]),
+        ("data_structures/fenwick.cpp", "Fenwick Trees", ["-Fenwick2D", "-rect_add_rect_sum"]),
         ("data_structures/sparse_table.cpp", "Sparse Tables"),
         ("data_structures/segment_tree.cpp", "Segment Trees"),
         ("data_structures/wavelet.cpp", "Wavelet Matrix and Merge Sort Tree"),

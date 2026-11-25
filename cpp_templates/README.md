@@ -56,6 +56,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `Fenwick` | Fenwick tree (0-indexed) |
 | `RangeFenwick` | Fenwick tree with range update, point query (0-indexed) |
 | `Fenwick2D` | 2D Fenwick tree over points known in advance: point add, rectangle sum |
+| `rect_add_rect_sum` | offline rectangle adds, then rectangle sums, mod a modulus (sweep with Fenwick trees), O((n + q) log n) |
 
 ### [`data_structures/sparse_table.cpp`](data_structures/sparse_table.cpp)
 
