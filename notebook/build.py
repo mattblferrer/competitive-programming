@@ -68,7 +68,7 @@ SECTIONS = [
     ]),
     ("Math", [
         ("math/modint.cpp", "ModInt"),
-        ("math/number_theory.cpp", "Number Theory", ["-count_primes"]),
+        ("math/number_theory.cpp", "Number Theory", ["-count_primes", "-totient_sum"]),
         ("math/combinatorics.cpp", "Combinatorics"),
         ("math/matrix.cpp", "Matrix"),
         ("math/linear_algebra.cpp", "Linear Algebra", ["binexp", "gauss_jordan", "solve_linear", "det_mod",

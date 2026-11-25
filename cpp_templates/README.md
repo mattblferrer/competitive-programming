@@ -339,6 +339,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `tetration` | a^^b = a^(a^(...^a)) (b copies of a) mod m, with a^^0 = 1 and 0^0 = 1 |
 | `count_squarefree` | number of squarefree integers in [1, n], n up to 1e18, O(n^(2/5)) |
 | `count_primes` | number of primes <= n (Lucy_Hedgehog), n up to about 1e11, O(n^(3/4)) |
+| `totient_sum` | sum of phi(i) for i in [1, n] mod mod, n up to about 1e11, O(n^(2/3)) |
 
 ### [`math/combinatorics.cpp`](math/combinatorics.cpp)
 
