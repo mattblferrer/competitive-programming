@@ -74,6 +74,9 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `SegTree` | iterative segment tree, point update, query on [l, r) |
 | `Spec` | example lazy spec (range add, range sum) for LazySegTree |
 | `LazySegTree` | lazy segment tree (iterative), range update and query on [l, r) |
+| `MinCount` | copy of MinCount from monoids.cpp, for rect_union_area |
+| `AddMinCount` | copy of AddMinCount from monoids.cpp, for rect_union_area |
+| `rect_union_area` | area of the union of axis-parallel rectangles, O(n log n) |
 | `SegTree2D` | 2D segment tree (iterative), point update |
 | `DynamicSegTree` | implicit segment tree on any integer range [lo, hi) |
 | `SegTreeBeats` | segment tree beats on [l, r): range chmin, chmax and add with sum, max and min queries |

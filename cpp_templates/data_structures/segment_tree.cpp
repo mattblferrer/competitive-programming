@@ -3,6 +3,9 @@
 //   SegTree         iterative segment tree, point update, query on [l, r)
 //   Spec            example lazy spec (range add, range sum) for LazySegTree
 //   LazySegTree     lazy segment tree (iterative), range update and query on [l, r)
+//   MinCount        copy of MinCount from monoids.cpp, for rect_union_area
+//   AddMinCount     copy of AddMinCount from monoids.cpp, for rect_union_area
+//   rect_union_area area of the union of axis-parallel rectangles, O(n log n)
 //   SegTree2D       2D segment tree (iterative), point update
 //   DynamicSegTree  implicit segment tree on any integer range [lo, hi)
 //   SegTreeBeats    segment tree beats on [l, r): range chmin, chmax and add with sum, max and min queries
@@ -159,6 +162,59 @@ struct LazySegTree {
         }
     }
 };
+
+// copy of MinCount and AddMinCount from monoids.cpp, for rect_union_area below; left out of the notebook
+// {min, number of times it occurs}; leaves {a[i], 1}
+struct MinCount {
+    using T = pll;
+    static T id() { return {LLONG_MAX, 0}; }
+    static T op(const T &a, const T &b) {
+        if (a.first != b.first) return a.first < b.first ? a : b;
+        return {a.first, a.second + b.second};
+    }
+};
+
+// range add, range {min, count}; leaves {a[i], 1}. number of zeros in a range of nonnegative
+// values: len - (min == 0 ? count : 0), as in the sweep for the area of a union of rectangles
+struct AddMinCount : MinCount {
+    using F = ll;
+    static F fid() { return 0; }
+    static T apply(const F &f, const T &x) { return {x.first == LLONG_MAX ? x.first : x.first + f, x.second}; }
+    static F compose(const F &f, const F &g) { return f + g; }
+};
+
+// area of the union of axis-parallel rectangles {l, d, r, u} = [l, r) x [d, u), using LazySegTree and AddMinCount
+// above: sweep over x with one leaf {cover count, height} per gap between consecutive y's, so the uncovered height
+// is the count of the min when it is 0; the area must fit in ll, O(n log n)
+ll rect_union_area(const vector<array<ll, 4>> &rects) {
+    vector<array<ll, 4>> events;  // {x, d, u, +1 / -1}
+    vector<ll> ys;
+    for (auto [l, d, r, u] : rects) {
+        events.push_back({l, d, u, 1});
+        events.push_back({r, d, u, -1});
+        ys.push_back(d);
+        ys.push_back(u);
+    }
+    if (ys.empty()) return 0;
+    sort(events.begin(), events.end());
+    sort(ys.begin(), ys.end());
+    ys.erase(unique(ys.begin(), ys.end()), ys.end());
+    int m = ys.size() - 1;
+    vector<pll> leaves(m);
+    for (int i = 0; i < m; i++) leaves[i] = {0, ys[i + 1] - ys[i]};
+    LazySegTree<AddMinCount> seg(leaves);
+    ll total = ys.back() - ys[0], area = 0;
+    for (int i = 0; i < (int)events.size(); i++) {
+        auto [x, d, u, w] = events[i];
+        if (i) {
+            pll mc = seg.query(0, m);
+            area += (x - events[i - 1][0]) * (total - (mc.first == 0 ? mc.second : 0));
+        }
+        int lo = lower_bound(ys.begin(), ys.end(), d) - ys.begin(), hi = lower_bound(ys.begin(), ys.end(), u) - ys.begin();
+        seg.update(lo, hi, w);
+    }
+    return area;
+}
 
 // 2D segment tree (iterative), point update, query on [r1, r2] x [c1, c2] (uses Monoid above)
 //   SegTree2D(n, m)         n x m grid of identity elements, O(nm)
