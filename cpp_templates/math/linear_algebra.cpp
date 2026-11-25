@@ -8,6 +8,11 @@
 //   solve_xor             solves A x = b over GF(2) (XOR equations) with m <= N variables
 //   det_mod               determinant of a square matrix mod a prime, O(n^3)
 //   count_spanning_trees  number of spanning trees of a multigraph mod a prime (Kirchhoff), O(n^3)
+//   charpoly_mod          characteristic polynomial det(xI - A) mod a prime (Hessenberg form), O(n^3)
+//   BitMatrix             n x m matrix over GF(2) with rows packed into 64-bit words; gauss gives the RREF
+//   det_mod2              determinant of a square matrix over GF(2), O(n^3 / 64)
+//   inverse_mod2          inverse of a square matrix over GF(2); false if it is singular, O(n^3 / 64)
+//   mul_mod2              product of an n x m and an m x l matrix over GF(2), O(n * m * l / 64)
 //   XorBasis              XOR linear basis over values in [0, 2^BITS), BITS <= 62
 
 #include <bits/stdc++.h>
@@ -15,6 +20,7 @@ using namespace std;
 using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
+using ull = unsigned long long;
 const ld EPS = 1e-12;
 
 // a^b mod mod, O(log b)
@@ -207,6 +213,114 @@ ll count_spanning_trees(int n, const vector<pair<int, int>> &edges, ll p) {
     lap.pop_back();
     for (auto &row : lap) row.pop_back();
     return det_mod(lap, p);
+}
+
+// characteristic polynomial det(xI - A) mod a prime p, coefficients of x^0..x^n (monic), O(n^3)
+// A is first reduced to upper Hessenberg form H by similarity, then det(xI - H) is expanded along the last column:
+// P[i + 1] = (x - H[i][i]) P[i] - sum over k < i of H[k][i] H[k + 1][k] ... H[i][i - 1] P[k]
+vector<ll> charpoly_mod(vector<vector<ll>> a, ll p) {
+    int n = a.size();
+    for (auto &row : a) for (ll &x : row) x = (x % p + p) % p;
+    for (int j = 0; j + 2 < n; j++) {
+        int piv = j + 1;
+        while (piv < n && !a[piv][j]) piv++;
+        if (piv == n) continue;
+        if (piv != j + 1) {  // swap rows and columns j + 1 and piv
+            swap(a[piv], a[j + 1]);
+            for (auto &row : a) swap(row[piv], row[j + 1]);
+        }
+        ll inv = binexp(a[j + 1][j], p - 2, p);
+        for (int i = j + 2; i < n; i++) {
+            ll u = a[i][j] * inv % p;
+            if (!u) continue;
+            for (int k = 0; k < n; k++) a[i][k] = (a[i][k] - u * a[j + 1][k] % p + p) % p;  // row i -= u row j + 1
+            for (int k = 0; k < n; k++) a[k][j + 1] = (a[k][j + 1] + u * a[k][i]) % p;     // col j + 1 += u col i
+        }
+    }
+    vector<vector<ll>> P(n + 1);
+    P[0] = {1};
+    for (int i = 0; i < n; i++) {
+        P[i + 1].assign(i + 2, 0);
+        for (int k = 0; k <= i; k++) {
+            P[i + 1][k + 1] = (P[i + 1][k + 1] + P[i][k]) % p;
+            P[i + 1][k] = (P[i + 1][k] + (p - a[i][i]) * P[i][k]) % p;
+        }
+        ll prod = 1;
+        for (int k = i - 1; k >= 0; k--) {
+            prod = prod * a[k + 1][k] % p;
+            ll c = prod * a[k][i] % p;
+            for (int t = 0; t <= k; t++) P[i + 1][t] = (P[i + 1][t] + (p - c) * P[k][t]) % p;
+        }
+    }
+    return P[n];
+}
+
+// n x m matrix over GF(2), rows packed into 64-bit words in one array (no size limit, unlike solve_xor's bitset)
+//   BitMatrix(n, m)   all zeros, O(nm / 64)
+//   get(i, j)         entry (i, j), O(1)
+//   flip(i, j)        toggle entry (i, j), O(1)
+//   row(i)            pointer to the w = ceil(m / 64) words of row i
+//   gauss(cols)       reduced row echelon form using the first cols columns, in place; returns the pivot columns,
+//                     pivot k in row k (rank = their count), O(n * m * rank / 64)
+struct BitMatrix {
+    int n, m, w;
+    vector<ull> d;
+
+    BitMatrix(int n = 0, int m = 0): n(n), m(m), w((m + 63) / 64), d((size_t)n * w) {}
+
+    ull *row(int i) { return d.data() + (size_t)i * w; }
+    bool get(int i, int j) const { return d[(size_t)i * w + j / 64] >> (j % 64) & 1; }
+    void flip(int i, int j) { d[(size_t)i * w + j / 64] ^= 1ULL << (j % 64); }
+
+    vector<int> gauss(int cols) {
+        vector<int> piv;
+        for (int c = 0, r = 0; c < cols && r < n; c++) {
+            int i = r;
+            while (i < n && !get(i, c)) i++;
+            if (i == n) continue;
+            swap_ranges(row(i), row(i) + w, row(r));
+            for (i = 0; i < n; i++) {
+                if (i == r || !get(i, c)) continue;
+                ull *x = row(i), *y = row(r);
+                for (int k = c / 64; k < w; k++) x[k] ^= y[k];  // words before c / 64 are 0 in row r
+            }
+            piv.push_back(c);
+            r++;
+        }
+        return piv;
+    }
+};
+
+// determinant of a square matrix over GF(2), using BitMatrix above, O(n^3 / 64)
+bool det_mod2(BitMatrix a) { return (int)a.gauss(a.n).size() == a.n; }
+
+// inverse of a square matrix over GF(2), using BitMatrix above; false if it is singular, O(n^3 / 64)
+bool inverse_mod2(const BitMatrix &a, BitMatrix &inv) {
+    int n = a.n;
+    BitMatrix aug(n, 2 * n);  // [A | I]
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) if (a.get(i, j)) aug.flip(i, j);
+        aug.flip(i, n + i);
+    }
+    if ((int)aug.gauss(n).size() < n) return false;
+    inv = BitMatrix(n, n);
+    for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) if (aug.get(i, n + j)) inv.flip(i, j);
+    return true;
+}
+
+// product of an n x m and an m x l matrix over GF(2), using BitMatrix above: row i of a b is the XOR of the rows k of b
+// with a(i, k) = 1, O(n * m * l / 64)
+BitMatrix mul_mod2(const BitMatrix &a, const BitMatrix &b) {
+    BitMatrix c(a.n, b.m);
+    for (int i = 0; i < a.n; i++) {
+        ull *x = c.row(i);
+        for (int k = 0; k < a.m; k++) {
+            if (!a.get(i, k)) continue;
+            const ull *y = b.d.data() + (size_t)k * b.w;
+            for (int j = 0; j < c.w; j++) x[j] ^= y[j];
+        }
+    }
+    return c;
 }
 
 // XOR linear basis over values in [0, 2^BITS), BITS <= 62

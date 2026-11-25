@@ -42,4 +42,5 @@ rerooting examples (`MaxDist`, `PathComposite`), and `SumDSU`, `PotentialDSU`, `
 `gaussian_gcd`, `two_square_sum`, `sb_path`, `sb_bounds`, `sb_lca`, `sb_ancestor`,
 `rational_approx`, `lyndon_factorization`,
 `min_plus_convex_convex`, `min_plus_convex_arbitrary`, `min_plus_concave_arbitrary`,
-`complement_components`, `multiplicative_sum`, `delaunay_edges` and `TriangleCounter`.
+`complement_components`, `multiplicative_sum`, `delaunay_edges`, `TriangleCounter`,
+`charpoly_mod`, `BitMatrix`, `det_mod2`, `inverse_mod2` and `mul_mod2`.
