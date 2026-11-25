@@ -34,6 +34,11 @@
 //   totient_sum         sum of phi(i) for i in [1, n] mod mod, n up to about 1e11, O(n^(2/3))
 //   gaussian_gcd        a gcd of two Gaussian integers {re, im} (unique up to units), O(log)
 //   two_square_sum      all pairs (a, b) of integers >= 0 with a^2 + b^2 = n, n up to ~1e18; uses factorize, gaussian_gcd
+//   sb_path             Stern-Brocot path from 1/1 to a/b as runs {'L' or 'R', length}, O(log)
+//   sb_bounds           bounds {p, q, r, s} of the Stern-Brocot node reached by a path: its descendants lie strictly between p/q and r/s
+//   sb_lca              lowest common ancestor of a/b and c/d in the Stern-Brocot tree, O(log)
+//   sb_ancestor         ancestor of a/b at depth k in the Stern-Brocot tree (1/1 has depth 0), {-1, -1} if none, O(log)
+//   rational_approx     closest fractions <= x/y and >= x/y with numerator and denominator in [1, n], O(log)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -757,4 +762,75 @@ vector<pll> two_square_sum(ll n) {
     sort(res.begin(), res.end());
     res.erase(unique(res.begin(), res.end()), res.end());
     return res;
+}
+
+// Stern-Brocot tree of the positive fractions: path from 1/1 to the coprime a/b as runs {'L' or 'R', length}, O(log)
+// (the continued fraction of a/b, with its last term decreased by 1)
+vector<pair<char, ll>> sb_path(ll a, ll b) {
+    vector<pair<char, ll>> path;
+    for (char c = 'R'; b; c ^= 'L' ^ 'R') {
+        ll q = a / b, r = a % b;
+        if (!r) q--;
+        if (q) path.push_back({c, q});
+        a = b;
+        b = r;
+    }
+    return path;
+}
+
+// follows path from 1/1 in the Stern-Brocot tree: returns {p, q, r, s}, where the node reached is (p + r) / (q + s)
+// and its descendants are exactly the fractions strictly between p/q and r/s (0/1 and 1/0 stand for 0 and infinity)
+array<ll, 4> sb_bounds(const vector<pair<char, ll>> &path) {
+    array<ll, 4> t{0, 1, 1, 0};
+    for (auto [c, k] : path) {
+        if (c == 'R') t[0] += k * t[2], t[1] += k * t[3];
+        else t[2] += k * t[0], t[3] += k * t[1];
+    }
+    return t;
+}
+
+// lowest common ancestor of a/b and c/d in the Stern-Brocot tree (longest common prefix of the paths), O(log)
+pll sb_lca(ll a, ll b, ll c, ll d) {
+    vector<pair<char, ll>> p = sb_path(a, b), q = sb_path(c, d), r;
+    for (size_t i = 0; i < min(p.size(), q.size()) && p[i].first == q[i].first; i++) {
+        r.push_back({p[i].first, min(p[i].second, q[i].second)});
+        if (p[i].second != q[i].second) break;
+    }
+    array<ll, 4> t = sb_bounds(r);
+    return {t[0] + t[2], t[1] + t[3]};
+}
+
+// ancestor of a/b at depth k in the Stern-Brocot tree (1/1 has depth 0), {-1, -1} if a/b is shallower, O(log)
+pll sb_ancestor(ll k, ll a, ll b) {
+    vector<pair<char, ll>> r;
+    for (auto [c, len] : sb_path(a, b)) {
+        if (!k) break;
+        r.push_back({c, min(k, len)});
+        k -= r.back().second;
+    }
+    if (k) return {-1, -1};
+    array<ll, 4> t = sb_bounds(r);
+    return {t[0] + t[2], t[1] + t[3]};
+}
+
+// best approximations of x/y (x, y >= 1) by fractions with numerator and denominator in [1, n]: returns {p, q, r, s},
+// p/q the largest <= x/y (0/1 if none) and r/s the smallest >= x/y (1/0 if none); walks down the Stern-Brocot tree
+// toward x/y one run at a time, each run as long as it stays on its side of x/y and within n, O(log)
+array<ll, 4> rational_approx(ll n, ll x, ll y) {
+    ll g = gcd(x, y), a = 0, b = 1, c = 1, d = 0;  // invariant a/b <= x/y <= c/d
+    x /= g, y /= g;
+    while (true) {
+        if (a * y == x * b) return {a, b, a, b};
+        if (c * y == x * d) return {c, d, c, d};
+        ll k = (x * b - a * y) / (c * y - d * x);  // right run: a/b moves toward x/y
+        k = min(k, (n - a) / c);
+        if (d) k = min(k, (n - b) / d);
+        a += k * c, b += k * d;
+        if (a * y == x * b) return {a, b, a, b};
+        ll k2 = (c * y - d * x) / (x * b - a * y);  // left run: c/d moves toward x/y
+        if (a) k2 = min(k2, (n - c) / a);
+        k2 = min(k2, (n - d) / b);
+        c += k2 * a, d += k2 * b;
+        if (!k && !k2) return {a, b, c, d};
+    }
 }

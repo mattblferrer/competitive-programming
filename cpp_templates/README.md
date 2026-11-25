@@ -343,6 +343,11 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `totient_sum` | sum of phi(i) for i in [1, n] mod mod, n up to about 1e11, O(n^(2/3)) |
 | `gaussian_gcd` | a gcd of two Gaussian integers {re, im} (unique up to units), O(log) |
 | `two_square_sum` | all pairs (a, b) of integers >= 0 with a^2 + b^2 = n, n up to ~1e18; uses factorize, gaussian_gcd |
+| `sb_path` | Stern-Brocot path from 1/1 to a/b as runs {'L' or 'R', length}, O(log) |
+| `sb_bounds` | bounds {p, q, r, s} of the Stern-Brocot node reached by a path: its descendants lie strictly between p/q and r/s |
+| `sb_lca` | lowest common ancestor of a/b and c/d in the Stern-Brocot tree, O(log) |
+| `sb_ancestor` | ancestor of a/b at depth k in the Stern-Brocot tree (1/1 has depth 0), {-1, -1} if none, O(log) |
+| `rational_approx` | closest fractions <= x/y and >= x/y with numerator and denominator in [1, n], O(log) |
 
 ### [`math/combinatorics.cpp`](math/combinatorics.cpp)
 

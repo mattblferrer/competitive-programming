@@ -39,4 +39,5 @@ The current build fits the 25-page ICPC limit. It leaves out `math/big_integer.c
 rerooting examples (`MaxDist`, `PathComposite`), and `SumDSU`, `PotentialDSU`, `FoldDeque`, `Fenwick2D`,
 `count_primes`, `subset_convolution`, `cartesian_tree`, `manhattan_mst_edges`, `range_inversions`,
 `tree_distance_counts`, `totient_sum`, `wildcard_match`,
-`gaussian_gcd` and `two_square_sum`.
+`gaussian_gcd`, `two_square_sum`, `sb_path`, `sb_bounds`, `sb_lca`, `sb_ancestor` and
+`rational_approx`.
