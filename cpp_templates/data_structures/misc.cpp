@@ -1,9 +1,10 @@
 // Contents
-//   Compressor      coordinate compression
-//   MinStack        stack with minimum query
-//   MinQueue        queue with minimum query
-//   FoldDeque       deque with the fold of a monoid over all its elements in order (two stacks)
-//   MisofTree       multiset of integers in [0, 2^BITS)
+//   Compressor  coordinate compression
+//   MinStack    stack with minimum query
+//   MinQueue    queue with minimum query
+//   FoldDeque   deque with the fold of a monoid over all its elements in order (two stacks)
+//   MisofTree   multiset of integers in [0, 2^BITS)
+//   RangeMode   static range mode, online: a mode of a[l, r) and its count (sqrt decomposition), O(sqrt n) per query
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -159,5 +160,59 @@ struct MisofTree {
         int res = 0;
         for (int i = 0; i < BITS; i++, x >>= 1) if (x & 1) res += cnt[i][x - 1];  // the left sibling is all smaller
         return res;
+    }
+};
+
+// static range mode, online: {a mode of a[l, r), its count}; values can be any integers
+// blocks of about sqrt n elements with the mode of every run of whole blocks precomputed; a query starts from that and
+// tries each leftover element by jumping in its value's position list (a value whose first occurrence in [l, r) is a
+// left leftover is counted from there forward, one whose last occurrence is a right leftover backward)
+//   RangeMode(a)   build, O(n sqrt n) time, O(n) memory
+//   query(l, r)    {mode, count} of a[l, r), l < r, O(sqrt n)
+struct RangeMode {
+    int n, bs;
+    vector<ll> vals;
+    vector<int> c, at;                    // compressed value of a[i], index of i in pos[c[i]]
+    vector<vector<int>> pos;              // positions of each value, increasing
+    vector<vector<pair<int, int>>> blk;  // blk[i][j] = {mode, count} of blocks i..j
+
+    RangeMode(const vector<ll> &a): n(a.size()), vals(a), c(n), at(n) {
+        sort(vals.begin(), vals.end());
+        vals.erase(unique(vals.begin(), vals.end()), vals.end());
+        pos.resize(vals.size());
+        for (int i = 0; i < n; i++) {
+            c[i] = lower_bound(vals.begin(), vals.end(), a[i]) - vals.begin();
+            at[i] = pos[c[i]].size();
+            pos[c[i]].push_back(i);
+        }
+        bs = max(1, (int)sqrt(n));
+        int nb = (n + bs - 1) / bs;
+        blk.assign(nb, vector<pair<int, int>>(nb));
+        vector<int> cnt(vals.size());
+        for (int i = 0; i < nb; i++) {
+            pair<int, int> best{0, 0};
+            for (int j = i; j < nb; j++) {
+                for (int p = j * bs; p < min(n, (j + 1) * bs); p++) {
+                    if (++cnt[c[p]] > best.second) best = {c[p], cnt[c[p]]};
+                }
+                blk[i][j] = best;
+            }
+            for (int p = i * bs; p < n; p++) cnt[c[p]]--;
+        }
+    }
+
+    pair<ll, int> query(int l, int r) const {
+        int bl = (l + bs - 1) / bs, br = r / bs, lend = r, rbeg = r;  // whole blocks bl..br-1
+        int mode = c[l], best = 0;
+        if (bl < br) tie(mode, best) = blk[bl][br - 1], lend = bl * bs, rbeg = br * bs;
+        for (int p = l; p < lend; p++) {
+            const vector<int> &ps = pos[c[p]];
+            while (at[p] + best < (int)ps.size() && ps[at[p] + best] < r) best++, mode = c[p];
+        }
+        for (int p = rbeg; p < r; p++) {
+            const vector<int> &ps = pos[c[p]];
+            while (at[p] - best >= 0 && ps[at[p] - best] >= l) best++, mode = c[p];
+        }
+        return {vals[mode], best};
     }
 };

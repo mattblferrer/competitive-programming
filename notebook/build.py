@@ -45,7 +45,7 @@ SECTIONS = [
         ("data_structures/wavelet.cpp", "Wavelet Matrix and Merge Sort Tree"),
         ("data_structures/treap.cpp", "Treap and Ordered Set"),
         ("data_structures/offline.cpp", "Mo's Algorithm", ["-range_inversions"]),
-        ("data_structures/misc.cpp", "Other Structures", ["-FoldDeque"]),
+        ("data_structures/misc.cpp", "Other Structures", ["-FoldDeque", "-RangeMode"]),
     ]),
     ("Graphs", [
         ("graphs/shortest_paths.cpp", "Topological Sort and Shortest Paths"),
@@ -61,7 +61,7 @@ SECTIONS = [
         ("graphs/matching.cpp", "Matching"),
         ("graphs/trees.cpp", "Trees", ["-cartesian_tree", "-tree_distance_counts"]),
         ("graphs/rerooting.cpp", "Rerooting", ["SumDist", "rerooting"]),  # MaxDist, PathComposite: more examples
-        ("graphs/link_cut_tree.cpp", "Link-Cut Tree"),
+        ("graphs/link_cut_tree.cpp", "Link-Cut Tree", ["-LinkCutPath"]),
     ]),
     ("Strings", [
         ("strings/strings.cpp", "Strings", ["-lyndon_factorization"]),

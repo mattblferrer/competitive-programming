@@ -108,6 +108,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `MinQueue` | queue with minimum query |
 | `FoldDeque` | deque with the fold of a monoid over all its elements in order (two stacks) |
 | `MisofTree` | multiset of integers in [0, 2^BITS) |
+| `RangeMode` | static range mode, online: a mode of a[l, r) and its count (sqrt decomposition), O(sqrt n) per query |
 
 ### [`data_structures/monoids.cpp`](data_structures/monoids.cpp)
 
@@ -258,6 +259,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | Name | Description |
 | --- | --- |
 | `LinkCutTree` | link-cut tree: a forest under link and cut with path and subtree sum queries, 0-indexed |
+| `LinkCutPath` | link-cut tree with path folds of any monoid (op need not commute), 0-indexed |
 
 ### [`graphs/euler_tour_tree.cpp`](graphs/euler_tour_tree.cpp)
 
