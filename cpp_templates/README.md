@@ -535,6 +535,9 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `PersistentLiChao` | persistent Li Chao tree for minimum queries on integer x in [lo, hi] |
 | `dnc_opt` | divide and conquer DP optimization |
 | `knuth_opt` | Knuth optimization, O(n^2) |
+| `min_plus_convex_convex` | c[k] = min of a[i] + b[j] over i + j = k for convex a and b (merge of slopes), O(n + m) |
+| `min_plus_convex_arbitrary` | c[k] = min of a[i] + b[j] over i + j = k for convex a and any b (monotone minima), O((n + m) log(n + m)) |
+| `min_plus_concave_arbitrary` | c[k] = min of a[i] + b[j] over i + j = k for concave a and any b, O((n + m) log^2 (n + m)) |
 
 ## Miscellaneous
 

@@ -40,4 +40,5 @@ rerooting examples (`MaxDist`, `PathComposite`), and `SumDSU`, `PotentialDSU`, `
 `count_primes`, `subset_convolution`, `cartesian_tree`, `manhattan_mst_edges`, `range_inversions`,
 `tree_distance_counts`, `totient_sum`, `wildcard_match`,
 `gaussian_gcd`, `two_square_sum`, `sb_path`, `sb_bounds`, `sb_lca`, `sb_ancestor`,
-`rational_approx` and `lyndon_factorization`.
+`rational_approx`, `lyndon_factorization`,
+`min_plus_convex_convex`, `min_plus_convex_arbitrary` and `min_plus_concave_arbitrary`.

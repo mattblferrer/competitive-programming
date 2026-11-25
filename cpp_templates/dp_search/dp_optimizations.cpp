@@ -1,9 +1,12 @@
 // Contents
-//   LineContainer     dynamic convex hull trick: add lines in any order, query at any x
-//   LiChao            Li Chao tree on integer x in [lo, hi]
-//   PersistentLiChao  persistent Li Chao tree for minimum queries on integer x in [lo, hi]
-//   dnc_opt           divide and conquer DP optimization
-//   knuth_opt         Knuth optimization, O(n^2)
+//   LineContainer               dynamic convex hull trick: add lines in any order, query at any x
+//   LiChao                      Li Chao tree on integer x in [lo, hi]
+//   PersistentLiChao            persistent Li Chao tree for minimum queries on integer x in [lo, hi]
+//   dnc_opt                     divide and conquer DP optimization
+//   knuth_opt                   Knuth optimization, O(n^2)
+//   min_plus_convex_convex      c[k] = min of a[i] + b[j] over i + j = k for convex a and b (merge of slopes), O(n + m)
+//   min_plus_convex_arbitrary   c[k] = min of a[i] + b[j] over i + j = k for convex a and any b (monotone minima), O((n + m) log(n + m))
+//   min_plus_concave_arbitrary  c[k] = min of a[i] + b[j] over i + j = k for concave a and any b, O((n + m) log^2 (n + m))
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -237,4 +240,70 @@ vector<vector<ll>> knuth_opt(int n, Cost cost, Base base) {
         }
     }
     return dp;
+}
+
+// c[k] = min over i + j = k of a[i] + b[j] for convex a and b (a[i + 1] - a[i] nondecreasing): c starts at
+// a[0] + b[0] and its differences are those of a and b merged in sorted order, O(n + m)
+vector<ll> min_plus_convex_convex(const vector<ll> &a, const vector<ll> &b) {
+    int n = a.size(), m = b.size();
+    vector<ll> c(n + m - 1);
+    c[0] = a[0] + b[0];
+    for (int i = 0, j = 0, k = 1; k < n + m - 1; k++) {
+        if (j == m - 1 || (i < n - 1 && a[i + 1] - a[i] < b[j + 1] - b[j])) c[k] = c[k - 1] + a[i + 1] - a[i], i++;
+        else c[k] = c[k - 1] + b[j + 1] - b[j], j++;
+    }
+    return c;
+}
+
+// c[k] = min over i + j = k of a[i] + b[j] for convex a and any b: the matrix b[j] + a[k - j] is Monge, so the
+// best j is nondecreasing in k and divide and conquer over k (monotone minima) finds it, O((n + m) log(n + m))
+vector<ll> min_plus_convex_arbitrary(const vector<ll> &a, const vector<ll> &b) {
+    int n = a.size(), m = b.size();
+    vector<ll> c(n + m - 1);
+    auto rec = [&](auto &self, int klo, int khi, int jlo, int jhi) -> void {  // rows [klo, khi), best j in [jlo, jhi]
+        if (klo >= khi) return;
+        int k = (klo + khi) / 2, best = -1;
+        for (int j = max(jlo, k - n + 1); j <= min({jhi, k, m - 1}); j++) {
+            if (best == -1 || b[j] + a[k - j] < c[k]) c[k] = b[j] + a[k - j], best = j;
+        }
+        self(self, klo, k, jlo, best);
+        self(self, k + 1, khi, best, jhi);
+    };
+    rec(rec, 0, n + m - 1, 0, m - 1);
+    return c;
+}
+
+// c[k] = min over i + j = k of a[i] + b[j] for concave a (a[i + 1] - a[i] nonincreasing) and any b: on the cells
+// (k, j) with 0 <= k - j < n the best j is nonincreasing in k, but the band of cells shifts right as k grows, so it
+// is cut into full rectangles (halving the longer side) and each gets monotone minima, O((n + m) log^2 (n + m))
+vector<ll> min_plus_concave_arbitrary(const vector<ll> &a, const vector<ll> &b) {
+    int n = a.size(), m = b.size();
+    vector<ll> c(n + m - 1, INF);
+    auto mono = [&](auto &self, int klo, int khi, int jlo, int jhi) -> void {  // rows [klo, khi), best j in [jlo, jhi)
+        if (klo >= khi) return;
+        int k = (klo + khi) / 2, best = jlo;
+        ll val = a[k - jlo] + b[jlo];
+        for (int j = jlo + 1; j < jhi; j++) {
+            if (a[k - j] + b[j] < val) val = a[k - j] + b[j], best = j;
+        }
+        c[k] = min(c[k], val);
+        self(self, klo, k, best, jhi);
+        self(self, k + 1, khi, jlo, best + 1);
+    };
+    auto rec = [&](auto &self, int klo, int khi, int jlo, int jhi) -> void {  // rows [klo, khi), columns [jlo, jhi)
+        int lo = klo - (jhi - 1), hi = khi - 1 - jlo;  // range of k - j
+        if (hi < 0 || lo >= n) return;
+        if (lo >= 0 && hi < n) return mono(mono, klo, khi, jlo, jhi);
+        if (khi - klo >= jhi - jlo) {
+            int mid = (klo + khi) / 2;
+            self(self, klo, mid, jlo, jhi);
+            self(self, mid, khi, jlo, jhi);
+        } else {
+            int mid = (jlo + jhi) / 2;
+            self(self, klo, khi, jlo, mid);
+            self(self, klo, khi, mid, jhi);
+        }
+    };
+    rec(rec, 0, n + m - 1, 0, m);
+    return c;
 }

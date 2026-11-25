@@ -85,7 +85,8 @@ SECTIONS = [
     ]),
     ("DP and Search", [
         ("dp_search/binary_ternary_search.cpp", "Binary and Ternary Search"),
-        ("dp_search/dp_optimizations.cpp", "DP Optimizations"),
+        ("dp_search/dp_optimizations.cpp", "DP Optimizations", ["-min_plus_convex_convex", "-min_plus_convex_arbitrary",
+                                                                "-min_plus_concave_arbitrary"]),
     ]),
     ("Miscellaneous", [
         ("misc/sat.cpp", "SAT Solver"),
