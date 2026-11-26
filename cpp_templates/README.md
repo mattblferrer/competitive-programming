@@ -389,6 +389,23 @@ crashes or times out, printing the transcript of the exchange.
 | `sb_ancestor` | ancestor of a/b at depth k in the Stern-Brocot tree (1/1 has depth 0), {-1, -1} if none, O(log) |
 | `rational_approx` | closest fractions <= x/y and >= x/y with numerator and denominator in [1, n], O(log) |
 | `multiplicative_sum` | sum of a multiplicative f over [1, n] mod any mod below ~3e9 (Min_25 sieve), f(p) a polynomial, n up to ~1e12 |
+| `isqrt` | floor(sqrt(n)) for n >= 0, O(1) |
+| `sqrt_cf` | continued fraction of sqrt(D): {a0, period}, O(period) |
+| `pell` | fundamental solution of x^2 - D y^2 = 1 (or -1) from the continued fraction of sqrt(D), O(period) |
+| `pell_general` | all solutions of x^2 - D y^2 = N with 0 <= x <= limit (Lagrange-Matthews-Mollin); uses pell |
+| `carmichael` | Carmichael function lambda(n), the largest multiplicative order mod n; uses factorize |
+| `mult_order` | multiplicative order of a mod n, -1 if gcd(a, n) != 1; uses carmichael, factorize |
+| `segmented_sieve` | calls f(p) for every prime p in [L, R], R up to ~1e12, O((R - L) log log R + sqrt(R)) |
+| `floor_blocks` | calls f(q, l, r) for each block [l, r] of i with floor(n / i) = q, O(sqrt(n)) |
+| `DuSieve` | Du's sieve: prefix sums of f at every n / i from easy prefix sums of g and f * g, O(n^(2/3)) |
+| `mertens` | Mertens function M(x) at every x = n / i, n up to ~1e11, as a DuSieve, O(n^(2/3)) |
+| `powerful_sum` | sum of a multiplicative f over [1, n] by the powerful number trick, O(sqrt(n)) calls of G |
+| `smooth_numbers` | all B-smooth numbers in [1, n], sorted |
+| `multiplicative_sieve` | f(0..n) of any multiplicative f from f(p^k) (linear sieve), O(n) |
+| `pythagorean_triples` | calls f(a, b, c) for every (or every primitive) Pythagorean triple with c <= n (Euclid) |
+| `hensel_roots` | all roots of a polynomial mod p^k (Hensel lifting, singular roots included) |
+| `lattice_circle` | number of integer points with x^2 + y^2 <= n, O(sqrt(n)) |
+| `r2` | number of ways to write n as x^2 + y^2 over the integers; uses factorize |
 
 ### [`math/combinatorics.cpp`](math/combinatorics.cpp)
 
