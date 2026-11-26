@@ -562,6 +562,9 @@ crashes or times out, printing the transcript of the exchange.
 | `line_inter` | intersection of lines ab and cd (segments if seg), nullopt if there is none |
 | `circle_line_inter` | intersection points of the circle (c, r) and the line ab: 0, 1 (tangent), or 2 points |
 | `circle_circle_inter` | intersection points of circles (c1, r1) and (c2, r2): 0, 1 (tangent), or 2 points |
+| `tangent_points` | points where the tangent lines from p touch the circle (c, r): 0, 1, or 2 points, O(1) |
+| `circle_tangents` | common tangent lines of two circles, each as its two touching points, O(1) |
+| `circle_polygon_area` | area of the intersection of a circle and a simple polygon, O(n) |
 | `polygon_area` | area of a simple polygon, O(n) |
 | `triangle_area` | area of a triangle from its side lengths (Heron), O(1) |
 | `cyclic_quad_area` | area of a cyclic quadrilateral (opposite angles sum to 180 degrees) from its side lengths (Brahmagupta), O(1) |
@@ -602,6 +605,7 @@ crashes or times out, printing the transcript of the exchange.
 | `minkowski_sum` | Minkowski sum of two convex polygons given as strict hulls in CCW order |
 | `half_plane_intersection` | intersection of half-planes as a CCW polygon |
 | `polygon_union_area` | area of the union of simple polygons, each in CCW order |
+| `circle_union_area` | area of the union of circles {center, radius}, O(n^2 log n) |
 | `delaunay_edges` | Delaunay triangulation edges of integer points (they contain a Euclidean MST), O(n log n) |
 | `TriangleCounter` | number of points strictly inside triangles of given points, O(n^2 m) build, O(1) per query |
 

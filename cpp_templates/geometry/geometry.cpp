@@ -13,6 +13,9 @@
 //   line_inter               intersection of lines ab and cd (segments if seg), nullopt if there is none
 //   circle_line_inter        intersection points of the circle (c, r) and the line ab: 0, 1 (tangent), or 2 points
 //   circle_circle_inter      intersection points of circles (c1, r1) and (c2, r2): 0, 1 (tangent), or 2 points
+//   tangent_points           points where the tangent lines from p touch the circle (c, r): 0, 1, or 2 points, O(1)
+//   circle_tangents          common tangent lines of two circles, each as its two touching points, O(1)
+//   circle_polygon_area      area of the intersection of a circle and a simple polygon, O(n)
 //   polygon_area             area of a simple polygon, O(n)
 //   triangle_area            area of a triangle from its side lengths (Heron), O(1)
 //   cyclic_quad_area         area of a cyclic quadrilateral (opposite angles sum to 180 degrees) from its side...
@@ -54,6 +57,7 @@
 //   minkowski_sum            Minkowski sum of two convex polygons given as strict hulls in CCW order
 //   half_plane_intersection  intersection of half-planes as a CCW polygon
 //   polygon_union_area       area of the union of simple polygons, each in CCW order
+//   circle_union_area        area of the union of circles {center, radius}, O(n^2 log n)
 //   delaunay_edges           Delaunay triangulation edges of integer points (they contain a Euclidean MST), O(n log n)
 //   TriangleCounter          number of points strictly inside triangles of given points, O(n^2 m) build, O(1) per query
 
@@ -160,6 +164,59 @@ vector<Point> circle_circle_inter(Point c1, ld r1, Point c2, ld r2) {
     if (h2 < EPS) return {m};
     Point n = Point(-v.y, v.x) * sqrtl(h2);
     return {m + n, m - n};
+}
+
+// points where the tangent lines from p touch the circle (c, r): 0 (p inside), 1 (p on the circle), or 2 points, O(1)
+vector<Point> tangent_points(Point p, Point c, ld r) {
+    Point v = p - c;
+    ld d = abs(v);
+    if (d < r - EPS) return {};
+    if (d < r + EPS) return {p};
+    Point m = c + v * (r * r / (d * d)), h = Point(-v.y, v.x) * (r * sqrtl(d * d - r * r) / (d * d));
+    return {m + h, m - h};
+}
+
+// common tangent lines of the circles (c1, r1) and (c2, r2) with r1, r2 > 0, each as its touching points
+// {on circle 1, on circle 2}, the outer ones first: 4 if the circles are apart, 3 if they touch outside, 2 if they
+// cross, 1 if they touch inside, 0 if one is inside the other or they are the same circle; at a point where the
+// circles touch, the two points are equal and the tangent is perpendicular to c2 - c1, O(1)
+// v is the unit normal of the tangent line, so dot(c2 - c1, v) = r1 - r2 (r2 negated for the inner tangents)
+vector<pair<Point, Point>> circle_tangents(Point c1, ld r1, Point c2, ld r2) {
+    vector<pair<Point, Point>> res;
+    Point d = c2 - c1;
+    ld len = abs(d);
+    if (len < EPS) return res;
+    for (ld s : {r2, -r2}) {
+        ld dr = r1 - s;
+        if (len < fabsl(dr) - EPS) continue;
+        ld h = len < fabsl(dr) + EPS ? 0 : sqrtl(len * len - dr * dr);
+        for (int sg : {1, -1}) {
+            Point v = (d * dr + Point(-d.y, d.x) * (h * sg)) / (len * len);
+            res.push_back({c1 + v * r1, c2 + v * s});
+            if (h == 0) break;
+        }
+    }
+    return res;
+}
+
+// area of the intersection of the circle (c, r) and a simple polygon p in either orientation, O(n)
+// adds up the signed areas of the circle cut with each triangle (c, p[j], p[i]): the part of the edge inside the
+// circle makes a triangle with c, the parts outside make circular sectors
+ld circle_polygon_area(Point c, ld r, const vector<Point> &p) {
+    auto sector = [&](Point u, Point v) { return r * r / 2 * atan2l(cross(u, v), dot(u, v)); };
+    auto tri = [&](Point a, Point b) {  // a and b relative to c
+        Point d = b - a;
+        if (abs(d) < EPS) return (ld)0;
+        ld k = dot(d, a) / norm(d), disc = k * k - (norm(a) - r * r) / norm(d);  // |a + d t| = r at t = -k +- sqrt
+        if (disc <= 0) return sector(a, b);
+        ld s = max<ld>(0, -k - sqrtl(disc)), t = min<ld>(1, -k + sqrtl(disc));
+        if (t < 0 || s >= 1) return sector(a, b);
+        Point u = a + d * s, v = a + d * t;
+        return sector(a, u) + cross(u, v) / 2 + sector(v, b);
+    };
+    ld area = 0;
+    for (int i = 0, n = p.size(), j = n - 1; i < n; j = i++) area += tri(p[j] - c, p[i] - c);
+    return fabsl(area);
 }
 
 // area of a simple polygon, O(n)
@@ -656,6 +713,49 @@ ld polygon_union_area(const vector<vector<Point>> &poly) {
                 cnt += segs[j].second;
             }
             area += cross(A, B) * visible;
+        }
+    }
+    return area / 2;
+}
+
+// area of the union of circles {center, radius}; they may overlap freely, and copies of a circle count once,
+// O(n^2 log n)
+// by Green's theorem the area is the integral of (x dy - y dx) / 2 around the boundary of the union, which is made
+// of the arcs of each circle not inside any other circle
+ld circle_union_area(const vector<pair<Point, ld>> &cs) {
+    int n = cs.size();
+    ld area = 0;
+    for (int i = 0; i < n; i++) {
+        auto [c, r] = cs[i];
+        if (r < EPS) continue;
+        vector<pair<ld, ld>> cov;  // angle ranges of circle i inside other circles, within [-pi, pi]
+        bool inside = false;
+        for (int j = 0; j < n && !inside; j++) {
+            auto [c2, r2] = cs[j];
+            ld d = dist(c, c2);
+            if (j == i) continue;
+            if (d + r <= r2 + EPS) {  // i inside j, or j is an earlier copy of i
+                inside = r < r2 - EPS || j < i;
+                continue;
+            }
+            if (d >= r + r2 - EPS || d + r2 <= r + EPS) continue;  // apart, or j inside i
+            ld a = atan2l(c2.y - c.y, c2.x - c.x);
+            ld b = acosl(clamp((r * r + d * d - r2 * r2) / (2 * r * d), -1.0L, 1.0L));  // law of cosines
+            ld lo = a - b, hi = a + b;
+            if (lo < -PI) cov.push_back({lo + 2 * PI, PI}), lo = -PI;
+            if (hi > PI) cov.push_back({-PI, hi - 2 * PI}), hi = PI;
+            cov.push_back({lo, hi});
+        }
+        if (inside) continue;
+        auto arc = [&](ld a, ld b) {  // twice the integral over the arc from angle a to b
+            return r * r * (b - a) + c.x * r * (sinl(b) - sinl(a)) - c.y * r * (cosl(b) - cosl(a));
+        };
+        sort(cov.begin(), cov.end());
+        cov.push_back({PI, PI});
+        ld from = -PI;
+        for (auto [lo, hi] : cov) {
+            if (lo > from) area += arc(from, lo);
+            from = max(from, hi);
         }
     }
     return area / 2;
