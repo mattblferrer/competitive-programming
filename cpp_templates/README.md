@@ -9,7 +9,7 @@ Each folder is one chapter of the notebook; the contest template `new_file.cpp` 
 - [Strings](#strings): [`strings.cpp`](strings/strings.cpp)
 - [Math](#math): [`modint.cpp`](math/modint.cpp), [`number_theory.cpp`](math/number_theory.cpp), [`combinatorics.cpp`](math/combinatorics.cpp), [`matrix.cpp`](math/matrix.cpp), [`linear_algebra.cpp`](math/linear_algebra.cpp), [`fft.cpp`](math/fft.cpp), [`polynomial.cpp`](math/polynomial.cpp), [`bitmask.cpp`](math/bitmask.cpp), [`big_integer.cpp`](math/big_integer.cpp), [`hex_big_integer.cpp`](math/hex_big_integer.cpp), [`int128.cpp`](math/int128.cpp), [`simplex.cpp`](math/simplex.cpp)
 - [Geometry](#geometry): [`geometry.cpp`](geometry/geometry.cpp)
-- [DP and Search](#dp-and-search): [`binary_ternary_search.cpp`](dp_search/binary_ternary_search.cpp), [`dp_optimizations.cpp`](dp_search/dp_optimizations.cpp)
+- [DP and Search](#dp-and-search): [`binary_ternary_search.cpp`](dp_search/binary_ternary_search.cpp), [`dp_optimizations.cpp`](dp_search/dp_optimizations.cpp), [`digit_dp.cpp`](dp_search/digit_dp.cpp)
 - [Miscellaneous](#miscellaneous): [`sat.cpp`](misc/sat.cpp), [`dlx.cpp`](misc/dlx.cpp), [`misc.cpp`](misc/misc.cpp)
 
 ## Contest
@@ -629,6 +629,14 @@ crashes or times out, printing the transcript of the exchange.
 | `min_plus_concave_arbitrary` | c[k] = min of a[i] + b[j] over i + j = k for concave a and any b, O((n + m) log^2 (n + m)) |
 | `SlopeTrick` | convex piecewise linear function: add \|x - a\| and ramps, prefix / suffix min, shift, merge |
 | `aliens` | Aliens trick (WQS binary search): min cost with exactly k items for a cost convex in k |
+
+### [`dp_search/digit_dp.cpp`](dp_search/digit_dp.cpp)
+
+| Name | Description |
+| --- | --- |
+| `digit_dp_simple` | copy-and-edit digit DP: how many x in [0, n] have digit sum divisible by K, O(len * K * 10) |
+| `digits_of` | base-b digits of n >= 0, most significant first (empty for 0), O(log n) |
+| `digit_dp` | sum of acc(state) over every x in [0, n], where state comes from feeding x's digits to step |
 
 ## Miscellaneous
 
