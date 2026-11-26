@@ -37,8 +37,8 @@ The current build fits the 25-page ICPC limit. It leaves out `math/big_integer.c
 `misc/misc.cpp`, `graphs/euler_tour_tree.cpp`, `graphs/cycles.cpp`, `graphs/triangles.cpp`, the modular solvers in
 `math/linear_algebra.cpp`, the copy of `mod_sqrt` in `math/polynomial.cpp` (Number Theory prints it), the extra
 rerooting examples (`MaxDist`, `PathComposite`), and `SumDSU`, `PotentialDSU`, `FoldDeque`, `Fenwick2D`,
-`count_primes`, `subset_convolution`, `cartesian_tree`, `manhattan_mst_edges`, `range_inversions`,
-`tree_distance_counts`, `totient_sum`, `wildcard_match`,
+`count_primes`, `ranked_zeta`, `subset_convolution`, `subset_exp`, `subset_log`, `cartesian_tree`,
+`manhattan_mst_edges`, `range_inversions`, `tree_distance_counts`, `totient_sum`, `wildcard_match`,
 `gaussian_gcd`, `two_square_sum`, `sb_path`, `sb_bounds`, `sb_lca`, `sb_ancestor`,
 `rational_approx`, `lyndon_factorization`,
 `min_plus_convex_convex`, `min_plus_convex_arbitrary`, `min_plus_concave_arbitrary`,

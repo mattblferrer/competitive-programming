@@ -80,7 +80,8 @@ SECTIONS = [
         ("math/polynomial.cpp", "Polynomials", ["binexp", "NTT", "Poly", "poly_divide_real", "berlekamp_massey",
                                                 "kth_term", "kth_term_ntt", "bernoulli_ntt", "bell_ntt", "shift_samples",
                                                 "FactorialMod", "lagrange", "lagrange_consecutive"]),  # mod_sqrt: Number Theory
-        ("math/bitmask.cpp", "Bitmask Transforms", ["-subset_convolution"]),
+        ("math/bitmask.cpp", "Bitmask Transforms", ["-ranked_zeta", "-subset_convolution", "-subset_exp",
+                                                    "-subset_log"]),
     ]),
     ("Geometry", [
         ("geometry/geometry.cpp", "Geometry", ["-delaunay_edges", "-TriangleCounter"]),

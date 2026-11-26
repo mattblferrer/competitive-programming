@@ -458,7 +458,10 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `or_convolution` | c[k] = sum of a[i] * b[j] over all i \| j == k, O(n log n) |
 | `and_convolution` | c[k] = sum of a[i] * b[j] over all i & j == k, O(n log n) |
 | `xor_convolution` | c[k] = sum of a[i] * b[j] over all i ^ j == k, O(n log n) |
+| `ranked_zeta` | ranked zeta transform for the subset convolution family (undone if invert), O(n^2 2^n) |
 | `subset_convolution` | c[k] = sum of a[i] * b[j] over i \| j == k and i & j == 0, mod a prime, O(n^2 2^n) |
+| `subset_exp` | exp of a set power series: sum over partitions of s of the product of a over the blocks, O(n^2 2^n) |
+| `subset_log` | log of a set power series, the inverse of subset_exp, O(n^2 2^n) |
 
 ### [`math/big_integer.cpp`](math/big_integer.cpp)
 

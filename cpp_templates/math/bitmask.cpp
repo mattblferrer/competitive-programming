@@ -6,7 +6,10 @@
 //   or_convolution      c[k] = sum of a[i] * b[j] over all i | j == k, O(n log n)
 //   and_convolution     c[k] = sum of a[i] * b[j] over all i & j == k, O(n log n)
 //   xor_convolution     c[k] = sum of a[i] * b[j] over all i ^ j == k, O(n log n)
+//   ranked_zeta         ranked zeta transform for the subset convolution family (undone if invert), O(n^2 2^n)
 //   subset_convolution  c[k] = sum of a[i] * b[j] over i | j == k and i & j == 0, mod a prime, O(n^2 2^n)
+//   subset_exp          exp of a set power series: sum over partitions of s of the product of a over the blocks, O(n^2 2^n)
+//   subset_log          log of a set power series, the inverse of subset_exp, O(n^2 2^n)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -107,8 +110,23 @@ vector<T> xor_convolution(vector<T> a, vector<T> b) {
     return a;
 }
 
+// ranked zeta transform for the subset convolution family: h[s * R + r] holds rank r of mask s (R = n + 1, h.size()
+// = 2^n R); each rank becomes the sum over submasks of s (undone if invert), mod m, O(n^2 2^n)
+void ranked_zeta(vector<unsigned> &h, int R, unsigned m, bool invert = false) {
+    int N = h.size() / R;
+    for (int bit = 1; bit < N; bit <<= 1) {
+        for (int s = 0; s < N; s++) {
+            if (!(s & bit)) continue;
+            unsigned *x = &h[(size_t)s * R], *y = &h[(size_t)(s ^ bit) * R];
+            if (invert) for (int r = 0; r < R; r++) x[r] = x[r] >= y[r] ? x[r] - y[r] : x[r] + m - y[r];
+            else for (int r = 0; r < R; r++) x[r] = x[r] + y[r] >= m ? x[r] + y[r] - m : x[r] + y[r];
+        }
+    }
+}
+
 // subset convolution: c[k] = sum of a[i] * b[j] over all i | j == k with i & j == 0, mod mod (below 2^31)
-// a and b have size 2^n; zeta transforms split by popcount (rank), multiplied rank by rank, O(n^2 2^n)
+// a and b have size 2^n; zeta transforms split by popcount (rank), multiplied rank by rank, using ranked_zeta above,
+// O(n^2 2^n)
 vector<ll> subset_convolution(const vector<ll> &a, const vector<ll> &b, ll mod) {
     int N = a.size(), n = __lg(N), R = n + 1;
     assert(N == (1 << n) && b.size() == a.size());
@@ -118,18 +136,8 @@ vector<ll> subset_convolution(const vector<ll> &a, const vector<ll> &b, ll mod) 
         f[(size_t)s * R + __builtin_popcount(s)] = a[s] % mod;
         g[(size_t)s * R + __builtin_popcount(s)] = b[s] % mod;
     }
-    auto zeta = [&](vector<unsigned> &h, bool invert) {
-        for (int bit = 1; bit < N; bit <<= 1) {
-            for (int s = 0; s < N; s++) {
-                if (!(s & bit)) continue;
-                unsigned *x = &h[(size_t)s * R], *y = &h[(size_t)(s ^ bit) * R];
-                if (invert) for (int r = 0; r < R; r++) x[r] = x[r] >= y[r] ? x[r] - y[r] : x[r] + m - y[r];
-                else for (int r = 0; r < R; r++) x[r] = x[r] + y[r] >= m ? x[r] + y[r] - m : x[r] + y[r];
-            }
-        }
-    };
-    zeta(f, false);
-    zeta(g, false);
+    ranked_zeta(f, R, m);
+    ranked_zeta(g, R, m);
     vector<unsigned> prod(R);
     for (int s = 0; s < N; s++) {
         unsigned *x = &f[(size_t)s * R], *y = &g[(size_t)s * R];
@@ -140,8 +148,64 @@ vector<ll> subset_convolution(const vector<ll> &a, const vector<ll> &b, ll mod) 
         }
         copy(prod.begin(), prod.end(), x);
     }
-    zeta(f, true);
+    ranked_zeta(f, R, m, true);
     vector<ll> c(N);
     for (int s = 0; s < N; s++) c[s] = f[(size_t)s * R + __builtin_popcount(s)];
     return c;
+}
+
+// exp of a set power series: b[s] = sum over all partitions of s into nonempty blocks t_1, ..., t_k of
+// a[t_1] * ... * a[t_k] (b[0] = 1), mod a prime mod (below 2^31, above n); a has size 2^n and a[0] == 0
+// per mask the ranked transform is a polynomial f(z) with f(0) = 0, and g = exp(f) solves z g' = (z f') g, using
+// ranked_zeta above, O(n^2 2^n)
+vector<ll> subset_exp(const vector<ll> &a, ll mod) {
+    int N = a.size(), n = __lg(N), R = n + 1;
+    assert(N == (1 << n) && a[0] % mod == 0);
+    unsigned m = mod;
+    vector<unsigned> f((size_t)N * R), inv(R, 1), d(R);
+    for (int i = 2; i < R; i++) inv[i] = (unsigned long long)(m - m / i) * inv[m % i] % m;
+    for (int s = 0; s < N; s++) f[(size_t)s * R + __builtin_popcount(s)] = a[s] % mod;
+    ranked_zeta(f, R, m);
+    for (int s = 0; s < N; s++) {
+        unsigned *x = &f[(size_t)s * R];
+        for (int i = 0; i < R; i++) d[i] = (unsigned long long)x[i] * i % m;
+        x[0] = 1;
+        for (int k = 1; k < R; k++) {  // k g_k = sum of i f_i g_(k - i), in place since f_k is only read via d
+            unsigned long long acc = 0;
+            for (int i = 1; i <= k; i++) acc = (acc + (unsigned long long)d[i] * x[k - i]) % m;
+            x[k] = acc * inv[k] % m;
+        }
+    }
+    ranked_zeta(f, R, m, true);
+    vector<ll> b(N);
+    for (int s = 0; s < N; s++) b[s] = f[(size_t)s * R + __builtin_popcount(s)];
+    return b;
+}
+
+// log of a set power series, the inverse of subset_exp above: a has size 2^n with a[0] == 1, and the result has
+// result[0] = 0, mod a prime mod (below 2^31, above n); per mask the ranked transform is a polynomial f(z) with
+// f(0) = 1, and g = log(f) solves z f g' = z f', using ranked_zeta above, O(n^2 2^n)
+vector<ll> subset_log(const vector<ll> &a, ll mod) {
+    int N = a.size(), n = __lg(N), R = n + 1;
+    assert(N == (1 << n) && a[0] % mod == 1);
+    unsigned m = mod;
+    vector<unsigned> f((size_t)N * R), inv(R, 1), F(R);
+    for (int i = 2; i < R; i++) inv[i] = (unsigned long long)(m - m / i) * inv[m % i] % m;
+    for (int s = 0; s < N; s++) f[(size_t)s * R + __builtin_popcount(s)] = a[s] % mod;
+    ranked_zeta(f, R, m);
+    for (int s = 0; s < N; s++) {
+        unsigned *x = &f[(size_t)s * R];
+        copy(x, x + R, F.begin());
+        x[0] = 0;
+        for (int k = 1; k < R; k++) {  // x[i] holds i g_i: k g_k = k f_k - sum of i g_i f_(k - i), 0 < i < k
+            unsigned long long acc = 0;
+            for (int i = 1; i < k; i++) acc = (acc + (unsigned long long)x[i] * F[k - i]) % m;
+            x[k] = ((unsigned long long)F[k] * k + m - acc) % m;
+        }
+        for (int k = 1; k < R; k++) x[k] = (unsigned long long)x[k] * inv[k] % m;
+    }
+    ranked_zeta(f, R, m, true);
+    vector<ll> b(N);
+    for (int s = 0; s < N; s++) b[s] = f[(size_t)s * R + __builtin_popcount(s)];
+    return b;
 }
