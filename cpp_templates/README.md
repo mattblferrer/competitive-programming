@@ -106,6 +106,8 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `range_inversions` | number of inversions in each a[l, r), using mo above and a Fenwick tree |
 | `binomial_prefix_sums` | sum of C(n, i) over i <= k for each query {n, k}, Mo's algorithm on the points (n, k) |
 | `cdq_dominance` | offline 2D dominance sums with point updates (CDQ divide and conquer), O(n log^2 n) |
+| `mo_updates` | Mo's algorithm with point updates; queries are {l, r, t} over [l, r) after t updates, O(n^(5/3)) |
+| `mo_tree` | Mo's algorithm on tree paths; queries are {u, v}, over the vertices of the path u - v |
 
 ### [`data_structures/misc.cpp`](data_structures/misc.cpp)
 

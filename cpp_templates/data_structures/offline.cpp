@@ -1,10 +1,13 @@
 // Contents
-//   binexp            a^b mod mod, O(log b)
-//   hilbert_order     position of (x, y) along a Hilbert curve of order pow; requires x, y < 2^pow, O(pow)
-//   mo                Mo's algorithm with Hilbert ordering; queries are {l, r} over [l, r)
-//   range_inversions  number of inversions in each a[l, r), using mo above and a Fenwick tree
+//   binexp                a^b mod mod, O(log b)
+//   hilbert_order         position of (x, y) along a Hilbert curve of order pow; requires x, y < 2^pow, O(pow)
+//   mo                    Mo's algorithm with Hilbert ordering; queries are {l, r} over [l, r)
+//   range_inversions      number of inversions in each a[l, r), using mo above and a Fenwick tree
 //   binomial_prefix_sums  sum of C(n, i) over i <= k for each query {n, k}, Mo's algorithm on the points (n, k)
-//   cdq_dominance     offline 2D dominance sums with point updates (CDQ divide and conquer), O(n log^2 n)
+//   cdq_dominance         offline 2D dominance sums with point updates (CDQ divide and conquer), O(n log^2 n)
+//   mo_updates            Mo's algorithm with point updates; queries are {l, r, t} over [l, r) after t updates,
+//                         O(n^(5/3))
+//   mo_tree               Mo's algorithm on tree paths; queries are {u, v}, over the vertices of the path u - v
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -166,5 +169,99 @@ vector<ll> cdq_dominance(const vector<CDQOp> &ops) {
         copy(tmp.begin() + l, tmp.begin() + r, ord.begin() + l);
         };
     solve(solve, 0, n);
+    return ans;
+}
+
+// Mo's algorithm with updates: query i is {l, r, t}, asking about [l, r) after the first t updates; add(i) /
+// remove(i) change the window, toggle(j, l, r) applies update j if it is off and undoes it if it is on, given the
+// current window [l, r) (an update that sets a[p] = x can be stored as {p, x} and toggled by swapping a[p] with x,
+// removing and re-adding p if it lies in the window), get() returns the answer. Sorted by (l / B, r / B, t) with
+// B ~ n^(2/3), O(n^(5/3)) calls when q and the number of updates are O(n)
+template <class Add, class Remove, class Toggle, class Get>
+auto mo_updates(int n, const vector<array<int, 3>> &queries, Add add, Remove remove, Toggle toggle, Get get) {
+    int q = queries.size(), B = max(1, (int)cbrt((double)n * n));
+    vector<int> order(q);
+    iota(order.begin(), order.end(), 0);
+    sort(order.begin(), order.end(), [&](int a, int b) {
+        auto &x = queries[a], &y = queries[b];
+        if (x[0] / B != y[0] / B) return x[0] < y[0];
+        if (x[1] / B != y[1] / B) return (x[0] / B & 1) ? x[1] > y[1] : x[1] < y[1];
+        return (x[1] / B & 1) ? x[2] > y[2] : x[2] < y[2];
+    });
+    vector<decltype(get())> ans(q);
+    int l = 0, r = 0, t = 0;
+    for (int i : order) {
+        auto [ql, qr, qt] = queries[i];
+        while (l > ql) add(--l);
+        while (r < qr) add(r++);
+        while (l < ql) remove(l++);
+        while (r > qr) remove(--r);
+        while (t < qt) toggle(t++, l, r);
+        while (t > qt) toggle(--t, l, r);
+        ans[i] = get();
+    }
+    return ans;
+}
+
+// Mo's algorithm on tree paths: query i is {u, v}, asking about the vertices on the path u - v (both included) of the
+// tree adj; add(x) / remove(x) put vertex x in or take it out of the current set, get() returns the answer for it.
+// Uses the Euler tour that lists each vertex on entry and exit: the path is the range between the two endpoints with
+// the vertices seen twice dropped, plus the LCA when it is neither endpoint. Hilbert order via hilbert_order above,
+// O((n + q) sqrt q) add/remove calls (plus O((n + q) log n) for the LCAs)
+template <class Add, class Remove, class Get>
+auto mo_tree(const vector<vector<int>> &adj, const vector<pair<int, int>> &queries, Add add, Remove remove, Get get,
+             int root = 0) {
+    int n = adj.size(), q = queries.size(), LOG = 1, T = 0, pow = 1;
+    while ((1 << LOG) < n) LOG++;
+    vector<int> tin(n), tout(n), tour(2 * n);
+    vector<vector<int>> up(LOG + 1, vector<int>(n, root));
+    vector<pair<int, int>> st{{root, root}};  // {vertex, parent}; a vertex is pushed again as ~v to mark its exit
+    while (!st.empty()) {
+        auto [v, p] = st.back();
+        st.pop_back();
+        if (v < 0) {
+            tour[tout[~v] = T++] = ~v;
+            continue;
+        }
+        up[0][v] = p;
+        tour[tin[v] = T++] = v;
+        st.push_back({~v, p});
+        for (int w : adj[v]) if (w != p) st.push_back({w, v});
+    }
+    for (int j = 1; j <= LOG; j++) for (int v = 0; v < n; v++) up[j][v] = up[j - 1][up[j - 1][v]];
+    auto is_anc = [&](int a, int b) { return tin[a] <= tin[b] && tout[b] <= tout[a]; };
+    auto lca = [&](int a, int b) {
+        if (is_anc(a, b)) return a;
+        for (int j = LOG; j >= 0; j--) if (!is_anc(up[j][a], b)) a = up[j][a];
+        return up[0][a];
+    };
+    vector<int> ql(q), qr(q), extra(q, -1), order(q);
+    vector<ll> key(q);
+    while ((1 << pow) <= 2 * n) pow++;
+    for (int i = 0; i < q; i++) {
+        auto [u, v] = queries[i];
+        if (tin[u] > tin[v]) swap(u, v);
+        int w = lca(u, v);
+        if (w == u) ql[i] = tin[u], qr[i] = tin[v] + 1;
+        else ql[i] = tout[u], qr[i] = tin[v] + 1, extra[i] = w;
+        key[i] = hilbert_order(ql[i], qr[i], pow), order[i] = i;
+    }
+    sort(order.begin(), order.end(), [&](int a, int b) { return key[a] < key[b]; });
+    vector<char> in(n);
+    auto flip = [&](int x) {
+        if ((in[x] ^= 1)) add(x);
+        else remove(x);
+    };
+    vector<decltype(get())> ans(q);
+    int l = 0, r = 0;
+    for (int i : order) {
+        while (l > ql[i]) flip(tour[--l]);
+        while (r < qr[i]) flip(tour[r++]);
+        while (l < ql[i]) flip(tour[l++]);
+        while (r > qr[i]) flip(tour[--r]);
+        if (extra[i] >= 0) add(extra[i]);
+        ans[i] = get();
+        if (extra[i] >= 0) remove(extra[i]);
+    }
     return ans;
 }
