@@ -36,6 +36,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `SafeHash` | hash for unordered_map / unordered_set that resists anti-hash tests |
 | `SafeMap` | unordered_map using SafeHash |
 | `SafeSet` | unordered_set using SafeHash |
+| `Zobrist` | random 64-bit label per key: XOR / sum of labels hash sets / multisets, with prefix hashes |
 
 ## Data Structures
 
