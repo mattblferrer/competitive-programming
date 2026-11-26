@@ -300,6 +300,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `PersistentXorTrie` | persistent binary trie |
 | `XorTrie` | binary trie over a multiset: insert, erase, min and max xor |
 | `SuffixArray` | suffix array and LCP array |
+| `longest_common_substring` | {i, j, len}: a longest common substring s.substr(i, len) == t.substr(j, len), O(n log n) |
 | `AhoCorasick` | Aho-Corasick automaton: KMP for many patterns over the alphabet [BASE, BASE + ALPHA) |
 | `Eertree` | palindromic tree (eertree) over lowercase letters |
 | `RollingHash` | polynomial rolling hash mod 2^61 - 1 with a random base |

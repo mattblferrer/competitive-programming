@@ -65,7 +65,7 @@ SECTIONS = [
         ("graphs/link_cut_tree.cpp", "Link-Cut Tree", ["-LinkCutPath"]),
     ]),
     ("Strings", [
-        ("strings/strings.cpp", "Strings", ["-lyndon_factorization", "-XorTrie"]),
+        ("strings/strings.cpp", "Strings", ["-lyndon_factorization", "-XorTrie", "-longest_common_substring"]),
     ]),
     ("Math", [
         ("math/modint.cpp", "ModInt"),

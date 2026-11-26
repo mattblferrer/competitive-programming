@@ -7,6 +7,7 @@
 //   PersistentXorTrie     persistent binary trie
 //   XorTrie               binary trie over a multiset: insert, erase, min and max xor
 //   SuffixArray           suffix array and LCP array
+//   longest_common_substring  {i, j, len}: a longest common substring s.substr(i, len) == t.substr(j, len), O(n log n)
 //   AhoCorasick           Aho-Corasick automaton: KMP for many patterns over the alphabet [BASE, BASE + ALPHA)
 //   Eertree               palindromic tree (eertree) over lowercase letters
 //   RollingHash           polynomial rolling hash mod 2^61 - 1 with a random base
@@ -290,6 +291,20 @@ struct SuffixArray {
         return hi - lo;
     }
 };
+
+// longest common substring of s and t, using SuffixArray above: {i, j, len} with s.substr(i, len) == t.substr(j, len)
+// (len = 0 if there is none); the best pair is adjacent in the suffix array of s + char(1) + t, so s and t must not
+// contain char(0) or char(1), O((|s| + |t|) log(|s| + |t|))
+array<int, 3> longest_common_substring(const string &s, const string &t) {
+    int n = s.size();
+    SuffixArray sa(s + char(1) + t);
+    array<int, 3> best{0, 0, 0};
+    for (int k = 0; k + 1 < (int)sa.sa.size(); k++) {
+        int x = sa.sa[k], y = sa.sa[k + 1];
+        if ((x < n) != (y < n) && sa.lcp[k] > best[2]) best = {min(x, y), max(x, y) - n - 1, sa.lcp[k]};
+    }
+    return best;
+}
 
 // Aho-Corasick automaton: KMP for many patterns over the alphabet [BASE, BASE + ALPHA)
 //   add(s)          add pattern s, O(|s|)
