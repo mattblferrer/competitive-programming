@@ -54,7 +54,8 @@ vector<pair<int, int>> rnd_tree(int n, int shape = 0) {
     return edges;
 }
 
-// random simple graph on vertices 1..n with m edges (no loops or repeats); connected requires m >= n - 1, O(m log m) when sparse
+// random simple graph on vertices 1..n with m edges (no loops or repeats);
+// connected requires m >= n - 1, O(m log m) when sparse
 vector<pair<int, int>> rnd_graph(int n, int m, bool connected = false) {
     assert((ll)m <= (ll)n * (n - 1) / 2);
     vector<pair<int, int>> edges;

@@ -10,9 +10,11 @@ using pll = pair<ll, ll>;
 // bridges, articulation points and biconnected components of an undirected graph; multi-edges are handled correctly
 //   Biconnected(n)        empty graph on n vertices, O(n)
 //   add_edge(u, v)        add the undirected edge u - v, returns its id, O(1)
-//   dfs(root)             visit the component of root (iterative, so deep graphs can't overflow the stack), O(V + E) total
+//   dfs(root)             visit the component of root (iterative, so deep graphs can't overflow the stack),
+//                         O(V + E) total
 //   run()                 fills is_bridge[id], artics, and blocks (vertex lists), O(V + E)
-//   block_cut_tree(node)  tree whose nodes are the artics then the blocks; node[u] is u's tree node (-1 if isolated), O(V + E)
+//   block_cut_tree(node)  tree whose nodes are the artics then the blocks;
+//                         node[u] is u's tree node (-1 if isolated), O(V + E)
 //   bridge_tree(comp)     tree of 2-edge-connected components; comp[u] is u's tree node, O(V + E)
 struct Biconnected {
     int n, m = 0, timer = 0;

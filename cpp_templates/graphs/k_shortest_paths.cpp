@@ -9,11 +9,13 @@ using ld = long double;
 using pll = pair<ll, ll>;
 const ll INF = 2e18;
 
-// k shortest walks from s to t (Eppstein with a persistent leftist heap); walks may repeat vertices and edges, weights must be >= 0
+// k shortest walks from s to t (Eppstein with a persistent leftist heap);
+// walks may repeat vertices and edges, weights must be >= 0
 //   KShortestWalks(n)    empty directed graph on n vertices, O(n)
 //   add_edge(u, v, w)    add the directed edge u -> v, O(1)
 //   merge(a, b)          persistent heap merge, O(log E)
-//   run(s, t, k)         lengths of the k shortest walks in increasing order (fewer if there aren't k), O(E log E + V log V + k log k)
+//   run(s, t, k)         lengths of the k shortest walks in increasing order (fewer if there aren't k),
+//                        O(E log E + V log V + k log k)
 struct KShortestWalks {
     struct Edge { int u, v; ll w; };
     struct Node { ll key; int to, l, r, rank; };

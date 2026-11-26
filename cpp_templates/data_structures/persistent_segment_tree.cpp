@@ -112,8 +112,10 @@ struct Spec {
 // PersistentLazySegTree<S>: works with any S shaped like Spec above
 //   PersistentLazySegTree(n)    version 0 is n identity elements, O(n)
 //   PersistentLazySegTree(a)    version 0 is a, O(n)
-//   update(ver, l, r, f)        apply f to every element of [l, r) on a copy of ver, returns the new version, O(log n) time and memory
-//   copy_range(ver, src, l, r)  a copy of ver with [l, r) taken from version src, returns the new version, O(log n) time and memory
+//   update(ver, l, r, f)        apply f to every element of [l, r) on a copy of ver, returns the new version,
+//                               O(log n) time and memory
+//   copy_range(ver, src, l, r)  a copy of ver with [l, r) taken from version src, returns the new version,
+//                               O(log n) time and memory
 //   get(ver, p)                 a[p] in ver, O(log n)
 //   query(ver, l, r)            op over [l, r) in ver, O(log n)
 template <class S>

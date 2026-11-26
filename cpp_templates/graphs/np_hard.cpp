@@ -10,10 +10,12 @@ using ld = long double;
 using pll = pair<ll, ll>;
 const ll INF = 2e18;
 
-// cliques in a graph on at most N vertices, exponential in the worst case; a maximum independent set is a maximum clique of the complement
+// cliques in a graph on at most N vertices, exponential in the worst case;
+// a maximum independent set is a maximum clique of the complement
 //   MaxClique(n)       empty graph on n vertices, O(n)
 //   add_edge(u, v)     add the undirected edge u - v (self-loops are ignored), O(1)
-//   enumerate(f)       call f(r) with a bitset r for every maximal clique (Bron-Kerbosch with pivoting), O(3^(n/3)) calls at most
+//   enumerate(f)       call f(r) with a bitset r for every maximal clique (Bron-Kerbosch with pivoting),
+//                      O(3^(n/3)) calls at most
 //   max_clique()       vertices of a maximum clique (branch and bound with a greedy coloring bound)
 template <int N = 128>
 struct MaxClique {
@@ -62,7 +64,8 @@ struct MaxClique {
     void expand(B p) {
         vector<int> order, color;
         B left = p;
-        for (int c = 1; left.any(); c++) {  // vertices of one color are pairwise non-adjacent, so a clique uses at most one of them
+        // vertices of one color are pairwise non-adjacent, so a clique uses at most one of them
+        for (int c = 1; left.any(); c++) {
             B q = left;
             while (q.any()) {
                 int v = q._Find_first();
@@ -96,7 +99,8 @@ struct MaxClique {
     }
 };
 
-// fewest colors for a proper vertex coloring (inclusion-exclusion over independent sets), O(2^n n) time, O(2^n) memory, n up to about 23
+// fewest colors for a proper vertex coloring (inclusion-exclusion over independent sets), O(2^n n) time, O(2^n) memory,
+// n up to about 23
 // checks two primes, so a wrong answer needs both to cancel by chance; edges are {u, v}, self-loops are ignored
 int chromatic_number(int n, const vector<pair<int, int>> &edges) {
     if (n == 0) return 0;
@@ -127,7 +131,8 @@ int chromatic_number(int n, const vector<pair<int, int>> &edges) {
     return n;
 }
 
-// cheapest connected subgraph containing all terminals (Steiner tree): returns {total weight, edge ids}, {INF, {}} if impossible
+// cheapest connected subgraph containing all terminals (Steiner tree): returns {total weight, edge ids},
+// {INF, {}} if impossible
 // edges are {u, v, w} with w >= 0; k = number of terminals, O(3^k V + 2^k E log V)
 pair<ll, vector<int>> steiner_tree(int n, const vector<array<ll, 3>> &edges, const vector<int> &terminals) {
     int k = terminals.size();

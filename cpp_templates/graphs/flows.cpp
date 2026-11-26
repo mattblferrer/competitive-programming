@@ -68,7 +68,8 @@ struct Flow {
                 return pushed;
             }
             int &i = ptr[u];
-            while (i < (int)adj[u].size() && (level[e[adj[u][i]].to] != level[u] + 1 || e[adj[u][i]].cap == e[adj[u][i]].f)) i++;
+            while (i < (int)adj[u].size() &&
+                   (level[e[adj[u][i]].to] != level[u] + 1 || e[adj[u][i]].cap == e[adj[u][i]].f)) i++;
             if (i < (int)adj[u].size()) {
                 path.push_back(adj[u][i]);
                 u = e[adj[u][i]].to;

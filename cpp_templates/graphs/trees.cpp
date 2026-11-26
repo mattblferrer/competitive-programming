@@ -8,7 +8,8 @@
 //   dsu_on_tree           small-to-large on a tree (DSU on tree / sack)
 //   virtual_tree          virtual tree of the vertices vs, using LCA above; returns {nodes, par}
 //   cartesian_tree        parent of each index in the Cartesian tree of a (minimum at the root), -1 for the root
-//   tree_distance_counts  cnt[d] = number of unordered pairs of vertices at distance d, O(n log^2 n); uses multiply (FFT)
+//   tree_distance_counts  cnt[d] = number of unordered pairs of vertices at distance d, O(n log^2 n);
+//                         uses multiply (FFT)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -254,7 +255,8 @@ struct CentroidDecomp {
 
 // tree isomorphism by canonical ids (AHU); compare ids from the same TreeCanon object
 //   rooted(adj, root)   ids of the subtree of every vertex when rooted at root (the tree's id is [root]):
-//                       equal ids means isomorphic, and ids are 0..ids.size()-1 in order of first appearance, O(n log n)
+//                       equal ids means isomorphic, and ids are 0..ids.size()-1 in order of first appearance,
+//                       O(n log n)
 //   centers(adj)        the 1 or 2 centers of the tree, O(n)
 //   unrooted(adj)       id of the unrooted tree: equal ids means isomorphic, O(n log n)
 struct TreeCanon {
@@ -383,8 +385,9 @@ void dsu_on_tree(const vector<vector<int>> &adj, int root, Add add, Remove remov
     }
 }
 
-// virtual tree of the vertices vs, using LCA above; returns {nodes, par}, nodes sorted by DFS order and containing vs and
-// all their pairwise LCAs, par[i] = the parent vertex of nodes[i] in the virtual tree (-1 for the first), O(k log k)
+// virtual tree of the vertices vs, using LCA above; returns {nodes, par}, nodes sorted by DFS order and containing vs
+// and all their pairwise LCAs, par[i] = the parent vertex of nodes[i] in the virtual tree (-1 for the first),
+// O(k log k)
 pair<vector<int>, vector<int>> virtual_tree(vector<int> vs, const LCA &l) {
     auto by_tin = [&](int a, int b) { return l.tin[a] < l.tin[b]; };
     sort(vs.begin(), vs.end(), by_tin);

@@ -33,13 +33,16 @@
 //   count_primes        number of primes <= n (Lucy_Hedgehog), n up to about 1e11, O(n^(3/4))
 //   totient_sum         sum of phi(i) for i in [1, n] mod mod, n up to about 1e11, O(n^(2/3))
 //   gaussian_gcd        a gcd of two Gaussian integers {re, im} (unique up to units), O(log)
-//   two_square_sum      all pairs (a, b) of integers >= 0 with a^2 + b^2 = n, n up to ~1e18; uses factorize, gaussian_gcd
+//   two_square_sum      all pairs (a, b) of integers >= 0 with a^2 + b^2 = n, n up to ~1e18;
+//                       uses factorize, gaussian_gcd
 //   sb_path             Stern-Brocot path from 1/1 to a/b as runs {'L' or 'R', length}, O(log)
-//   sb_bounds           bounds {p, q, r, s} of the Stern-Brocot node reached by a path: its descendants lie strictly between p/q and r/s
+//   sb_bounds           bounds {p, q, r, s} of the Stern-Brocot node reached by a path:
+//                       its descendants lie strictly between p/q and r/s
 //   sb_lca              lowest common ancestor of a/b and c/d in the Stern-Brocot tree, O(log)
 //   sb_ancestor         ancestor of a/b at depth k in the Stern-Brocot tree (1/1 has depth 0), {-1, -1} if none, O(log)
 //   rational_approx     closest fractions <= x/y and >= x/y with numerator and denominator in [1, n], O(log)
-//   multiplicative_sum  sum of a multiplicative f over [1, n] mod any mod below ~3e9 (Min_25 sieve), f(p) a polynomial, n up to ~1e12
+//   multiplicative_sum  sum of a multiplicative f over [1, n] mod any mod below ~3e9 (Min_25 sieve), f(p) a polynomial,
+//                       n up to ~1e12
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -237,8 +240,8 @@ void divisor_transform(vector<T> &a, bool multiples, bool invert = false) {
     }
 }
 
-// c[k] = sum of a[i] * b[j] over all gcd(i, j) == k (lcm(i, j) == k if lcm), 1-indexed, a.size() == b.size(); no division,
-// so T can be any ring, O(n log log n)
+// c[k] = sum of a[i] * b[j] over all gcd(i, j) == k (lcm(i, j) == k if lcm), 1-indexed, a.size() == b.size(); no
+// division, so T can be any ring, O(n log log n)
 template <class T>
 vector<T> gcd_convolution(vector<T> a, vector<T> b, bool lcm = false) {
     divisor_transform(a, !lcm);
@@ -283,7 +286,8 @@ optional<pll> diophantine(ll a, ll b, ll c) {
     return pll((ll)(((__int128)c - (__int128)b * y) / a), y);
 }
 
-// solves x = b1 (mod m1), x = b2 (mod m2), m1, m2 > 0: returns {x, lcm}, nullopt if none; the lcm must fit in ll, O(log m)
+// solves x = b1 (mod m1), x = b2 (mod m2), m1, m2 > 0: returns {x, lcm}, nullopt if none;
+// the lcm must fit in ll, O(log m)
 optional<pll> crt(ll b1, ll m1, ll b2, ll m2) {
     b1 = (b1 % m1 + m1) % m1;
     b2 = (b2 % m2 + m2) % m2;
@@ -305,7 +309,8 @@ optional<pll> crt(const vector<ll> &b, const vector<ll> &m) {
     return ans;
 }
 
-// solves a[i] * x = b[i] (mod m[i]) for every i: returns {x, M} meaning all solutions are x mod M, nullopt if none, O(n log m)
+// solves a[i] * x = b[i] (mod m[i]) for every i: returns {x, M} meaning all solutions are x mod M, nullopt if none,
+// O(n log m)
 optional<pll> super_crt(const vector<ll> &a, const vector<ll> &b, const vector<ll> &m) {
     pll ans = {0, 1};
     for (int i = 0; i < (int)a.size(); i++) {
@@ -467,7 +472,8 @@ ll floor_sum(ll n, ll m, ll a, ll b) {
     return ans;
 }
 
-// a square root of a mod the prime p (Tonelli-Shanks), the smaller of the two; -1 if none exists; p below 2^31, O(log^2 p)
+// a square root of a mod the prime p (Tonelli-Shanks), the smaller of the two; -1 if none exists;
+// p below 2^31, O(log^2 p)
 ll mod_sqrt(ll a, ll p) {
     a = (a % p + p) % p;
     if (a == 0 || p == 2) return a;
@@ -679,7 +685,8 @@ ll count_primes(ll n) {
 }
 
 // sum of phi(i) for i in [1, n] mod mod, n up to about 1e11, O(n^(2/3)) time and memory
-// S(x) = x(x + 1) / 2 - sum over d in [2, x] of S(x / d), since every pair i <= j <= x has gcd(i, j) = j / d for some d;
+// S(x) = x(x + 1) / 2 - sum over d in [2, x] of S(x / d),
+// since every pair i <= j <= x has gcd(i, j) = j / d for some d;
 // S is sieved up to n^(2/3), and big[i] = S(n / i) above that is filled for decreasing i (n / (i d) = (n / i) / d)
 ll totient_sum(ll n, ll mod) {
     if (n < 1) return 0;
@@ -705,7 +712,8 @@ ll totient_sum(ll n, ll mod) {
 }
 
 // a gcd of the Gaussian integers x = x.first + x.second i and y (unique up to the units 1, i, -1, -i); Euclid with the
-// quotient rounded to the nearest Gaussian integer, so the remainder's norm at most halves; components up to ~1e18, O(log)
+// quotient rounded to the nearest Gaussian integer, so the remainder's norm at most halves;
+// components up to ~1e18, O(log)
 pll gaussian_gcd(pll x, pll y) {
     auto rdiv = [](__int128 a, __int128 b) {  // nearest integer to a / b for b > 0
         __int128 t = 2 * a + b, q = t / (2 * b);
@@ -724,7 +732,8 @@ pll gaussian_gcd(pll x, pll y) {
 
 // all pairs (a, b) of integers >= 0 with a^2 + b^2 = n, sorted, n up to ~1e18; uses factorize and gaussian_gcd above
 // a + bi runs over products of (1 + i)^e2, q^(e / 2) for each prime q = 3 mod 4 (none if e is odd) and, for each prime
-// p = 1 mod 4, pi^t conj(pi)^(e - t) with pi = gcd(p, x + i), x^2 = -1 mod p; then over the 4 units, O(n^(1/4) + answers)
+// p = 1 mod 4, pi^t conj(pi)^(e - t) with pi = gcd(p, x + i), x^2 = -1 mod p;
+// then over the 4 units, O(n^(1/4) + answers)
 vector<pll> two_square_sum(ll n) {
     if (n == 0) return {{0, 0}};
     auto mul = [](pll x, pll y) {

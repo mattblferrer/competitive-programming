@@ -10,7 +10,8 @@ using ld = long double;
 using pll = pair<ll, ll>;
 const ll INF = 2e18;
 
-// minimum spanning forest (Kruskal), edges are {w, u, v}; returns {total weight, indices of the chosen edges}, O(E log E)
+// minimum spanning forest (Kruskal), edges are {w, u, v}; returns {total weight, indices of the chosen edges},
+// O(E log E)
 pair<ll, vector<int>> kruskal(int n, const vector<array<ll, 3>> &edges) {
     vector<int> p(n), order(edges.size()), chosen;
     iota(p.begin(), p.end(), 0);

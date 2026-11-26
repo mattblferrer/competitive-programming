@@ -15,11 +15,13 @@
 //   stirling2_ntt         Stirling numbers of the second kind S(n, k), k = 0..n, mod an NTT prime, O(n log n)
 //   partition_ntt         partition numbers p(0..n) mod an NTT prime, O(n log n)
 //   subset_sum_counts     number of sub-multisets of s with each sum t = 0..T, mod an NTT prime, O(|s| + T log T)
-//   shift_samples         h(a), ..., h(a + m - 1) from h(0), ..., h(n - 1) (shift of sampling points), O((n + m) log(n + m))
+//   shift_samples         h(a), ..., h(a + m - 1) from h(0), ..., h(n - 1) (shift of sampling points),
+//                         O((n + m) log(n + m))
 //   FactorialMod          n! mod an NTT prime for any n < MOD, block table of (iV)!, O(V) per query
 //   lagrange              value at x of the unique polynomial through (xs[i], ys[i])
 //   lagrange_consecutive  value at x of the unique polynomial with p(i) = ys[i] for i = 0..n-1
-//   sum_exp_poly          sum of r^i i^d over 0 <= i < n, or over all i >= 0 (n = -1, r != 1), O(d + (d / log d) log mod)
+//   sum_exp_poly          sum of r^i i^d over 0 <= i < n, or over all i >= 0 (n = -1, r != 1),
+//                         O(d + (d / log d) log mod)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -41,7 +43,8 @@ ll binexp(ll a, ll b, ll mod) {
 }
 
 // copy of mod_sqrt from number_theory.cpp, for Poly::sqrt; left out of the notebook (see Number Theory)
-// a square root of a mod the prime p (Tonelli-Shanks), the smaller of the two; -1 if none exists; p below 2^31, O(log^2 p)
+// a square root of a mod the prime p (Tonelli-Shanks), the smaller of the two; -1 if none exists;
+// p below 2^31, O(log^2 p)
 ll mod_sqrt(ll a, ll p) {
     a = (a % p + p) % p;
     if (a == 0 || p == 2) return a;
@@ -87,12 +90,12 @@ ll mod_sqrt(ll a, ll p) {
 //   (754'974'721, 11), 2^24
 //   (1'004'535'809, 3), 2^21
 //   (2'013'265'921, 31), 2^27
-//   ntt(a, invert)   in-place NTT (inverse if invert) of a vector<ll> or vector<unsigned> (half the memory) with values in
-//                    [0, MOD); a.size() must be a power of 2 up to the max size; the forward result is in bit-reversed
-//                    order and the inverse expects that order (fine for pointwise products), O(n log n)
+//   ntt(a, invert)   in-place NTT (inverse if invert) of a vector<ll> or vector<unsigned> (half the memory) with values
+//                    in [0, MOD); a.size() must be a power of 2 up to the max size; the forward result is in
+//                    bit-reversed order and the inverse expects that order (fine for pointwise products), O(n log n)
 //   multiply(a, b)   product of polynomials a and b mod MOD, O((n + m) log(n + m))
-//   multiply_large(a, b)   multiply for products longer than the max size, in blocks; pass a and b with move to save memory,
-//                          O((n + m) log(max size) + n * m / max size)
+//   multiply_large(a, b)   multiply for products longer than the max size, in blocks; pass a and b with move to save
+//                          memory, O((n + m) log(max size) + n * m / max size)
 template <ll MOD, ll ROOT>
 struct NTT {
     template <class T>
@@ -379,7 +382,8 @@ vector<ll> poly_prod(const vector<vector<ll>> &f) {
     return go(go, 0, f.size());
 }
 
-// long division of real polynomials: returns {quotient, remainder} of a / b; the leading coefficient of b must be nonzero, O(nm)
+// long division of real polynomials: returns {quotient, remainder} of a / b;
+// the leading coefficient of b must be nonzero, O(nm)
 pair<vector<ld>, vector<ld>> poly_divide_real(vector<ld> a, const vector<ld> &b) {
     int n = a.size(), m = b.size();
     if (n < m) return {{}, a};
@@ -513,7 +517,8 @@ vector<ll> bell_ntt(int n) {
 }
 
 // a(x + c) mod MOD (Taylor shift), MOD a prime > deg a, using NTT above
-// b[k] k! = sum over i >= k of a[i] i! c^(i - k) / (i - k)!, one convolution with the second factor reversed, O(n log n)
+// b[k] k! = sum over i >= k of a[i] i! c^(i - k) / (i - k)!, one convolution with the second factor reversed,
+// O(n log n)
 template <ll MOD, ll ROOT>
 vector<ll> taylor_shift(vector<ll> a, ll c) {
     int n = a.size();
@@ -679,7 +684,8 @@ ll lagrange_consecutive(const vector<ll> &ys, ll x, ll mod) {
     for (int i = n - 1; i > 0; i--) inv_fac[i - 1] = inv_fac[i] * i % mod;
     ll ans = 0;
     for (int i = 0; i < n; i++) {
-        ll term = (ys[i] % mod + mod) % mod * pre[i] % mod * suf[i + 1] % mod * inv_fac[i] % mod * inv_fac[n - 1 - i] % mod;
+        ll term = (ys[i] % mod + mod) % mod * pre[i] % mod * suf[i + 1] % mod * inv_fac[i] % mod
+                  * inv_fac[n - 1 - i] % mod;
         if ((n - 1 - i) & 1) term = (mod - term) % mod;
         ans = (ans + term) % mod;
     }

@@ -2,7 +2,8 @@
 //   Fenwick            Fenwick tree (0-indexed)
 //   RangeFenwick       Fenwick tree with range update, point query (0-indexed)
 //   Fenwick2D          2D Fenwick tree over points known in advance: point add, rectangle sum
-//   rect_add_rect_sum  offline rectangle adds, then rectangle sums, mod a modulus (sweep with Fenwick trees), O((n + q) log n)
+//   rect_add_rect_sum  offline rectangle adds, then rectangle sums, mod a modulus (sweep with Fenwick trees),
+//                      O((n + q) log n)
 
 #include <bits/stdc++.h>
 using namespace std;

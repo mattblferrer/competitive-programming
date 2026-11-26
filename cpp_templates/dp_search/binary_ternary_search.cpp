@@ -9,7 +9,8 @@ using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
 
-// smallest x in [lo, hi] minimizing f, O(log(hi - lo)) calls to f; f must fall, then rise, and may only be flat at its minimum
+// smallest x in [lo, hi] minimizing f, O(log(hi - lo)) calls to f;
+// f must fall, then rise, and may only be flat at its minimum
 // to maximize, pass a function returning -f(x)
 template <class F>
 ll ternary_search_int(ll lo, ll hi, F f) {

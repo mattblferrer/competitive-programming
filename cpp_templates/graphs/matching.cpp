@@ -19,7 +19,8 @@ const ll INF = 2e18;
 //   bfs()                 build the layers; true if an augmenting path exists, O(V + E)
 //   dfs(u)                try to augment from left u along the layers, O(V + E) per phase
 //   max_matching()        size of the maximum matching, O(E sqrt V)
-//   min_vertex_cover()    minimum vertex cover as {left vertices, right vertices} (Konig); call max_matching first, O(V + E)
+//   min_vertex_cover()    minimum vertex cover as {left vertices, right vertices} (Konig);
+//                         call max_matching first, O(V + E)
 struct HopcroftKarp {
     int n, m;
     vector<vector<int>> adj;

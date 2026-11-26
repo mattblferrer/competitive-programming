@@ -89,12 +89,12 @@ ll binexp(ll a, ll b, ll mod) {
 //   (754'974'721, 11), 2^24
 //   (1'004'535'809, 3), 2^21
 //   (2'013'265'921, 31), 2^27
-//   ntt(a, invert)   in-place NTT (inverse if invert) of a vector<ll> or vector<unsigned> (half the memory) with values in
-//                    [0, MOD); a.size() must be a power of 2 up to the max size; the forward result is in bit-reversed
-//                    order and the inverse expects that order (fine for pointwise products), O(n log n)
+//   ntt(a, invert)   in-place NTT (inverse if invert) of a vector<ll> or vector<unsigned> (half the memory) with values
+//                    in [0, MOD); a.size() must be a power of 2 up to the max size; the forward result is in
+//                    bit-reversed order and the inverse expects that order (fine for pointwise products), O(n log n)
 //   multiply(a, b)   product of polynomials a and b mod MOD, O((n + m) log(n + m))
-//   multiply_large(a, b)   multiply for products longer than the max size, in blocks; pass a and b with move to save memory,
-//                          O((n + m) log(max size) + n * m / max size)
+//   multiply_large(a, b)   multiply for products longer than the max size, in blocks; pass a and b with move to save
+//                          memory, O((n + m) log(max size) + n * m / max size)
 template <ll MOD, ll ROOT>
 struct NTT {
     template <class T>

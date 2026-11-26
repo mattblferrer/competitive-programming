@@ -33,7 +33,8 @@ pair<int, int> find_cycle(T x0, F f) {
 // indices of a longest strictly increasing subsequence of a, O(n log n)
 vector<int> lis(const vector<ll> &a) {
     int n = a.size();
-    vector<int> seq, prev(n, -1), ans;  // seq[k] = index of the smallest tail of an increasing subsequence of length k + 1
+    // seq[k] = index of the smallest tail of an increasing subsequence of length k + 1
+    vector<int> seq, prev(n, -1), ans;
     for (int i = 0; i < n; i++) {
         int k = partition_point(seq.begin(), seq.end(), [&](int j) { return a[j] < a[i]; }) - seq.begin();
         if (k) prev[i] = seq[k - 1];
@@ -71,7 +72,8 @@ int int_to_day(int jd) { return jd % 7; }
 // current CPU time in seconds, O(1)
 double cur_time() { return (double)clock() / CLOCKS_PER_SEC; }
 
-// simulated annealing example: finds a permutation of 1..n with a large sum of |p[i] - p[i + 1]|, runs for the given seconds
+// simulated annealing example: finds a permutation of 1..n with a large sum of |p[i] - p[i + 1]|,
+// runs for the given seconds
 // edit the initial solution, the mutation and the delta for other problems; returns the best score found
 ll simulated_annealing(int n, double seconds) {
     if (n < 2) return 0;

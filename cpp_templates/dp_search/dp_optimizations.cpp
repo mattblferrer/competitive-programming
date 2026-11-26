@@ -5,8 +5,10 @@
 //   dnc_opt                     divide and conquer DP optimization
 //   knuth_opt                   Knuth optimization, O(n^2)
 //   min_plus_convex_convex      c[k] = min of a[i] + b[j] over i + j = k for convex a and b (merge of slopes), O(n + m)
-//   min_plus_convex_arbitrary   c[k] = min of a[i] + b[j] over i + j = k for convex a and any b (monotone minima), O((n + m) log(n + m))
-//   min_plus_concave_arbitrary  c[k] = min of a[i] + b[j] over i + j = k for concave a and any b, O((n + m) log^2 (n + m))
+//   min_plus_convex_arbitrary   c[k] = min of a[i] + b[j] over i + j = k for convex a and any b (monotone minima),
+//                               O((n + m) log(n + m))
+//   min_plus_concave_arbitrary  c[k] = min of a[i] + b[j] over i + j = k for concave a and any b,
+//                               O((n + m) log^2 (n + m))
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -201,7 +203,8 @@ struct PersistentLiChao {
     }
 };
 
-// divide and conquer DP optimization: computes cur[j] = min over k <= j of prev[k] + cost(k, j) for j in [l, r], O(n log n) cost calls
+// divide and conquer DP optimization: computes cur[j] = min over k <= j of prev[k] + cost(k, j) for j in [l, r],
+// O(n log n) cost calls
 // requires the optimal k to be non-decreasing in j (e.g. cost satisfies the quadrangle inequality)
 // call with k_lo = 0, k_hi = n - 1, l = 0, r = n - 1
 template <class Cost>
@@ -219,7 +222,8 @@ void dnc_opt(const vector<ll> &prev, vector<ll> &cur, Cost cost, int k_lo, int k
     dnc_opt(prev, cur, cost, best, k_hi, mid + 1, r);
 }
 
-// Knuth optimization, O(n^2): dp[i][j] = min over i <= k < j of dp[i][k] + dp[k + 1][j] + cost(i, j), dp[i][i] = base(i)
+// Knuth optimization, O(n^2): dp[i][j] = min over i <= k < j of dp[i][k] + dp[k + 1][j] + cost(i, j),
+// dp[i][i] = base(i)
 // requires opt[i][j - 1] <= opt[i][j] <= opt[i + 1][j]; returns the full dp table, the answer is usually dp[0][n - 1]
 template <class Cost, class Base>
 vector<vector<ll>> knuth_opt(int n, Cost cost, Base base) {

@@ -15,7 +15,8 @@ const ll INF = 2e18;
 //   connect(u, v, cap, cost)  add directed edge u -> v, returns edge id, O(1)
 //   init_potentials(s)        Bellman-Ford from s, only needed when some cost is negative, O(VE)
 //   dijkstra(s)               shortest paths in reduced costs, O(E log V)
-//   run(s, t, limit)          push up to limit units from s to t, returns {flow, cost}, O(F E log V) (+ O(VE) if costs are negative)
+//   run(s, t, limit)          push up to limit units from s to t, returns {flow, cost},
+//                             O(F E log V) (+ O(VE) if costs are negative)
 struct MinCostFlow {
     struct Edge { int to; ll cap, f, cost; };
     int n;

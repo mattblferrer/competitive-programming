@@ -13,7 +13,8 @@
 //   RollingHash           polynomial rolling hash mod 2^61 - 1 with a random base
 //   manacher              Manacher's algorithm, O(n); returns {d1, d2}
 //   SuffixAutomaton       suffix automaton over lowercase letters
-//   lyndon_factorization  Lyndon factorization (Duval): boundaries of the factors, which are nonincreasing Lyndon words, O(n)
+//   lyndon_factorization  Lyndon factorization (Duval): boundaries of the factors,
+//                         which are nonincreasing Lyndon words, O(n)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -449,7 +450,8 @@ struct Eertree {
 //   get(l, r)        hash of s[l..r), O(1)
 struct RollingHash {
     static constexpr unsigned long long MOD = (1ULL << 61) - 1;
-    static inline unsigned long long base = mt19937_64(chrono::steady_clock::now().time_since_epoch().count())() % (MOD - 1000) + 500;
+    static inline unsigned long long base =
+        mt19937_64(chrono::steady_clock::now().time_since_epoch().count())() % (MOD - 1000) + 500;
     vector<unsigned long long> h, pw;
 
     static unsigned long long mul(unsigned long long a, unsigned long long b) {

@@ -7,7 +7,8 @@ using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
 
-// exact cover with dancing links (Algorithm X): choose rows so every column is covered exactly once; exponential in the worst case
+// exact cover with dancing links (Algorithm X): choose rows so every column is covered exactly once;
+// exponential in the worst case
 //   DLX(cols)          empty matrix with columns 0..cols-1, O(cols)
 //   add_row(id, cs)    add a row covering the distinct columns cs; id is what solutions report, O(|cs|)
 //   cover(c)           remove internal column c and the rows using it

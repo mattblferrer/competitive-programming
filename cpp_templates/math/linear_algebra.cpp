@@ -2,13 +2,17 @@
 //   binexp                         a^b mod mod, O(log b)
 //   gauss_jordan                   reduces a to reduced row echelon form using its first cols columns, returns the rank
 //   solve_linear                   solves A x = b; free variables are set to 0; returns false if there is no solution
-//   gauss_jordan_mod               reduces a to reduced row echelon form mod a prime p < 2^31 using its first cols columns
-//   solve_linear_mod               solves A x = b mod a prime p < 2^31; free variables are set to 0; also a basis of A x = 0
-//   inverse_mod                    inverse of a square matrix mod a prime p < 2^31; returns false if it is singular, O(n^3)
+//   gauss_jordan_mod               reduces a to reduced row echelon form mod a prime p < 2^31
+//                                  using its first cols columns
+//   solve_linear_mod               solves A x = b mod a prime p < 2^31; free variables are set to 0;
+//                                  also a basis of A x = 0
+//   inverse_mod                    inverse of a square matrix mod a prime p < 2^31;
+//                                  returns false if it is singular, O(n^3)
 //   solve_xor                      solves A x = b over GF(2) (XOR equations) with m <= N variables
 //   det_mod                        determinant of a square matrix mod a prime, O(n^3)
 //   count_spanning_trees           number of spanning trees of a multigraph mod a prime (Kirchhoff), O(n^3)
-//   count_spanning_trees_directed  number of spanning arborescences rooted at r of a directed multigraph mod a prime, O(n^3)
+//   count_spanning_trees_directed  number of spanning arborescences rooted at r of a directed multigraph mod a prime,
+//                                  O(n^3)
 //   charpoly_mod                   characteristic polynomial det(xI - A) mod a prime (Hessenberg form), O(n^3)
 //   BitMatrix                      n x m matrix over GF(2) with rows packed into 64-bit words; gauss gives the RREF
 //   det_mod2                       determinant of a square matrix over GF(2), O(n^3 / 64)
@@ -112,7 +116,8 @@ int gauss_jordan_mod(vector<vector<ll>> &a, int cols, ll p, ll &det) {
 }
 
 // solves A x = b mod a prime p < 2^31; free variables are set to 0
-// returns -1 if there is no solution, else the number of free variables (there are p^that solutions), O(n * m * min(n, m))
+// returns -1 if there is no solution, else the number of free variables (there are p^that solutions),
+// O(n * m * min(n, m))
 // basis gets one solution of A x = 0 per free variable: every solution is x plus a combination of them
 int solve_linear_mod(vector<vector<ll>> a, const vector<ll> &b, ll p, vector<ll> &x, vector<vector<ll>> &basis) {
     int n = a.size(), m = n ? a[0].size() : 0;
@@ -152,8 +157,10 @@ bool inverse_mod(vector<vector<ll>> a, ll p, vector<vector<ll>> &inv) {
     return true;
 }
 
-// solves A x = b over GF(2) (XOR equations) with m <= N variables; row i of A is the bitset a[i]; free variables are set to 0
-// returns -1 if there is no solution, else the number of free variables (there are 2^that solutions), O(n * m * min(n, m) / 64)
+// solves A x = b over GF(2) (XOR equations) with m <= N variables; row i of A is the bitset a[i];
+// free variables are set to 0
+// returns -1 if there is no solution, else the number of free variables (there are 2^that solutions),
+// O(n * m * min(n, m) / 64)
 template <size_t N>
 int solve_xor(vector<bitset<N>> a, vector<int> b, int m, bitset<N> &x) {
     int n = a.size(), rank = 0;
@@ -325,7 +332,8 @@ bool inverse_mod2(const BitMatrix &a, BitMatrix &inv) {
 }
 
 // solves A x = b over GF(2), using BitMatrix above: false if there is no solution, else x is one solution (free
-// variables 0) and the rows of kernel are a basis of A x = 0 (all solutions are x + any sum of them), O(n * m * rank / 64)
+// variables 0) and the rows of kernel are a basis of A x = 0 (all solutions are x + any sum of them),
+// O(n * m * rank / 64)
 bool solve_mod2(const BitMatrix &a, const vector<int> &b, vector<int> &x, BitMatrix &kernel) {
     int n = a.n, m = a.m;
     BitMatrix aug(n, m + 1);  // [A | b]
@@ -369,7 +377,8 @@ BitMatrix mul_mod2(const BitMatrix &a, const BitMatrix &b) {
 //   contains(x)   true if x is the XOR of some subset of the inserted values, O(BITS)
 //   max_xor(x)    largest value of x ^ (XOR of a subset), O(BITS)
 //   size()        rank of the basis; there are 2^size() distinct subset XORs, O(1)
-//   kth(k)        k-th smallest distinct subset XOR (0-indexed, the empty subset gives 0), -1 if k is too large, O(BITS^2)
+//   kth(k)        k-th smallest distinct subset XOR (0-indexed, the empty subset gives 0), -1 if k is too large,
+//                 O(BITS^2)
 template <int BITS = 60>
 struct XorBasis {
     array<ll, BITS> b{};  // b[i] has highest set bit i, or is 0

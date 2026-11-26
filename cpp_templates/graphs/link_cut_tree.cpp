@@ -17,7 +17,8 @@ using pll = pair<ll, ll>;
 //   link(u, v)        add the edge u - v; false if they were already connected, O(log n) amortized
 //   cut(u, v)         remove the edge u - v; false if it doesn't exist, O(log n) amortized
 //   set(v, x)         set the value of v, O(log n) amortized
-//   path_sum(u, v)    sum of the values on the path u - v; re-roots the tree at u; u and v must be connected, O(log n) amortized
+//   path_sum(u, v)    sum of the values on the path u - v; re-roots the tree at u;
+//                     u and v must be connected, O(log n) amortized
 //   subtree_sum(v, p) sum of the values in the subtree of v when the tree is rooted at p (p = v: the whole tree);
 //                     re-roots the tree at p; v and p must be connected, O(log n) amortized
 //   reroot(v)         make v the root of its tree, O(log n) amortized

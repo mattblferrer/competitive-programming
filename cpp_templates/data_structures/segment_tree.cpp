@@ -211,7 +211,8 @@ ll rect_union_area(const vector<array<ll, 4>> &rects) {
             pll mc = seg.query(0, m);
             area += (x - events[i - 1][0]) * (total - (mc.first == 0 ? mc.second : 0));
         }
-        int lo = lower_bound(ys.begin(), ys.end(), d) - ys.begin(), hi = lower_bound(ys.begin(), ys.end(), u) - ys.begin();
+        int lo = lower_bound(ys.begin(), ys.end(), d) - ys.begin(),
+            hi = lower_bound(ys.begin(), ys.end(), u) - ys.begin();
         seg.update(lo, hi, w);
     }
     return area;
