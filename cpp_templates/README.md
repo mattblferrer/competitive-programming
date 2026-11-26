@@ -81,6 +81,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `DynamicSegTree` | implicit segment tree on any integer range [lo, hi) |
 | `SegTreeBeats` | segment tree beats on [l, r): range chmin, chmax and add with sum, max and min queries |
 | `SortableSegTree` | sequence of (key, value) pairs: point set, sort a range by key, fold a range |
+| `MergeSegTree` | sparse segment trees sharing a node pool: point add, merge, split at a position, query on [l, r) |
 
 ### [`data_structures/wavelet.cpp`](data_structures/wavelet.cpp)
 

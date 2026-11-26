@@ -10,6 +10,7 @@
 //   DynamicSegTree  implicit segment tree on any integer range [lo, hi)
 //   SegTreeBeats    segment tree beats on [l, r): range chmin, chmax and add with sum, max and min queries
 //   SortableSegTree sequence of (key, value) pairs: point set, sort a range by key, fold a range
+//   MergeSegTree    sparse segment trees sharing a node pool: point add, merge, split at a position, query on [l, r)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -598,5 +599,89 @@ struct SortableSegTree {
         cut(l);
         cut(r);
         return outer.query(l, r);
+    }
+};
+
+// segment tree merging: many sparse segment trees over positions [0, n) that share one node pool; a tree is its root
+// index and 0 is the empty tree. Merging trees with N nodes in total costs O(N) overall (each merged-away node is
+// gone), so building one tree per vertex and merging children into parents is O(n log n). Equal positions combine with
+// M::op (counts add up for a sum monoid), so op should be commutative if the order of the merges is not fixed
+//   MergeSegTree(n)    empty pool, O(1)
+//   add(x, p, v)       a[p] = op(a[p], v) in tree x (0 starts a new tree); returns the root, O(log n)
+//   merge(x, y)        tree with a[p] = op(x's a[p], y's a[p]); x and y can't be used afterwards, O(common nodes)
+//   split(x, k)        {positions < k, positions >= k} of tree x, which can't be used afterwards, O(log n)
+//   query(x, l, r)     op over [l, r) in tree x, O(log n)
+template <class M>
+struct MergeSegTree {
+    using T = typename M::T;
+    struct Node { T val; int l, r; };
+    int n;
+    vector<Node> t;
+
+    MergeSegTree(int n): n(n), t(1, Node{M::id(), 0, 0}) {}
+
+    int node() {
+        t.push_back(Node{M::id(), 0, 0});
+        return t.size() - 1;
+    }
+
+    void pull(int x) { t[x].val = M::op(t[t[x].l].val, t[t[x].r].val); }
+
+    int add(int x, int p, const T &v) { return add(x, p, v, 0, n); }
+
+    int add(int x, int p, const T &v, int lo, int hi) {
+        if (!x) x = node();
+        if (hi - lo == 1) {
+            t[x].val = M::op(t[x].val, v);
+            return x;
+        }
+        int m = (lo + hi) / 2;
+        if (p < m) {
+            int c = add(t[x].l, p, v, lo, m);
+            t[x].l = c;
+        } else {
+            int c = add(t[x].r, p, v, m, hi);
+            t[x].r = c;
+        }
+        pull(x);
+        return x;
+    }
+
+    int merge(int x, int y) { return merge(x, y, 0, n); }
+
+    int merge(int x, int y, int lo, int hi) {
+        if (!x || !y) return x | y;
+        if (hi - lo == 1) {
+            t[x].val = M::op(t[x].val, t[y].val);
+            return x;
+        }
+        int m = (lo + hi) / 2;
+        t[x].l = merge(t[x].l, t[y].l, lo, m);
+        t[x].r = merge(t[x].r, t[y].r, m, hi);
+        pull(x);
+        return x;
+    }
+
+    pair<int, int> split(int x, int k) { return split(x, k, 0, n); }
+
+    pair<int, int> split(int x, int k, int lo, int hi) {
+        if (!x) return {0, 0};
+        if (k <= lo) return {0, x};
+        if (k >= hi) return {x, 0};
+        int m = (lo + hi) / 2, y = node();
+        auto [a, b] = split(t[x].l, k, lo, m);
+        auto [c, d] = split(t[x].r, k, m, hi);
+        t[x].l = a, t[x].r = c, t[y].l = b, t[y].r = d;
+        pull(x), pull(y);
+        return {x, y};
+    }
+
+    T query(int x, int l, int r) const { return query(x, l, r, 0, n); }
+
+    T query(int x, int l, int r, int lo, int hi) const {
+        if (!x || r <= lo || hi <= l) return M::id();
+        if (l <= lo && hi <= r) return t[x].val;
+        int m = (lo + hi) / 2;
+        return M::op(query(t[x].l, l, r, lo, m), query(t[x].r, l, r, m, hi));
     }
 };
