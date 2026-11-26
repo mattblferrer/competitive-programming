@@ -288,6 +288,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | --- | --- |
 | `directed_cycle` | edge ids of some directed cycle in order, empty if the graph is acyclic |
 | `undirected_cycle` | some cycle of an undirected multigraph as {vertices, edge ids}, both empty if it is a forest |
+| `FunctionalGraph` | cycles, tails and depths of v -> f[v]; f^k(v) and the distance from u to v, O(log n) |
 
 ### [`graphs/triangles.cpp`](graphs/triangles.cpp)
 
