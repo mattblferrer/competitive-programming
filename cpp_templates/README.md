@@ -3,7 +3,7 @@
 Every top-level struct and function in this folder, taken from the `// Contents` block at the top of each file.
 Each folder is one chapter of the notebook; the contest template `new_file.cpp` sits at the top level for quick access.
 
-- [Contest](#contest): [`new_file.cpp`](new_file.cpp), [`stress_gen.cpp`](contest/stress_gen.cpp), [`safe_hash.cpp`](contest/safe_hash.cpp)
+- [Contest](#contest): [`new_file.cpp`](new_file.cpp), [`stress_gen.cpp`](contest/stress_gen.cpp), [`safe_hash.cpp`](contest/safe_hash.cpp), [`interactor.cpp`](contest/interactor.cpp), [`interact.py`](contest/interact.py)
 - [Data Structures](#data-structures): [`dsu.cpp`](data_structures/dsu.cpp), [`fenwick.cpp`](data_structures/fenwick.cpp), [`sparse_table.cpp`](data_structures/sparse_table.cpp), [`segment_tree.cpp`](data_structures/segment_tree.cpp), [`wavelet.cpp`](data_structures/wavelet.cpp), [`treap.cpp`](data_structures/treap.cpp), [`offline.cpp`](data_structures/offline.cpp), [`misc.cpp`](data_structures/misc.cpp), [`monoids.cpp`](data_structures/monoids.cpp), [`persistent_segment_tree.cpp`](data_structures/persistent_segment_tree.cpp)
 - [Graphs](#graphs): [`shortest_paths.cpp`](graphs/shortest_paths.cpp), [`scc.cpp`](graphs/scc.cpp), [`biconnected.cpp`](graphs/biconnected.cpp), [`euler.cpp`](graphs/euler.cpp), [`spanning_trees.cpp`](graphs/spanning_trees.cpp), [`dominator_tree.cpp`](graphs/dominator_tree.cpp), [`np_hard.cpp`](graphs/np_hard.cpp), [`k_shortest_paths.cpp`](graphs/k_shortest_paths.cpp), [`flows.cpp`](graphs/flows.cpp), [`min_cost_flow.cpp`](graphs/min_cost_flow.cpp), [`matching.cpp`](graphs/matching.cpp), [`trees.cpp`](graphs/trees.cpp), [`rerooting.cpp`](graphs/rerooting.cpp), [`link_cut_tree.cpp`](graphs/link_cut_tree.cpp), [`euler_tour_tree.cpp`](graphs/euler_tour_tree.cpp), [`cycles.cpp`](graphs/cycles.cpp), [`triangles.cpp`](graphs/triangles.cpp)
 - [Strings](#strings): [`strings.cpp`](strings/strings.cpp)
@@ -37,6 +37,20 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `SafeMap` | unordered_map using SafeHash |
 | `SafeSet` | unordered_set using SafeHash |
 | `Zobrist` | random 64-bit label per key: XOR / sum of labels hash sets / multisets, with prefix hashes |
+
+### [`contest/interactor.cpp`](contest/interactor.cpp)
+
+| Name | Description |
+| --- | --- |
+| `rnd` | random integer in [lo, hi], O(1) |
+| `wrong` | reject the solution: print the reason to stderr and exit with code 1 |
+| `main` | example interactor (guess a hidden number with "? y" queries), for interact.py |
+
+### [`contest/interact.py`](contest/interact.py)
+
+Local runner for interactive problems: `python interact.py SOLUTION INTERACTOR [FIRST_SEED [LAST_SEED]]` joins the
+solution to the interactor through pipes, runs the seeds in order and stops at the first one that is rejected,
+crashes or times out, printing the transcript of the exchange.
 
 ## Data Structures
 
