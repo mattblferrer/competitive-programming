@@ -7,7 +7,7 @@ Each folder is one chapter of the notebook; the contest template `new_file.cpp` 
 - [Data Structures](#data-structures): [`dsu.cpp`](data_structures/dsu.cpp), [`fenwick.cpp`](data_structures/fenwick.cpp), [`sparse_table.cpp`](data_structures/sparse_table.cpp), [`segment_tree.cpp`](data_structures/segment_tree.cpp), [`wavelet.cpp`](data_structures/wavelet.cpp), [`treap.cpp`](data_structures/treap.cpp), [`offline.cpp`](data_structures/offline.cpp), [`misc.cpp`](data_structures/misc.cpp), [`monoids.cpp`](data_structures/monoids.cpp), [`persistent_segment_tree.cpp`](data_structures/persistent_segment_tree.cpp)
 - [Graphs](#graphs): [`shortest_paths.cpp`](graphs/shortest_paths.cpp), [`scc.cpp`](graphs/scc.cpp), [`biconnected.cpp`](graphs/biconnected.cpp), [`euler.cpp`](graphs/euler.cpp), [`spanning_trees.cpp`](graphs/spanning_trees.cpp), [`dominator_tree.cpp`](graphs/dominator_tree.cpp), [`np_hard.cpp`](graphs/np_hard.cpp), [`k_shortest_paths.cpp`](graphs/k_shortest_paths.cpp), [`flows.cpp`](graphs/flows.cpp), [`min_cost_flow.cpp`](graphs/min_cost_flow.cpp), [`matching.cpp`](graphs/matching.cpp), [`trees.cpp`](graphs/trees.cpp), [`rerooting.cpp`](graphs/rerooting.cpp), [`link_cut_tree.cpp`](graphs/link_cut_tree.cpp), [`euler_tour_tree.cpp`](graphs/euler_tour_tree.cpp), [`cycles.cpp`](graphs/cycles.cpp), [`triangles.cpp`](graphs/triangles.cpp)
 - [Strings](#strings): [`strings.cpp`](strings/strings.cpp)
-- [Math](#math): [`modint.cpp`](math/modint.cpp), [`number_theory.cpp`](math/number_theory.cpp), [`combinatorics.cpp`](math/combinatorics.cpp), [`matrix.cpp`](math/matrix.cpp), [`linear_algebra.cpp`](math/linear_algebra.cpp), [`fft.cpp`](math/fft.cpp), [`polynomial.cpp`](math/polynomial.cpp), [`bitmask.cpp`](math/bitmask.cpp), [`big_integer.cpp`](math/big_integer.cpp), [`hex_big_integer.cpp`](math/hex_big_integer.cpp), [`simplex.cpp`](math/simplex.cpp)
+- [Math](#math): [`modint.cpp`](math/modint.cpp), [`number_theory.cpp`](math/number_theory.cpp), [`combinatorics.cpp`](math/combinatorics.cpp), [`matrix.cpp`](math/matrix.cpp), [`linear_algebra.cpp`](math/linear_algebra.cpp), [`fft.cpp`](math/fft.cpp), [`polynomial.cpp`](math/polynomial.cpp), [`bitmask.cpp`](math/bitmask.cpp), [`big_integer.cpp`](math/big_integer.cpp), [`hex_big_integer.cpp`](math/hex_big_integer.cpp), [`int128.cpp`](math/int128.cpp), [`simplex.cpp`](math/simplex.cpp)
 - [Geometry](#geometry): [`geometry.cpp`](geometry/geometry.cpp)
 - [DP and Search](#dp-and-search): [`binary_ternary_search.cpp`](dp_search/binary_ternary_search.cpp), [`dp_optimizations.cpp`](dp_search/dp_optimizations.cpp)
 - [Miscellaneous](#miscellaneous): [`sat.cpp`](misc/sat.cpp), [`dlx.cpp`](misc/dlx.cpp), [`misc.cpp`](misc/misc.cpp)
@@ -523,6 +523,19 @@ crashes or times out, printing the transcript of the exchange.
 | `cross` | cross product, O(1) |
 | `norm` | squared length, O(1) |
 | `abs` | length, O(1) |
+### [`math/int128.cpp`](math/int128.cpp)
+
+| Name | Description |
+| --- | --- |
+| `to_string128` | decimal string of an __int128 (or unsigned __int128) |
+| `parse128` | __int128 from a decimal string with an optional sign |
+| `operator<<` | print __int128 and unsigned __int128 with cout or any ostream |
+| `operator>>` | read __int128 with cin or any istream |
+| `gcd128` | gcd of two __int128 (std::gcd needs gnu++ mode for __int128) |
+| `Frac` | exact fraction with __int128 numerator and denominator, always reduced |
+| `mulmod` | a * b mod m for m up to ~7.2e18 without __int128 (long double quotient), O(1) |
+| `powmod` | a^e mod m for m up to ~7.2e18, using mulmod, O(log e) |
+
 | `dist` | distance between a and b, O(1) |
 | `angle` | angle abc at b in radians, in [0, pi], O(1) |
 | `rotate` | rotate a counter-clockwise by d radians about pivot p, O(1) |
