@@ -103,6 +103,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `hilbert_order` | position of (x, y) along a Hilbert curve of order pow; requires x, y < 2^pow, O(pow) |
 | `mo` | Mo's algorithm with Hilbert ordering; queries are {l, r} over [l, r) |
 | `range_inversions` | number of inversions in each a[l, r), using mo above and a Fenwick tree |
+| `cdq_dominance` | offline 2D dominance sums with point updates (CDQ divide and conquer), O(n log^2 n) |
 
 ### [`data_structures/misc.cpp`](data_structures/misc.cpp)
 
@@ -552,6 +553,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | --- | --- |
 | `ternary_search_int` | smallest x in [lo, hi] minimizing f, O(log(hi - lo)) calls to f; f must fall, then rise |
 | `ternary_search_real` | x in [lo, hi] minimizing a real function that falls and then rises, O(iters) calls to f |
+| `parallel_binary_search` | for each query, the first step count after which check(i) holds, O(log steps) replays |
 
 ### [`dp_search/dp_optimizations.cpp`](dp_search/dp_optimizations.cpp)
 

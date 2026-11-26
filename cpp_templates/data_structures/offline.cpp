@@ -2,6 +2,7 @@
 //   hilbert_order     position of (x, y) along a Hilbert curve of order pow; requires x, y < 2^pow, O(pow)
 //   mo                Mo's algorithm with Hilbert ordering; queries are {l, r} over [l, r)
 //   range_inversions  number of inversions in each a[l, r), using mo above and a Fenwick tree
+//   cdq_dominance     offline 2D dominance sums with point updates (CDQ divide and conquer), O(n log^2 n)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -76,4 +77,52 @@ vector<ll> range_inversions(const vector<ll> &a, const vector<pair<int, int>> &q
         else inv -= r - 1 - l - below(rk[i] + 1), r--;
     };
     return mo(n, queries, add, remove, [&] { return inv; });
+}
+
+// offline 2D dominance sums with point updates, by CDQ divide and conquer over time: ops are in time order, an update
+// {x, y, w, false} adds w at (x, y) and a query {x, y, 0, true} gets the sum of w over earlier updates with x' < x and
+// y' < y (a rectangle is 4 such queries); returns each op's answer (0 for updates). The left half's updates are swept
+// into the right half's queries in x order with a Fenwick tree over the y's, O(n log^2 n)
+struct CDQOp {
+    ll x, y, w;
+    bool query;
+};
+vector<ll> cdq_dominance(const vector<CDQOp> &ops) {
+    int n = ops.size();
+    vector<ll> ys, ans(n);
+    for (auto &o : ops) if (!o.query) ys.push_back(o.y);
+    sort(ys.begin(), ys.end());
+    ys.erase(unique(ys.begin(), ys.end()), ys.end());
+    int m = ys.size();
+    vector<int> yi(n), ord(n), tmp(n);  // yi = number of update y's below op's y, which is an update's y rank
+    for (int i = 0; i < n; i++) yi[i] = lower_bound(ys.begin(), ys.end(), ops[i].y) - ys.begin(), ord[i] = i;
+    vector<ll> bit(m + 1);
+    auto upd = [&](int i, ll v) {
+        for (i++; i <= m; i += i & -i) bit[i] += v;
+    };
+    auto pre = [&](int i) {
+        ll s = 0;
+        for (; i > 0; i -= i & -i) s += bit[i];
+        return s;
+    };
+    auto solve = [&](auto &self, int l, int r) -> void {  // afterwards ord[l, r) is sorted by x
+        if (r - l <= 1) return;
+        int mid = (l + r) / 2, i = l;
+        self(self, l, mid);
+        self(self, mid, r);
+        for (int j = mid; j < r; j++) {
+            int b = ord[j];
+            if (!ops[b].query) continue;
+            for (; i < mid && ops[ord[i]].x < ops[b].x; i++) {
+                if (!ops[ord[i]].query) upd(yi[ord[i]], ops[ord[i]].w);
+            }
+            ans[b] += pre(yi[b]);
+        }
+        for (int t = l; t < i; t++) if (!ops[ord[t]].query) upd(yi[ord[t]], -ops[ord[t]].w);
+        merge(ord.begin() + l, ord.begin() + mid, ord.begin() + mid, ord.begin() + r, tmp.begin() + l,
+              [&](int a, int b) { return ops[a].x < ops[b].x; });
+        copy(tmp.begin() + l, tmp.begin() + r, ord.begin() + l);
+        };
+    solve(solve, 0, n);
+    return ans;
 }
