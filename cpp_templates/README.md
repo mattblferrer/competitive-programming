@@ -60,6 +60,8 @@ crashes or times out, printing the transcript of the exchange.
 | --- | --- |
 | `DSU` | disjoint set union with path compression and union by size |
 | `PotentialDSU` | DSU with potentials: value(u) - value(v) under constraints, for any additive group |
+| `PersistentArray` | persistent array (path-copied segment tree), O(log n) get and set |
+| `PersistentDSU` | persistent DSU: every merge makes a new version, O(log^2 n) per operation |
 | `RollbackDSU` | DSU with undo, example structure for OfflineDynamic below; D needs Op, snapshot() |
 | `SumDSU` | RollbackDSU with component sums and point adds, for OfflineDynamic |
 | `OfflineDynamic` | segment tree over time |
@@ -133,6 +135,7 @@ crashes or times out, printing the transcript of the exchange.
 | `MinStack` | stack with minimum query |
 | `MinQueue` | queue with minimum query |
 | `FoldDeque` | deque with the fold of a monoid over all its elements in order (two stacks) |
+| `PersistentQueue` | persistent queue: every push and pop makes a new version, O(1) memory per push |
 | `MisofTree` | multiset of integers in [0, 2^BITS) |
 | `RangeMode` | static range mode, online: a mode of a[l, r) and its count (sqrt decomposition), O(sqrt n) per query |
 
