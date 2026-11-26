@@ -25,74 +25,106 @@ COMPACT = True  # drop blank lines from the code (the template keeps its own)
 CONDENSE = True  # put lines that only close braces ("}", "};", "});") at the end of the line above
 INDENT = 2  # spaces per indent level in the printed code (the templates use 4); None keeps 4
 
-# (section title, [entries]); an entry is a .cpp path relative to cpp_templates/ (whose folders match these
-# chapters) or a .tex in content/, either bare or as (file, title). A .cpp entry can also be (file, title, [names])
-# to print only the components (structs/functions with their doc comments) that define those names, or
-# ["-name", ...] to print every component except those.
-# Templates not listed here are reported, not included.
+# (section title, [entries]); an entry is a .tex in content/, as (file, title), or a .cpp path relative to
+# cpp_templates/ (whose folders match these chapters) as (file, title, [names]). Only the components (structs,
+# functions, aliases with their doc comments) that define the listed names are printed, plus the file's
+# comment-only notes, so a new template stays out of the notebook until its name is added here. The contest
+# template (HEADER_FILE) is printed whole and takes no list. Template files not listed are reported, not included.
 SECTIONS = [
     ("Contest", [
         ("new_file.cpp", "Template"),
         ("contest.tex", "Commands and Checklist"),
-        ("contest/stress_gen.cpp", "Stress Test Generator"),
-        ("contest/safe_hash.cpp", "Safe Hash"),
+        # main reads the seed and prints one test
+        ("contest/stress_gen.cpp", "Stress Test Generator", ["rng", "rnd", "rnd_array", "rnd_perm", "rnd_string",
+                                                             "rnd_tree", "rnd_graph", "main"]),
+        ("contest/safe_hash.cpp", "Safe Hash", ["SafeHash", "SafeMap", "SafeSet"]),
     ]),
     ("Data Structures", [
         ("data_structures/dsu.cpp", "DSU", ["DSU", "RollbackDSU", "OfflineDynamic"]),
-        ("data_structures/fenwick.cpp", "Fenwick Trees", ["-Fenwick2D", "-rect_add_rect_sum"]),
-        ("data_structures/sparse_table.cpp", "Sparse Tables"),
-        ("data_structures/segment_tree.cpp", "Segment Trees", ["-MinCount", "-AddMinCount", "-rect_union_area",
-                                                                "-SortableSegTree"]),
-        ("data_structures/wavelet.cpp", "Wavelet Matrix and Merge Sort Tree"),
-        ("data_structures/treap.cpp", "Treap and Ordered Set"),
-        ("data_structures/offline.cpp", "Mo's Algorithm", ["-range_inversions"]),
-        ("data_structures/misc.cpp", "Other Structures", ["-FoldDeque", "-RangeMode"]),
+        ("data_structures/fenwick.cpp", "Fenwick Trees", ["Fenwick", "RangeFenwick"]),
+        ("data_structures/sparse_table.cpp", "Sparse Tables", ["MinOp", "SparseTable", "SparseTable2D"]),
+        ("data_structures/segment_tree.cpp", "Segment Trees", ["Monoid", "SegTree", "Spec", "LazySegTree",
+                                                               "SegTree2D", "DynamicSegTree", "SegTreeBeats"]),
+        ("data_structures/wavelet.cpp", "Wavelet Matrix and Merge Sort Tree", [
+            "WaveletMatrix", "MergeSortTree"]),
+        ("data_structures/treap.cpp", "Treap and Ordered Set", ["ImplicitTreap", "IndexedSet"]),
+        ("data_structures/offline.cpp", "Mo's Algorithm", ["hilbert_order", "mo"]),
+        ("data_structures/misc.cpp", "Other Structures", ["Compressor", "MinStack", "MinQueue", "MisofTree"]),
     ]),
     ("Graphs", [
-        ("graphs/shortest_paths.cpp", "Topological Sort and Shortest Paths"),
-        ("graphs/scc.cpp", "SCC and 2-SAT", ["-complement_components"]),
-        ("graphs/biconnected.cpp", "Biconnected Components"),
-        ("graphs/euler.cpp", "Euler Paths"),
-        ("graphs/spanning_trees.cpp", "Spanning Trees", ["-manhattan_mst_edges"]),
-        ("graphs/dominator_tree.cpp", "Dominator Tree"),
-        ("graphs/np_hard.cpp", "Cliques, Coloring and Steiner Tree"),
-        ("graphs/k_shortest_paths.cpp", "K Shortest Paths"),
-        ("graphs/flows.cpp", "Max Flow"),
-        ("graphs/min_cost_flow.cpp", "Min-Cost Flow"),
-        ("graphs/matching.cpp", "Matching", ["-WeightedBlossom"]),
-        ("graphs/trees.cpp", "Trees", ["-cartesian_tree", "-tree_distance_counts"]),
-        ("graphs/rerooting.cpp", "Rerooting", ["SumDist", "rerooting"]),  # MaxDist, PathComposite: more examples
-        ("graphs/link_cut_tree.cpp", "Link-Cut Tree", ["-LinkCutPath"]),
+        ("graphs/shortest_paths.cpp", "Topological Sort and Shortest Paths", [
+            "topo_sort", "BellmanFord", "FloydWarshall", "Dijkstra", "zero_one_bfs", "min_mean_cycle"]),
+        ("graphs/scc.cpp", "SCC and 2-SAT", ["SCC", "TwoSat"]),
+        ("graphs/biconnected.cpp", "Biconnected Components", ["Biconnected"]),
+        ("graphs/euler.cpp", "Euler Paths", ["euler_directed", "euler_undirected"]),
+        ("graphs/spanning_trees.cpp", "Spanning Trees", ["kruskal", "Arborescence"]),
+        ("graphs/dominator_tree.cpp", "Dominator Tree", ["dominator_tree"]),
+        ("graphs/np_hard.cpp", "Cliques, Coloring and Steiner Tree", ["MaxClique", "chromatic_number",
+                                                                      "steiner_tree"]),
+        ("graphs/k_shortest_paths.cpp", "K Shortest Paths", ["KShortestWalks", "SimplePaths"]),
+        ("graphs/flows.cpp", "Max Flow", ["Flow", "GomoryHu"]),
+        ("graphs/min_cost_flow.cpp", "Min-Cost Flow", ["MinCostFlow"]),
+        ("graphs/matching.cpp", "Matching", ["HopcroftKarp", "hungarian", "Blossom", "stable_marriage"]),
+        ("graphs/trees.cpp", "Trees", ["BinaryLift", "LCA", "HLD", "CentroidDecomp", "TreeCanon", "tree_diameter",
+                                       "dsu_on_tree", "virtual_tree"]),
+        # MaxDist and PathComposite are further examples, left out
+        ("graphs/rerooting.cpp", "Rerooting", ["SumDist", "rerooting"]),
+        ("graphs/link_cut_tree.cpp", "Link-Cut Tree", ["LinkCutTree"]),
     ]),
     ("Strings", [
-        ("strings/strings.cpp", "Strings", ["-lyndon_factorization", "-XorTrie", "-longest_common_substring"]),
+        ("strings/strings.cpp", "Strings", ["prefix_function", "kmp", "Booth", "z_function", "Trie",
+                                            "PersistentXorTrie", "SuffixArray", "AhoCorasick", "Eertree",
+                                            "RollingHash", "manacher", "SuffixAutomaton"]),
     ]),
     ("Math", [
-        ("math/modint.cpp", "ModInt"),
-        ("math/number_theory.cpp", "Number Theory", ["-count_primes", "-totient_sum", "-gaussian_gcd", "-two_square_sum",
-                                                     "-sb_path", "-sb_bounds", "-sb_lca", "-sb_ancestor", "-rational_approx",
-                                                     "-multiplicative_sum"]),
-        ("math/combinatorics.cpp", "Combinatorics", ["-derangements", "-distinct_subsequences"]),
-        ("math/matrix.cpp", "Matrix"),
+        ("math/modint.cpp", "ModInt", ["ModInt", "mint"]),
+        ("math/number_theory.cpp", "Number Theory", ["binexp", "modinv_p", "extended_euclidean", "modinv",
+                                                     "discrete_log", "is_prime", "sieve", "sum_of_divisors",
+                                                     "miller_rabin", "mobius_sieve", "gcd_subset_count",
+                                                     "divisor_transform", "gcd_convolution", "totient", "mod_solver",
+                                                     "diophantine", "crt", "super_crt", "josephus", "spf_sieve",
+                                                     "factorize_spf", "pollard_rho", "factorize", "primitive_root",
+                                                     "floor_sum", "mod_sqrt", "kth_root_floor", "kth_root_mod",
+                                                     "bernoulli", "tetration", "count_squarefree"]),
+        ("math/combinatorics.cpp", "Combinatorics", ["binexp", "modinv_p", "comb", "init_fac", "comb_f", "comb_m",
+                                                     "factorial", "lucas", "CombAny", "OrderTree",
+                                                     "perm_to_factoradic", "factoradic_to_perm", "kth_permutation"]),
+        ("math/matrix.cpp", "Matrix", ["Matrix"]),
         ("math/linear_algebra.cpp", "Linear Algebra", ["binexp", "gauss_jordan", "solve_linear", "det_mod",
                                                        "count_spanning_trees", "XorBasis"]),
-        ("math/fft.cpp", "FFT / NTT", ["-wildcard_match"]),
+        ("math/fft.cpp", "FFT / NTT", ["fft", "multiply", "binexp", "NTT", "garner", "convolution_any_mod",
+                                       "convolution_mod_2_64"]),
+        # its copy of mod_sqrt is left out, Number Theory prints it
         ("math/polynomial.cpp", "Polynomials", ["binexp", "NTT", "Poly", "poly_divide_real", "berlekamp_massey",
-                                                "kth_term", "kth_term_ntt", "bernoulli_ntt", "bell_ntt", "shift_samples",
-                                                "FactorialMod", "lagrange", "lagrange_consecutive"]),  # mod_sqrt: Number Theory
-        ("math/bitmask.cpp", "Bitmask Transforms", ["-ranked_zeta", "-subset_convolution", "-subset_exp",
-                                                    "-subset_log"]),
+                                                "kth_term", "kth_term_ntt", "bernoulli_ntt", "bell_ntt",
+                                                "shift_samples", "FactorialMod", "lagrange", "lagrange_consecutive"]),
+        ("math/bitmask.cpp", "Bitmask Transforms", ["sos_subset", "sos_superset", "xor_transform", "pad_to_power",
+                                                    "or_convolution", "and_convolution", "xor_convolution"]),
     ]),
     ("Geometry", [
-        ("geometry/geometry.cpp", "Geometry", ["-delaunay_edges", "-TriangleCounter"]),
+        ("geometry/geometry.cpp", "Geometry", ["Point", "dot", "cross", "norm", "abs", "dist", "angle", "rotate",
+                                               "proj_line", "proj_seg", "dist_pt_line", "line_inter",
+                                               "circle_line_inter", "circle_circle_inter", "polygon_area",
+                                               "triangle_area", "cyclic_quad_area", "polygon_centroid", "convex_hull",
+                                               "on_polygon", "in_polygon", "cut_polygon", "bary", "trilinear",
+                                               "centroid", "circumcenter", "orthocenter", "incenter", "inradius",
+                                               "excenter", "brocard", "symmedian", "convex_polygon_inter",
+                                               "lattice_boundary", "lattice_interior", "min_enclosing_circle",
+                                               "furthest_pair", "polygon_width", "closest_pair", "KDTree", "Point3",
+                                               "proj_plane", "dist_pt_plane", "dist_line_3d", "great_circle_dist",
+                                               "great_circle_angle", "Point3I", "Face", "convex_hull_3d", "in_convex",
+                                               "sort_by_angle", "minkowski_sum", "half_plane_intersection",
+                                               "polygon_union_area"]),
     ]),
     ("DP and Search", [
-        ("dp_search/binary_ternary_search.cpp", "Binary and Ternary Search"),
-        ("dp_search/dp_optimizations.cpp", "DP Optimizations", ["-min_plus_convex_convex", "-min_plus_convex_arbitrary",
-                                                                "-min_plus_concave_arbitrary"]),
+        # main is the binary search snippet
+        ("dp_search/binary_ternary_search.cpp", "Binary and Ternary Search", [
+            "ternary_search_int", "ternary_search_real", "main"]),
+        ("dp_search/dp_optimizations.cpp", "DP Optimizations", ["LineContainer", "LiChao", "PersistentLiChao",
+                                                                "dnc_opt", "knuth_opt"]),
     ]),
     ("Miscellaneous", [
-        ("misc/sat.cpp", "SAT Solver"),
+        ("misc/sat.cpp", "SAT Solver", ["SAT"]),
     ]),
     ("Theory", [
         ("theory.tex", "Formulas and Facts"),
@@ -107,9 +139,14 @@ BUILD = ROOT / "build"
 HEADER_FILE = "new_file.cpp"  # its preamble is printed once, so other files drop those lines
 
 PREAMBLE_LINE = re.compile(r"^(#include|using |const |mt19937)|^\s*$")
-TOP_LEVEL_NAME = [
+TOP_LEVEL_NAME = [  # names for the index: structs, classes and multi-line functions
     re.compile(r"^(?:struct|class)\s+(\w+)"),
     re.compile(r"^(?!return\b|else\b)[\w:<>,]+(?:<[^()]*>)?[\s*&]+(\w+)\s*\([^;]*$"),
+]
+DEFINED_NAME = TOP_LEVEL_NAME + [  # names SECTIONS can pick a component by: also one-line functions, aliases, globals
+    re.compile(r"^(?!return\b|else\b)[\w:<>,]+(?:<[^()]*>)?[\s*&]+(\w+)\s*\("),
+    re.compile(r"^using\s+(\w+)\s*="),
+    re.compile(r"^[\w:<>]+\s+(\w+)\s*[;={]"),
 ]
 
 
@@ -161,8 +198,8 @@ def strip_preamble(text, shared):
 
 def keep_only(text, wanted, fname):
     """Keep the top-level blocks (a column-0 comment after a blank line starts one) that
-    define any name in wanted, plus whatever comes before the first block. If every name in
-    wanted starts with "-", keep every block except the ones that define those names."""
+    define any name in wanted, the blocks that are only comments (notes about the file), and
+    whatever comes before the first block. Everything else is left out."""
     blocks = [[]]
     prev = ""
     for line in text.splitlines():
@@ -173,15 +210,10 @@ def keep_only(text, wanted, fname):
     head, rest = blocks[0], blocks[1:]
     if head and head[0].startswith("//"):  # the file starts with a block, not a header
         head, rest = [], blocks
-    if all(w.startswith("-") for w in wanted):
-        drop = {w[1:] for w in wanted}
-        kept = [b for b in rest if not set(top_level_names("\n".join(b))) & drop]
-        found = {n for b in rest for n in top_level_names("\n".join(b))}
-        missing = [n for n in drop if n not in found]
-    else:
-        kept = [b for b in rest if set(top_level_names("\n".join(b))) & set(wanted)]
-        found = {n for b in kept for n in top_level_names("\n".join(b))}
-        missing = [n for n in wanted if n not in found]
+    note = lambda b: all(l.startswith("//") for l in b if l.strip())
+    kept = [b for b in rest if note(b) or set(defined_names("\n".join(b))) & set(wanted)]
+    found = {n for b in kept for n in defined_names("\n".join(b))}
+    missing = [n for n in wanted if n not in found]
     if missing:
         sys.exit(f"error: {fname} has no top-level {', '.join(missing)} (listed in SECTIONS)")
     return "\n".join(head + [l for b in kept for l in b]).strip("\n") + "\n"
@@ -251,15 +283,20 @@ def check_condensed(pairs):
         sys.exit(f"error: condensing broke {', '.join(broken)} (compiles before, not after)")
 
 
-def top_level_names(text):
+def top_level_names(text, patterns=TOP_LEVEL_NAME, skip=("main", "operator")):
     names = []
     for line in text.splitlines():
-        for pat in TOP_LEVEL_NAME:
+        for pat in patterns:
             m = pat.match(line)
-            if m and m.group(1) not in ("main", "operator") and m.group(1) not in names:
+            if m and m.group(1) not in skip and m.group(1) not in names:
                 names.append(m.group(1))
                 break
     return names
+
+
+def defined_names(text):
+    """Every name a SECTIONS list can pick a block by, main included (for snippets written as a main)."""
+    return top_level_names(text, DEFINED_NAME, ("operator",))
 
 
 def label_for(name):
@@ -295,7 +332,9 @@ def build_tex():
             listed.add(fname)
             raw = strip_contents(path.read_text())
             code = raw if fname == HEADER_FILE else strip_preamble(raw, shared)
-            if only:
+            if fname != HEADER_FILE:
+                if not only:
+                    sys.exit(f"error: {fname} in SECTIONS needs the list of names to print")
                 code = keep_only(code, only, fname)
             if COMPACT and fname != HEADER_FILE:
                 code = compact(code)
