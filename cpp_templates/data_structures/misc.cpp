@@ -5,7 +5,8 @@
 //   FoldDeque        deque with the fold of a monoid over all its elements in order (two stacks)
 //   PersistentQueue  persistent queue: every push and pop makes a new version, O(1) memory per push
 //   MisofTree        multiset of integers in [0, 2^BITS)
-//   RangeMode        static range mode, online: a mode of a[l, r) and its count (sqrt decomposition), O(sqrt n) per query
+//   RangeMode        static range mode, online: a mode of a[l, r) and its count (sqrt decomposition),
+//                    O(sqrt n) per query
 
 #include <bits/stdc++.h>
 using namespace std;
