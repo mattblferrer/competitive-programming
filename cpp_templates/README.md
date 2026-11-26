@@ -138,6 +138,7 @@ crashes or times out, printing the transcript of the exchange.
 | `PersistentQueue` | persistent queue: every push and pop makes a new version, O(1) memory per push |
 | `MisofTree` | multiset of integers in [0, 2^BITS) |
 | `RangeMode` | static range mode, online: a mode of a[l, r) and its count (sqrt decomposition), O(sqrt n) per query |
+| `IntervalMap` | interval map (Chtholly tree): assign a value on [l, r) and iterate over the runs, O(log runs) amortized |
 
 ### [`data_structures/monoids.cpp`](data_structures/monoids.cpp)
 

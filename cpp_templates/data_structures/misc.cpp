@@ -7,6 +7,7 @@
 //   MisofTree        multiset of integers in [0, 2^BITS)
 //   RangeMode        static range mode, online: a mode of a[l, r) and its count (sqrt decomposition),
 //                    O(sqrt n) per query
+//   IntervalMap      interval map (Chtholly tree): assign a value on [l, r) and iterate over the runs
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -257,4 +258,42 @@ struct RangeMode {
         }
         return {vals[mode], best};
     }
+};
+
+// interval map (Chtholly tree / ODT): the values of positions [lo, hi) kept as runs of equal value, a run starting at
+// each key of m and ending at the next key (hi is a sentinel key); assign turns [l, r) into one run, so when random
+// assigns are mixed into random queries the runs stay few (O(n log log n) runs visited in all, expected); runs
+// beside an assigned one may hold the same value, since nothing merges them
+//   IntervalMap(lo, hi, x)   positions [lo, hi) all set to x, O(1)
+//   split(x)                 make a run start at x, lo <= x <= hi; returns it, O(log runs)
+//   assign(l, r, x)          set positions [l, r) to x, O(log runs) amortized
+//   for_each(l, r, f)        f(a, b, value) for each run [a, b) of [l, r), in order; value is a reference, so f can
+//                            change it (e.g. add to it), O(log runs + runs touched)
+//   get(x)                   the value at position x, O(log runs)
+template <class T>
+struct IntervalMap {
+    map<ll, T> m;
+
+    IntervalMap(ll lo, ll hi, T x) { m[lo] = x, m[hi] = x; }
+
+    typename map<ll, T>::iterator split(ll x) {
+        auto it = m.lower_bound(x);
+        if (it->first == x) return it;
+        return m.emplace_hint(it, x, prev(it)->second);
+    }
+
+    void assign(ll l, ll r, T x) {
+        if (l >= r) return;
+        auto il = split(l), ir = split(r);
+        il->second = x;
+        m.erase(next(il), ir);
+    }
+
+    template <class F>
+    void for_each(ll l, ll r, F f) {
+        if (l >= r) return;
+        for (auto it = split(l), ir = split(r); it != ir; it++) f(it->first, next(it)->first, it->second);
+    }
+
+    T get(ll x) const { return prev(m.upper_bound(x))->second; }
 };
