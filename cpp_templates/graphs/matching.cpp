@@ -1,9 +1,12 @@
 // Contents
-//   HopcroftKarp     maximum bipartite matching (Hopcroft-Karp); left vertices 0..n-1, right vertices 0..m-1
-//   hungarian        minimum cost assignment (Hungarian) of every row to a distinct column
-//   Blossom          maximum matching in a general graph (Edmonds' blossom)
-//   WeightedBlossom  maximum weight matching in a general graph (Edmonds' blossom with dual variables), O(n^3)
-//   stable_marriage  stable marriage (Gale-Shapley), O(n^2): men[i] and women[i] are preference lists
+//   HopcroftKarp          maximum bipartite matching (Hopcroft-Karp); left vertices 0..n-1, right vertices 0..m-1
+//   hungarian             minimum cost assignment (Hungarian) of every row to a distinct column
+//   Blossom               maximum matching in a general graph (Edmonds' blossom)
+//   WeightedBlossom       maximum weight matching in a general graph (Edmonds' blossom with dual variables), O(n^3)
+//   stable_marriage       stable marriage (Gale-Shapley), O(n^2): men[i] and women[i] are preference lists
+//   matroid_intersection  largest common independent set of two matroids given by oracles, O(r n^2) oracle calls
+//   GraphicMatroid        forests of a graph, as a matroid for matroid_intersection
+//   ColorMatroid          at most cap[c] elements of each color c (partition matroid), for matroid_intersection
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -500,3 +503,92 @@ vector<int> stable_marriage(const vector<vector<int>> &men, const vector<vector<
     }
     return res;
 }
+
+// maximum common independent set of two matroids on elements 0..n-1 (unweighted matroid intersection): augments along
+// shortest paths in the exchange graph, O(r n^2) oracle calls for an answer of size r. A matroid M needs:
+//   build(in)        prepare for the current set S = {x : in[x]}
+//   can_add(x)       S + x is independent, for x not in S
+//   can_swap(x, y)   S - y + x is independent, for x not in S and y in S
+// returns in[] of a largest set independent in both; e.g. a rainbow spanning forest (distinct colors) is
+// GraphicMatroid with ColorMatroid (all caps 1), bipartite matching is two ColorMatroids (colors = endpoints)
+template <class M1, class M2>
+vector<char> matroid_intersection(int n, M1 &m1, M2 &m2) {
+    vector<char> in(n);
+    while (true) {
+        m1.build(in), m2.build(in);
+        vector<int> par(n, -1);
+        vector<char> seen(n);
+        queue<int> q;
+        for (int x = 0; x < n; x++) if (!in[x] && m1.can_add(x)) seen[x] = 1, q.push(x);
+        int end = -1;
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+            if (!in[u] && m2.can_add(u)) {
+                end = u;
+                break;
+            }
+            for (int v = 0; v < n; v++) {  // out of S -> in S by m2, in S -> out of S by m1
+                if (seen[v] || in[v] == in[u] || !(in[u] ? m1.can_swap(v, u) : m2.can_swap(u, v))) continue;
+                seen[v] = 1, par[v] = u, q.push(v);
+            }
+        }
+        if (end < 0) return in;
+        for (int x = end; x >= 0; x = par[x]) in[x] ^= 1;
+    }
+}
+
+// graphic matroid for matroid_intersection: edge sets of edges[] on vertices 0..n-1 with no cycle; build is O(n + m),
+// can_add and can_swap are O(1) (x closes a cycle through the forest path of its endpoints, which y must lie on)
+struct GraphicMatroid {
+    int n;
+    vector<pair<int, int>> edges;
+    vector<int> comp, tin, tout, below;  // below[y] = deeper endpoint of forest edge y
+
+    GraphicMatroid(int n, const vector<pair<int, int>> &edges): n(n), edges(edges) {}
+
+    void build(const vector<char> &in) {
+        vector<vector<pair<int, int>>> adj(n);
+        for (int i = 0; i < (int)edges.size(); i++) {
+            if (!in[i]) continue;
+            adj[edges[i].first].push_back({edges[i].second, i});
+            adj[edges[i].second].push_back({edges[i].first, i});
+        }
+        comp.assign(n, -1), tin.assign(n, 0), tout.assign(n, 0), below.assign(edges.size(), -1);
+        int T = 0;
+        auto dfs = [&](auto &self, int v, int pe) -> void {
+            tin[v] = T++;
+            for (auto [w, id] : adj[v]) {
+                if (id == pe) continue;
+                comp[w] = comp[v], below[id] = w;
+                self(self, w, id);
+            }
+            tout[v] = T;
+        };
+        for (int s = 0; s < n; s++) if (comp[s] < 0) comp[s] = s, dfs(dfs, s, -1);
+    }
+
+    bool can_add(int x) const { return comp[edges[x].first] != comp[edges[x].second]; }
+
+    bool can_swap(int x, int y) const {
+        if (can_add(x)) return true;
+        int c = below[y];
+        auto inside = [&](int v) { return tin[c] <= tin[v] && tin[v] < tout[c]; };
+        return inside(edges[x].first) != inside(edges[x].second);
+    }
+};
+
+// partition matroid for matroid_intersection: sets with at most cap[c] elements of each color c, O(1) per call
+struct ColorMatroid {
+    vector<int> color, cap, cnt;
+
+    ColorMatroid(const vector<int> &color, const vector<int> &cap): color(color), cap(cap) {}
+
+    void build(const vector<char> &in) {
+        cnt.assign(cap.size(), 0);
+        for (int i = 0; i < (int)color.size(); i++) if (in[i]) cnt[color[i]]++;
+    }
+
+    bool can_add(int x) const { return cnt[color[x]] < cap[color[x]]; }
+    bool can_swap(int x, int y) const { return color[x] == color[y] || can_add(x); }
+};

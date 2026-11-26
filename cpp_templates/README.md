@@ -241,6 +241,9 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `Blossom` | maximum matching in a general graph (Edmonds' blossom) |
 | `WeightedBlossom` | maximum weight matching in a general graph (Edmonds' blossom with dual variables), O(n^3) |
 | `stable_marriage` | stable marriage (Gale-Shapley), O(n^2): men[i] and women[i] are preference lists |
+| `matroid_intersection` | largest common independent set of two matroids given by oracles, O(r n^2) oracle calls |
+| `GraphicMatroid` | forests of a graph, as a matroid for matroid_intersection |
+| `ColorMatroid` | at most cap[c] elements of each color c (partition matroid), for matroid_intersection |
 
 ### [`graphs/trees.cpp`](graphs/trees.cpp)
 
