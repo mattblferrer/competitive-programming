@@ -415,6 +415,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `solve_mod2` | solves A x = b over GF(2): one solution and a basis of A x = 0, O(n * m * rank / 64) |
 | `mul_mod2` | product of an n x m and an m x l matrix over GF(2), O(n * m * l / 64) |
 | `XorBasis` | XOR linear basis over values in [0, 2^BITS), BITS <= 62 |
+| `PrefixXorBasis` | XOR basis of every prefix: online max subset XOR / membership over a[l, r) |
 
 ### [`math/fft.cpp`](math/fft.cpp)
 

@@ -20,6 +20,7 @@
 //   solve_mod2                     solves A x = b over GF(2): one solution and a basis of A x = 0, O(n * m * rank / 64)
 //   mul_mod2                       product of an n x m and an m x l matrix over GF(2), O(n * m * l / 64)
 //   XorBasis                       XOR linear basis over values in [0, 2^BITS), BITS <= 62
+//   PrefixXorBasis                 XOR basis of every prefix: online max subset XOR / membership over a[l, r)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -426,5 +427,52 @@ struct XorBasis {
             used++;
         }
         return res;
+    }
+};
+
+// XOR basis of every prefix, keeping the latest index for each pivot bit: the basis of a[0, r) restricted to vectors
+// whose index is >= l spans exactly the subset XORs of a[l, r), so range queries are online. Values in [0, 2^BITS),
+// memory O(n * BITS)
+//   push_back(x)       append x as the next element, O(BITS)
+//   max_xor(l, r, x)   largest value of x ^ (XOR of a subset of a[l, r)), O(BITS)
+//   contains(l, r, x)  true if x is the XOR of some subset of a[l, r), O(BITS)
+template <int BITS = 60>
+struct PrefixXorBasis {
+    vector<array<ll, BITS>> b{{}};
+    vector<array<int, BITS>> pos;  // pos[r][i] = index of b[r][i], -1 if it is 0
+
+    PrefixXorBasis() { pos.push_back({}), pos[0].fill(-1); }
+
+    void push_back(ll x) {
+        auto nb = b.back();
+        auto np = pos.back();
+        int p = b.size() - 1;
+        for (int i = BITS - 1; i >= 0 && x; i--) {
+            if (!(x >> i & 1)) continue;
+            if (!nb[i]) {
+                nb[i] = x, np[i] = p;
+                break;
+            }
+            if (np[i] < p) swap(nb[i], x), swap(np[i], p);  // keep the newer vector, push the older one down
+            x ^= nb[i];
+        }
+        b.push_back(nb), pos.push_back(np);
+    }
+
+    ll max_xor(int l, int r, ll x = 0) const {
+        for (int i = BITS - 1; i >= 0; i--) {
+            if (pos[r][i] >= l) x = max(x, x ^ b[r][i]);
+        }
+        return x;
+    }
+
+    bool contains(int l, int r, ll x) const {
+        for (int i = BITS - 1; i >= 0 && x; i--) {
+            if (x >> i & 1) {
+                if (pos[r][i] < l) return false;
+                x ^= b[r][i];
+            }
+        }
+        return true;
     }
 };
