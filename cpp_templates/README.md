@@ -560,6 +560,8 @@ crashes or times out, printing the transcript of the exchange.
 | `proj_seg` | closest point to p on the segment ab, O(1) |
 | `dist_pt_line` | distance from p to the line ax + by + c = 0, O(1) |
 | `line_inter` | intersection of lines ab and cd (segments if seg), nullopt if there is none |
+| `seg_intersect` | true if the closed segments ab and cd share a point (touching and collinear overlap count), O(1) |
+| `seg_seg_dist` | distance between the segments ab and cd, 0 if they intersect, O(1) |
 | `circle_line_inter` | intersection points of the circle (c, r) and the line ab: 0, 1 (tangent), or 2 points |
 | `circle_circle_inter` | intersection points of circles (c1, r1) and (c2, r2): 0, 1 (tangent), or 2 points |
 | `tangent_points` | points where the tangent lines from p touch the circle (c, r): 0, 1, or 2 points, O(1) |
@@ -590,6 +592,7 @@ crashes or times out, printing the transcript of the exchange.
 | `furthest_pair` | two of the points at the largest distance (diameter, rotating calipers), n >= 1, O(n log n) |
 | `polygon_width` | smallest distance between two parallel lines containing all points between them (rotating calipers), O(n log n) |
 | `closest_pair` | two of the points at the smallest distance (line sweep), n >= 2, O(n log n) |
+| `any_seg_inter` | two segments that intersect, or {-1, -1} if no two do (Shamos-Hoey sweep), O(n log n) |
 | `KDTree` | 2D tree for nearest neighbor queries; the tree reorders its own copy of the points |
 | `Point3` | 3D point / vector with arithmetic, dot, cross, and length, O(1) each |
 | `proj_plane` | projection of p onto the plane ax + by + cz + d = 0, O(1) |

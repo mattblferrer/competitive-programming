@@ -11,6 +11,8 @@
 //   proj_seg                 closest point to p on the segment ab, O(1)
 //   dist_pt_line             distance from p to the line ax + by + c = 0, O(1)
 //   line_inter               intersection of lines ab and cd (segments if seg), nullopt if there is none
+//   seg_intersect            true if the closed segments ab and cd share a point (touching and collinear overlap...
+//   seg_seg_dist             distance between the segments ab and cd, 0 if they intersect, O(1)
 //   circle_line_inter        intersection points of the circle (c, r) and the line ab: 0, 1 (tangent), or 2 points
 //   circle_circle_inter      intersection points of circles (c1, r1) and (c2, r2): 0, 1 (tangent), or 2 points
 //   tangent_points           points where the tangent lines from p touch the circle (c, r): 0, 1, or 2 points, O(1)
@@ -41,6 +43,7 @@
 //   furthest_pair            two of the points at the largest distance (diameter, rotating calipers), n >= 1...
 //   polygon_width            smallest distance between two parallel lines containing all points between them...
 //   closest_pair             two of the points at the smallest distance (line sweep), n >= 2, O(n log n)
+//   any_seg_inter            two segments that intersect, or {-1, -1} if no two do (Shamos-Hoey sweep), O(n log n)
 //   KDTree                   2D tree for nearest neighbor queries; the tree reorders its own copy of the points
 //   Point3                   3D point / vector with arithmetic, dot, cross, and length, O(1) each
 //   proj_plane               projection of p onto the plane ax + by + cz + d = 0, O(1)
@@ -142,6 +145,22 @@ optional<Point> line_inter(Point a, Point b, Point c, Point d, bool seg = false)
     ld s = ds / det, t = dt / det;
     if (seg && (min(s, t) < -EPS || max(s, t) > 1 + EPS)) return nullopt;
     return a + ab * s;
+}
+
+// true if the closed segments ab and cd share a point (touching and collinear overlap count), O(1)
+// either they cross properly, or an endpoint of one lies on the other
+bool seg_intersect(Point a, Point b, Point c, Point d) {
+    auto sgn = [](ld v) { return (v > EPS) - (v < -EPS); };
+    if (sgn(cross(a, b, c)) * sgn(cross(a, b, d)) < 0 && sgn(cross(c, d, a)) * sgn(cross(c, d, b)) < 0) return true;
+    auto on = [](Point p, Point q, Point r) { return dist(proj_seg(r, p, q), r) < EPS; };  // r on segment pq
+    return on(a, b, c) || on(a, b, d) || on(c, d, a) || on(c, d, b);
+}
+
+// distance between the segments ab and cd, 0 if they intersect, O(1)
+ld seg_seg_dist(Point a, Point b, Point c, Point d) {
+    if (seg_intersect(a, b, c, d)) return 0;
+    return min({dist(proj_seg(a, c, d), a), dist(proj_seg(b, c, d), b), dist(proj_seg(c, a, b), c),
+                dist(proj_seg(d, a, b), d)});
 }
 
 // intersection points of the circle (c, r) and the line ab: 0, 1 (tangent), or 2 points, O(1)
@@ -434,6 +453,43 @@ pair<Point, Point> closest_pair(vector<Point> p) {
         box.insert(p[i]);
     }
     return res;
+}
+
+// indices {i, j} of two segments that intersect (touching counts), or {-1, -1} if no two do (Shamos-Hoey sweep),
+// O(n log n); exact for integer coordinates up to ~1e9
+// a vertical line sweeps left to right keeping the segments it crosses sorted by y; until the leftmost
+// intersection, that order is consistent and the segments in it first become neighbours, so only neighbours are
+// tested: on insert, the new segment with the ones above and below it, and on removal, the two that meet
+pair<int, int> any_seg_inter(vector<pair<Point, Point>> s) {
+    int n = s.size();
+    for (auto &[p, q] : s) if (q < p) swap(p, q);
+    auto y_at = [&](int i, ld x) {
+        auto [p, q] = s[i];
+        return q.x - p.x < EPS ? p.y : p.y + (q.y - p.y) * (x - p.x) / (q.x - p.x);  // vertical: its lowest point
+    };
+    auto below = [&](int i, int j) {
+        ld x = max(s[i].first.x, s[j].first.x);
+        return y_at(i, x) < y_at(j, x) - EPS;
+    };
+    auto hit = [&](int i, int j) { return seg_intersect(s[i].first, s[i].second, s[j].first, s[j].second); };
+    vector<tuple<ld, int, int>> ev;  // {x, 0 = insert / 1 = remove, segment}: inserts first at equal x
+    for (int i = 0; i < n; i++) ev.push_back({s[i].first.x, 0, i}), ev.push_back({s[i].second.x, 1, i});
+    sort(ev.begin(), ev.end());
+    set<int, decltype(below)> act(below);
+    vector<decltype(act)::iterator> where(n);
+    for (auto [x, type, i] : ev) {
+        if (type == 0) {
+            auto nx = act.lower_bound(i);
+            if (nx != act.end() && hit(*nx, i)) return {*nx, i};
+            if (nx != act.begin() && hit(*prev(nx), i)) return {*prev(nx), i};
+            where[i] = act.insert(nx, i);
+        } else {
+            auto it = where[i], nx = next(it);
+            if (it != act.begin() && nx != act.end() && hit(*prev(it), *nx)) return {*prev(it), *nx};
+            act.erase(it);
+        }
+    }
+    return {-1, -1};
 }
 
 // 2D tree for nearest neighbor queries; the tree reorders its own copy of the points
