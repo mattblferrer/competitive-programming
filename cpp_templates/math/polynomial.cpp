@@ -14,10 +14,12 @@
 //   stirling1_ntt         signed Stirling numbers of the first kind s(n, k), k = 0..n, mod an NTT prime, O(n log n)
 //   stirling2_ntt         Stirling numbers of the second kind S(n, k), k = 0..n, mod an NTT prime, O(n log n)
 //   partition_ntt         partition numbers p(0..n) mod an NTT prime, O(n log n)
+//   subset_sum_counts     number of sub-multisets of s with each sum t = 0..T, mod an NTT prime, O(|s| + T log T)
 //   shift_samples         h(a), ..., h(a + m - 1) from h(0), ..., h(n - 1) (shift of sampling points), O((n + m) log(n + m))
 //   FactorialMod          n! mod an NTT prime for any n < MOD, block table of (iV)!, O(V) per query
 //   lagrange              value at x of the unique polynomial through (xs[i], ys[i])
 //   lagrange_consecutive  value at x of the unique polynomial with p(i) = ys[i] for i = 0..n-1
+//   sum_exp_poly          sum of r^i i^d over 0 <= i < n, or over all i >= 0 (n = -1, r != 1), O(d + (d / log d) log mod)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -579,6 +581,22 @@ vector<ll> partition_ntt(int n) {
     return Poly<MOD, ROOT>::inv(a, n + 1);
 }
 
+// number of sub-multisets of s with each sum t = 0..T mod MOD (s holds positive integers; values above T are skipped),
+// MOD an NTT prime above T, using Poly above: the product of (1 + x^v)^cnt[v] is
+// exp(sum over v, j of cnt[v] (-1)^(j + 1) x^(vj) / j), and that sum has O(T log T) terms, O(|s| + T log T)
+template <ll MOD, ll ROOT>
+vector<ll> subset_sum_counts(const vector<int> &s, int T) {
+    vector<ll> cnt(T + 1), inv(T + 1, 1), a(T + 1);
+    for (int v : s) if (v <= T) cnt[v]++;
+    for (int i = 2; i <= T; i++) inv[i] = (MOD - MOD / i) * inv[MOD % i] % MOD;
+    for (int v = 1; v <= T; v++) {
+        if (!cnt[v]) continue;
+        ll c = cnt[v] % MOD;
+        for (int j = 1; (ll)v * j <= T; j++) a[v * j] = (a[v * j] + (j & 1 ? c : MOD - c) * inv[j]) % MOD;
+    }
+    return Poly<MOD, ROOT>::exp(a, T + 1);
+}
+
 // h(a), h(a + 1), ..., h(a + m - 1) mod MOD for the polynomial h of degree < n given by h[i] = h(i), i = 0..n-1
 // (shift of sampling points: Lagrange interpolation as one convolution), using NTT above; MOD > n, and every
 // a + k - i (0 <= k < m, 0 <= i < n) must be nonzero mod MOD, e.g. a >= n; O((n + m) log(n + m))
@@ -666,4 +684,52 @@ ll lagrange_consecutive(const vector<ll> &ys, ll x, ll mod) {
         ans = (ans + term) % mod;
     }
     return ans;
+}
+
+// sum of r^i i^d over 0 <= i < n (0^0 = 1), mod a prime mod > d + 1, using lagrange_consecutive above; n = -1 gives the
+// formal limit over all i >= 0, which needs r != 1. The sum f(n) is a polynomial of degree d + 1 if r == 1, and
+// otherwise f(n) = c + r^n g(n) with deg g <= d; the (d + 1)-th difference of g(i) = (f(i) - c) r^-i vanishes, so
+// c = (sum of (-1)^(d + 1 - i) C(d + 1, i) f(i) r^-i) / (r^-1 - 1)^(d + 1), and f(infinity) = c; i^d for i <= d + 1
+// comes from a linear sieve, O(d + (d / log d) log mod)
+ll sum_exp_poly(ll r, ll d, ll n, ll mod) {
+    r %= mod;
+    if (r == 0) return n != 0 && d == 0;
+    int K = d + 2;
+    vector<ll> f(K, 0);  // first i^d, then the prefix sums f(i)
+    vector<int> lp(K), primes;
+    f[0] = d == 0;
+    f[1] = 1;
+    for (int i = 2; i < K; i++) {
+        if (!lp[i]) lp[i] = i, primes.push_back(i), f[i] = binexp(i, d, mod);
+        for (int p : primes) {
+            if (p > lp[i] || (ll)i * p >= K) break;
+            lp[i * p] = p;
+            f[i * p] = f[i] * f[p] % mod;
+        }
+    }
+    vector<int>().swap(lp);
+    ll run = 0;
+    for (ll i = 0, pw = 1; i < K; i++, pw = pw * r % mod) {
+        ll term = f[i] * pw % mod;
+        f[i] = run;
+        run = (run + term) % mod;
+    }
+    if (r == 1) {
+        assert(n >= 0);
+        return lagrange_consecutive(f, n, mod);
+    }
+    ll ri = binexp(r, mod - 2, mod), num = 0, binom = 1;  // binom = C(d + 1, i)
+    vector<ll> inv(K, 1);
+    for (int i = 2; i < K; i++) inv[i] = (mod - mod / i) * inv[mod % i] % mod;
+    for (ll i = 0, pw = 1; i < K; i++, pw = pw * ri % mod) {
+        ll t = binom * f[i] % mod * pw % mod;
+        num = ((d + 1 - i) & 1 ? num - t + mod : num + t) % mod;
+        if (i + 1 < K) binom = binom * ((d + 1 - i) % mod) % mod * inv[i + 1] % mod;
+    }
+    vector<ll>().swap(inv);
+    ll c = num * binexp(binexp((ri - 1 + mod) % mod, d + 1, mod), mod - 2, mod) % mod;
+    if (n < 0) return c;
+    f.pop_back();  // g(0..d)
+    for (ll i = 0, pw = 1; i <= d; i++, pw = pw * ri % mod) f[i] = (f[i] - c + mod) % mod * pw % mod;
+    return (c + binexp(r, n, mod) * lagrange_consecutive(f, n, mod)) % mod;
 }

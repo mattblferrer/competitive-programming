@@ -1,7 +1,9 @@
 // Contents
+//   binexp            a^b mod mod, O(log b)
 //   hilbert_order     position of (x, y) along a Hilbert curve of order pow; requires x, y < 2^pow, O(pow)
 //   mo                Mo's algorithm with Hilbert ordering; queries are {l, r} over [l, r)
 //   range_inversions  number of inversions in each a[l, r), using mo above and a Fenwick tree
+//   binomial_prefix_sums  sum of C(n, i) over i <= k for each query {n, k}, Mo's algorithm on the points (n, k)
 //   cdq_dominance     offline 2D dominance sums with point updates (CDQ divide and conquer), O(n log^2 n)
 
 #include <bits/stdc++.h>
@@ -9,6 +11,18 @@ using namespace std;
 using ll = long long;
 using ld = long double;
 using pll = pair<ll, ll>;
+
+// a^b mod mod, O(log b)
+ll binexp(ll a, ll b, ll mod) {
+    ll ans = 1;
+    a %= mod;
+    while (b) {
+        if (b & 1) ans = ans * a % mod;
+        a = a * a % mod;
+        b >>= 1;
+    }
+    return ans;
+}
 
 // position of (x, y) along a Hilbert curve of order pow; requires x, y < 2^pow, O(pow)
 ll hilbert_order(int x, int y, int pow, int rotate = 0) {
@@ -77,6 +91,34 @@ vector<ll> range_inversions(const vector<ll> &a, const vector<pair<int, int>> &q
         else inv -= r - 1 - l - below(rk[i] + 1), r--;
     };
     return mo(n, queries, add, remove, [&] { return inv; });
+}
+
+// sum of C(n, i) over 0 <= i <= k for each query {n, k} (n, k >= 0), mod a prime mod > max n; Mo's algorithm over the
+// points (n, k) in Hilbert order, using binexp and hilbert_order above: S(n, k) - S(n, k - 1) = C(n, k) and
+// S(n + 1, k) = 2 S(n, k) - C(n, k), O(max(n, k) sqrt q) steps
+vector<ll> binomial_prefix_sums(const vector<pair<int, int>> &queries, ll mod) {
+    int q = queries.size(), N = 1, pow = 0;
+    for (auto [n, k] : queries) N = max({N, n + 1, k + 1});
+    while ((1 << pow) < N) pow++;
+    vector<ll> fac(N + 1, 1), ifac(N + 1, 1), key(q), ans(q);
+    for (int i = 1; i <= N; i++) fac[i] = fac[i - 1] * i % mod;
+    ifac[N] = binexp(fac[N], mod - 2, mod);
+    for (int i = N; i > 0; i--) ifac[i - 1] = ifac[i] * i % mod;
+    auto C = [&](int n, int k) { return k > n ? 0 : fac[n] * ifac[k] % mod * ifac[n - k] % mod; };
+    vector<int> order(q);
+    for (int i = 0; i < q; i++) key[i] = hilbert_order(queries[i].first, queries[i].second, pow), order[i] = i;
+    sort(order.begin(), order.end(), [&](int a, int b) { return key[a] < key[b]; });
+    ll S = 1, half = (mod + 1) / 2;  // S = S(n, k)
+    int n = 0, k = 0;
+    for (int i : order) {
+        auto [qn, qk] = queries[i];
+        while (n < qn) S = (2 * S - C(n, k) + mod) % mod, n++;
+        while (k > qk) S = (S - C(n, k) + mod) % mod, k--;
+        while (n > qn) n--, S = (S + C(n, k)) * half % mod;
+        while (k < qk) k++, S = (S + C(n, k)) % mod;
+        ans[i] = S;
+    }
+    return ans;
 }
 
 // offline 2D dominance sums with point updates, by CDQ divide and conquer over time: ops are in time order, an update

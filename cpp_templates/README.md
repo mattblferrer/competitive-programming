@@ -100,9 +100,11 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 
 | Name | Description |
 | --- | --- |
+| `binexp` | a^b mod mod, O(log b) |
 | `hilbert_order` | position of (x, y) along a Hilbert curve of order pow; requires x, y < 2^pow, O(pow) |
 | `mo` | Mo's algorithm with Hilbert ordering; queries are {l, r} over [l, r) |
 | `range_inversions` | number of inversions in each a[l, r), using mo above and a Fenwick tree |
+| `binomial_prefix_sums` | sum of C(n, i) over i <= k for each query {n, k}, Mo's algorithm on the points (n, k) |
 | `cdq_dominance` | offline 2D dominance sums with point updates (CDQ divide and conquer), O(n log^2 n) |
 
 ### [`data_structures/misc.cpp`](data_structures/misc.cpp)
@@ -443,10 +445,12 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `stirling1_ntt` | signed Stirling numbers of the first kind s(n, k), k = 0..n, mod an NTT prime, O(n log n) |
 | `stirling2_ntt` | Stirling numbers of the second kind S(n, k), k = 0..n, mod an NTT prime, O(n log n) |
 | `partition_ntt` | partition numbers p(0..n) mod an NTT prime, O(n log n) |
+| `subset_sum_counts` | number of sub-multisets of s with each sum t = 0..T, mod an NTT prime, O(\|s\| + T log T) |
 | `shift_samples` | h(a), ..., h(a + m - 1) from h(0), ..., h(n - 1) (shift of sampling points), O((n + m) log(n + m)) |
 | `FactorialMod` | n! mod an NTT prime for any n < MOD, block table of (iV)!, O(V) per query |
 | `lagrange` | value at x of the unique polynomial through (xs[i], ys[i]) |
 | `lagrange_consecutive` | value at x of the unique polynomial with p(i) = ys[i] for i = 0..n-1 |
+| `sum_exp_poly` | sum of r^i i^d over 0 <= i < n, or over all i >= 0 (n = -1, r != 1), O(d + (d / log d) log mod) |
 
 ### [`math/bitmask.cpp`](math/bitmask.cpp)
 
