@@ -9,6 +9,9 @@
 //                               O((n + m) log(n + m))
 //   min_plus_concave_arbitrary  c[k] = min of a[i] + b[j] over i + j = k for concave a and any b,
 //                               O((n + m) log^2 (n + m))
+//   SlopeTrick                  convex piecewise linear function: add |x - a| and ramps, prefix / suffix min,
+//                               shift, merge
+//   aliens                      Aliens trick (WQS binary search): min cost with exactly k items for a cost convex in k
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -310,4 +313,81 @@ vector<ll> min_plus_concave_arbitrary(const vector<ll> &a, const vector<ll> &b) 
     };
     rec(rec, 0, n + m - 1, 0, m);
     return c;
+}
+
+// slope trick: a convex piecewise linear f(x) with integer breakpoints, as its minimum and two heaps of breakpoints
+// (L: where the slope goes up by 1 left of the minimum, R: right of it), each with a lazy shift
+//   min()                  min of f, O(1)
+//   argmin()               {lo, hi}: f is minimal exactly on [lo, hi] (+-INF when unbounded), O(1)
+//   add_const(a)           f += a, O(1)
+//   add_x_minus_a(a)       f += max(0, x - a), O(log n)
+//   add_a_minus_x(a)       f += max(0, a - x), O(log n)
+//   add_abs(a)             f += |x - a|, O(log n)
+//   prefix_min()           f(x) = min over y <= x of f(y) (drops R), O(1) amortized
+//   suffix_min()           f(x) = min over y >= x of f(y) (drops L), O(1) amortized
+//   shift(a, b)            f(x) = min over x - b <= y <= x - a of f(y), a <= b (shift(a, a) moves f right by a), O(1)
+//   merge(o)               f += o (small to large; o is emptied), O(|o| log n)
+//   eval(x)                f(x), O(n log n)
+struct SlopeTrick {
+    ll min_f = 0, add_l = 0, add_r = 0;
+    priority_queue<ll> L;
+    priority_queue<ll, vector<ll>, greater<>> R;
+
+    ll top_l() const { return L.empty() ? -INF : L.top() + add_l; }
+    ll top_r() const { return R.empty() ? INF : R.top() + add_r; }
+    void push_l(ll a) { L.push(a - add_l); }
+    void push_r(ll a) { R.push(a - add_r); }
+    ll pop_l() { ll v = top_l(); L.pop(); return v; }
+    ll pop_r() { ll v = top_r(); R.pop(); return v; }
+
+    ll min() const { return min_f; }
+    pll argmin() const { return {top_l(), top_r()}; }
+    void add_const(ll a) { min_f += a; }
+
+    void add_x_minus_a(ll a) {
+        if (!L.empty()) min_f += max(0LL, top_l() - a);
+        push_l(a);
+        push_r(pop_l());
+    }
+
+    void add_a_minus_x(ll a) {
+        if (!R.empty()) min_f += max(0LL, a - top_r());
+        push_r(a);
+        push_l(pop_r());
+    }
+
+    void add_abs(ll a) { add_x_minus_a(a), add_a_minus_x(a); }
+    void prefix_min() { R = {}; }
+    void suffix_min() { L = {}; }
+    void shift(ll a, ll b) { add_l += a, add_r += b; }
+
+    void merge(SlopeTrick &o) {
+        if (L.size() + R.size() < o.L.size() + o.R.size()) swap(*this, o);
+        min_f += o.min_f;
+        while (!o.L.empty()) add_a_minus_x(o.pop_l());
+        while (!o.R.empty()) add_x_minus_a(o.pop_r());
+        o = SlopeTrick();
+    }
+
+    ll eval(ll x) const {
+        ll res = min_f;
+        for (auto l = L; !l.empty(); l.pop()) res += max(0LL, l.top() + add_l - x);
+        for (auto r = R; !r.empty(); r.pop()) res += max(0LL, x - r.top() - add_r);
+        return res;
+    }
+};
+
+// Aliens trick (WQS binary search, Lagrangian relaxation): f(k) = min cost of a solution with exactly k items, for f
+// convex in k with integer values. solve(lambda) must return {min over all solutions of cost + lambda * count, the
+// smallest count achieving that min}; [lo, hi] must hold some lambda whose count is <= k, i.e. hi >= f(k) - f(k + 1)
+// (lo = -hi with hi = max |f(j + 1) - f(j)| works). To maximize a concave f, return -cost and negate the answer.
+// O(log(hi - lo)) calls to solve
+template <class Solve>
+ll aliens(ll k, ll lo, ll hi, Solve solve) {
+    while (lo < hi) {  // smallest lambda with count(lambda) <= k
+        ll mid = lo + (hi - lo) / 2;
+        if (solve(mid).second <= k) hi = mid;
+        else lo = mid + 1;
+    }
+    return solve(lo).first - lo * k;
 }
