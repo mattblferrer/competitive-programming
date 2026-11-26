@@ -667,3 +667,6 @@ crashes or times out, printing the transcript of the exchange.
 | `next_bit_perm` | next larger integer with the same number of set bits; requires x > 0, O(1) |
 | `is_square` | true if x is a perfect square, O(1) |
 | `simpson` | numeric integral of f over [a, b] by Simpson's rule, O(steps); steps must be even |
+| `mex` | mex of a list of non-negative integers, O(k) |
+| `grundy` | Sprague-Grundy values of every position of a finite acyclic game, O(V + E) |
+| `grundy_line` | Grundy values g[0..n] of a game on integers whose moves go down, from the options' values |

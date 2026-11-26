@@ -10,6 +10,9 @@
 //   next_bit_perm        next larger integer with the same number of set bits; requires x > 0, O(1)
 //   is_square            true if x is a perfect square, O(1)
 //   simpson              numeric integral of f over [a, b] by Simpson's rule, O(steps); steps must be even
+//   mex                  mex of a list of non-negative integers, O(k)
+//   grundy               Sprague-Grundy values of every position of a finite acyclic game, O(V + E)
+//   grundy_line          Grundy values g[0..n] of a game on integers whose moves go down, from the options' values
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -147,4 +150,48 @@ ld simpson(F f, ld a, ld b, int steps = 1000000) {
     ld h = (b - a) / steps, s = f(a) + f(b);
     for (int i = 1; i < steps; i++) s += f(a + h * i) * ((i & 1) ? 4 : 2);
     return s * h / 3;
+}
+
+// mex of a list of non-negative integers: the smallest one that is missing, O(k)
+int mex(const vector<int> &a) {
+    vector<char> seen(a.size() + 1);
+    for (int x : a) if (x < (int)seen.size()) seen[x] = 1;
+    int m = 0;
+    while (seen[m]) m++;
+    return m;
+}
+
+// Sprague-Grundy values of every position of a finite acyclic game, adj[v] = the positions one move away from v;
+// the player to move loses iff the value is 0, and a sum of independent games has the xor of their values;
+// iterative DFS, each value is the mex of its options' values, O(V + E)
+vector<int> grundy(const vector<vector<int>> &adj) {
+    int n = adj.size();
+    vector<int> g(n, -1), it(n), st;
+    for (int s = 0; s < n; s++) {
+        if (g[s] >= 0) continue;
+        st.push_back(s);
+        while (!st.empty()) {
+            int v = st.back();
+            if (it[v] < (int)adj[v].size()) {
+                int u = adj[v][it[v]++];
+                if (g[u] < 0) st.push_back(u);
+                continue;
+            }
+            vector<int> opts;
+            for (int u : adj[v]) opts.push_back(g[u]);
+            g[v] = mex(opts);
+            st.pop_back();
+        }
+    }
+    return g;
+}
+
+// Grundy values g[0..n] of a game on integers where every move from x leads below x; opts(x, g) returns the Grundy
+// values of the options of x, reading g[y] for y < x (xor them for a move that splits x into several games), e.g.
+// Kayles takes 1 or 2 pins, leaving the xor g[a] ^ g[b] of the two rows a + b = x - 1 or x - 2; O(n * cost of opts)
+template <class F>
+vector<int> grundy_line(int n, F opts) {
+    vector<int> g(n + 1);
+    for (int x = 0; x <= n; x++) g[x] = mex(opts(x, g));
+    return g;
 }
