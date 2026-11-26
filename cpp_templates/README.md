@@ -523,6 +523,19 @@ crashes or times out, printing the transcript of the exchange.
 | --- | --- |
 | `HexBigInt` | arbitrary-precision signed hex integer in base 2^28 limbs (7 hex digits each) |
 
+### [`math/int128.cpp`](math/int128.cpp)
+
+| Name | Description |
+| --- | --- |
+| `to_string128` | decimal string of an __int128 (or unsigned __int128) |
+| `parse128` | __int128 from a decimal string with an optional sign |
+| `operator<<` | print __int128 and unsigned __int128 with cout or any ostream |
+| `operator>>` | read __int128 with cin or any istream |
+| `gcd128` | gcd of two __int128 (std::gcd needs gnu++ mode for __int128) |
+| `Frac` | exact fraction with __int128 numerator and denominator, always reduced |
+| `mulmod` | a * b mod m for m up to ~7.2e18 without __int128 (long double quotient), O(1) |
+| `powmod` | a^e mod m for m up to ~7.2e18, using mulmod, O(log e) |
+
 ### [`math/simplex.cpp`](math/simplex.cpp)
 
 | Name | Description |
@@ -540,19 +553,6 @@ crashes or times out, printing the transcript of the exchange.
 | `cross` | cross product, O(1) |
 | `norm` | squared length, O(1) |
 | `abs` | length, O(1) |
-### [`math/int128.cpp`](math/int128.cpp)
-
-| Name | Description |
-| --- | --- |
-| `to_string128` | decimal string of an __int128 (or unsigned __int128) |
-| `parse128` | __int128 from a decimal string with an optional sign |
-| `operator<<` | print __int128 and unsigned __int128 with cout or any ostream |
-| `operator>>` | read __int128 with cin or any istream |
-| `gcd128` | gcd of two __int128 (std::gcd needs gnu++ mode for __int128) |
-| `Frac` | exact fraction with __int128 numerator and denominator, always reduced |
-| `mulmod` | a * b mod m for m up to ~7.2e18 without __int128 (long double quotient), O(1) |
-| `powmod` | a^e mod m for m up to ~7.2e18, using mulmod, O(log e) |
-
 | `dist` | distance between a and b, O(1) |
 | `angle` | angle abc at b in radians, in [0, pi], O(1) |
 | `rotate` | rotate a counter-clockwise by d radians about pivot p, O(1) |
