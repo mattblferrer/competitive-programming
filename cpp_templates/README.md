@@ -294,6 +294,7 @@ crashes or times out, printing the transcript of the exchange.
 | --- | --- |
 | `LinkCutTree` | link-cut tree: a forest under link and cut with path and subtree sum queries, 0-indexed |
 | `LinkCutPath` | link-cut tree with path folds of any monoid (op need not commute), 0-indexed |
+| `IncrementalMSF` | incremental minimum spanning forest: add edges one at a time, O(log(n + m)) amortized each |
 
 ### [`graphs/euler_tour_tree.cpp`](graphs/euler_tour_tree.cpp)
 

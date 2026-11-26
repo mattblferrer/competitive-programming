@@ -1,6 +1,7 @@
 // Contents
-//   LinkCutTree  link-cut tree: a forest under link and cut with path and subtree sum queries, 0-indexed
-//   LinkCutPath  link-cut tree with path folds of any monoid (op need not commute), 0-indexed
+//   LinkCutTree     link-cut tree: a forest under link and cut with path and subtree sum queries, 0-indexed
+//   LinkCutPath     link-cut tree with path folds of any monoid (op need not commute), 0-indexed
+//   IncrementalMSF  incremental minimum spanning forest: add edges one at a time, O(log(n + m)) amortized each
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -272,5 +273,133 @@ struct LinkCutPath {
         make_root(u + 1);
         access(v + 1);
         return t[v + 1].sum;
+    }
+};
+
+// incremental minimum spanning forest: edges arrive one at a time and the forest stays minimum, 0-indexed vertices,
+// edges numbered 0, 1, ... in the order added; for each new edge u - v, if u and v are connected the heaviest edge on
+// the forest path u - v leaves if it is heavier than the new one, else the new edge is dropped
+// a link-cut tree with a node per edge (between its two endpoints) keeps the argmax of the path's edge weights;
+// components only merge, so a DSU answers connectivity
+//   IncrementalMSF(n)    n isolated vertices, O(n)
+//   add_edge(u, v, w)    add the edge, returns the id of the edge that is not in the forest afterwards: the new
+//                        edge itself (a loop, or no heavier edge on the path), the edge it replaced, or -1 if it
+//                        joined two trees, O(log(n + m)) amortized
+//   total                sum of the forest's edge weights
+//   in_forest[id]        true if edge id is in the forest
+struct IncrementalMSF {
+    struct Node {
+        int ch[2] = {0, 0}, p = 0, mx = 0;  // mx = the node with the largest val in the splay subtree
+        ll val = LLONG_MIN;
+        bool rev = false;
+    };
+    int n;
+    ll total = 0;
+    vector<Node> t;  // vertices are 1..n, edge i is n + 1 + i, 0 is null
+    vector<array<int, 2>> ends;
+    vector<char> in_forest;
+    vector<int> dsu, path;
+
+    IncrementalMSF(int n): n(n), t(n + 1), dsu(n + 1) {
+        for (int i = 1; i <= n; i++) t[i].mx = i;
+        iota(dsu.begin(), dsu.end(), 0);
+    }
+
+    int find_set(int x) {
+        while (dsu[x] != x) x = dsu[x] = dsu[dsu[x]];
+        return x;
+    }
+
+    bool is_root(int x) const { return t[t[x].p].ch[0] != x && t[t[x].p].ch[1] != x; }
+
+    void pull(int x) {
+        t[x].mx = x;
+        for (int c : t[x].ch) if (c && t[t[c].mx].val > t[t[x].mx].val) t[x].mx = t[c].mx;
+    }
+
+    void flip(int x) {
+        if (x) swap(t[x].ch[0], t[x].ch[1]), t[x].rev ^= 1;
+    }
+
+    void push(int x) {
+        if (t[x].rev) flip(t[x].ch[0]), flip(t[x].ch[1]), t[x].rev = false;
+    }
+
+    void rotate(int x) {
+        int p = t[x].p, g = t[p].p, d = t[p].ch[1] == x, c = t[x].ch[!d];
+        if (!is_root(p)) t[g].ch[t[g].ch[1] == p] = x;
+        t[x].p = g;
+        t[p].ch[d] = c;
+        if (c) t[c].p = p;
+        t[x].ch[!d] = p;
+        t[p].p = x;
+        pull(p);
+        pull(x);
+    }
+
+    void splay(int x) {
+        path.assign(1, x);
+        for (int y = x; !is_root(y); y = t[y].p) path.push_back(t[y].p);
+        for (int i = (int)path.size() - 1; i >= 0; i--) push(path[i]);
+        while (!is_root(x)) {
+            int p = t[x].p, g = t[p].p;
+            if (!is_root(p)) rotate((t[p].ch[1] == x) == (t[g].ch[1] == p) ? p : x);
+            rotate(x);
+        }
+    }
+
+    void access(int x) {
+        for (int y = x, last = 0; y; last = y, y = t[y].p) {
+            splay(y);
+            t[y].ch[1] = last;
+            pull(y);
+        }
+        splay(x);
+    }
+
+    void make_root(int x) {
+        access(x);
+        flip(x);
+    }
+
+    void link(int x, int y) {
+        make_root(x);
+        t[x].p = y;
+    }
+
+    void cut(int x, int y) {
+        make_root(x);
+        access(y);
+        t[y].ch[0] = t[x].p = 0;
+        pull(y);
+    }
+
+    int add_edge(int u, int v, ll w) {
+        int id = ends.size(), e = n + 1 + id;
+        u++, v++;
+        ends.push_back({u, v});
+        in_forest.push_back(false);
+        t.push_back(Node());
+        t[e].val = w, t[e].mx = e;
+        int out = -1;
+        if (u == v) return id;
+        if (find_set(u) == find_set(v)) {
+            make_root(u);
+            access(v);
+            int x = t[v].mx;  // heaviest edge on the path u - v
+            if (t[x].val <= w) return id;
+            out = x - n - 1;
+            cut(ends[out][0], x);
+            cut(x, ends[out][1]);
+            in_forest[out] = false;
+            total -= t[x].val;
+        } else {
+            dsu[find_set(u)] = find_set(v);
+        }
+        link(u, e);
+        link(e, v);
+        in_forest[id] = true;
+        total += w;
+        return out;
     }
 };
