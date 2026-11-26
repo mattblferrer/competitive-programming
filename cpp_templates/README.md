@@ -9,7 +9,7 @@ Each folder is one chapter of the notebook; the contest template `new_file.cpp` 
 - [Strings](#strings): [`strings.cpp`](strings/strings.cpp)
 - [Math](#math): [`modint.cpp`](math/modint.cpp), [`number_theory.cpp`](math/number_theory.cpp), [`combinatorics.cpp`](math/combinatorics.cpp), [`matrix.cpp`](math/matrix.cpp), [`linear_algebra.cpp`](math/linear_algebra.cpp), [`fft.cpp`](math/fft.cpp), [`polynomial.cpp`](math/polynomial.cpp), [`bitmask.cpp`](math/bitmask.cpp), [`big_integer.cpp`](math/big_integer.cpp), [`hex_big_integer.cpp`](math/hex_big_integer.cpp), [`int128.cpp`](math/int128.cpp), [`simplex.cpp`](math/simplex.cpp)
 - [Geometry](#geometry): [`geometry.cpp`](geometry/geometry.cpp)
-- [DP and Search](#dp-and-search): [`binary_ternary_search.cpp`](dp_search/binary_ternary_search.cpp), [`dp_optimizations.cpp`](dp_search/dp_optimizations.cpp), [`digit_dp.cpp`](dp_search/digit_dp.cpp), [`knapsack.cpp`](dp_search/knapsack.cpp)
+- [DP and Search](#dp-and-search): [`binary_ternary_search.cpp`](dp_search/binary_ternary_search.cpp), [`dp_optimizations.cpp`](dp_search/dp_optimizations.cpp), [`digit_dp.cpp`](dp_search/digit_dp.cpp), [`knapsack.cpp`](dp_search/knapsack.cpp), [`profile_dp.cpp`](dp_search/profile_dp.cpp)
 - [Miscellaneous](#miscellaneous): [`sat.cpp`](misc/sat.cpp), [`dlx.cpp`](misc/dlx.cpp), [`misc.cpp`](misc/misc.cpp)
 
 ## Contest
@@ -654,6 +654,12 @@ crashes or times out, printing the transcript of the exchange.
 | --- | --- |
 | `subset_sums` | bitset of the sums [0, N) reachable by subsets of w (bitset knapsack), O(N sqrt(N) / 64) |
 | `bounded_knapsack` | best value with weight at most j for every j <= W, item i used up to c[i] times, O(n W) |
+
+### [`dp_search/profile_dp.cpp`](dp_search/profile_dp.cpp)
+
+| Name | Description |
+| --- | --- |
+| `profile_dp_simple` | copy-and-edit broken-profile DP: domino tilings of the free cells of a grid mod MOD, O(n m 2^m) |
 
 ## Miscellaneous
 
