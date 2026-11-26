@@ -614,6 +614,7 @@ crashes or times out, printing the transcript of the exchange.
 | `ternary_search_int` | smallest x in [lo, hi] minimizing f, O(log(hi - lo)) calls to f; f must fall, then rise |
 | `ternary_search_real` | x in [lo, hi] minimizing a real function that falls and then rises, O(iters) calls to f |
 | `parallel_binary_search` | for each query, the first step count after which check(i) holds, O(log steps) replays |
+| `brent` | a root of f in [a, b] with f(a), f(b) of opposite signs (Brent's method) |
 
 ### [`dp_search/dp_optimizations.cpp`](dp_search/dp_optimizations.cpp)
 

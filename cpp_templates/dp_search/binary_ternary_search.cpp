@@ -1,7 +1,8 @@
 // Contents
-//   ternary_search_int   smallest x in [lo, hi] minimizing f, O(log(hi - lo)) calls to f; f must fall, then rise
-//   ternary_search_real  x in [lo, hi] minimizing a real function that falls and then rises, O(iters) calls to f
+//   ternary_search_int      smallest x in [lo, hi] minimizing f, O(log(hi - lo)) calls to f; f must fall, then rise
+//   ternary_search_real     x in [lo, hi] minimizing a real function that falls and then rises, O(iters) calls to f
 //   parallel_binary_search  for each query, the first step count after which check(i) holds, O(log steps) replays
+//   brent                   a root of f in [a, b] with f(a), f(b) of opposite signs (Brent's method)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -68,4 +69,40 @@ int main() {
         if ("f(mid)") right = mid;
         else left = mid;
     }
+}
+
+// a root of a continuous f on [a, b] where f(a) and f(b) have opposite signs (or one is 0), to within tol; Brent's
+// method: inverse quadratic interpolation or secant steps while they stay inside the bracket and shrink it fast
+// enough, bisection otherwise, so it converges superlinearly on smooth f and is never much slower than bisection
+// O(log((b - a) / tol)) calls to f at worst, usually far fewer
+template <class F>
+ld brent(F f, ld a, ld b, ld tol = 1e-15) {
+    const ld eps = numeric_limits<ld>::epsilon();
+    ld fa = f(a), fb = f(b), c = b, fc = fb, d = b - a, e = d;
+    for (int iter = 0; iter < 500; iter++) {
+        if ((fb > 0) == (fc > 0)) c = a, fc = fa, d = e = b - a;  // c is the other end of the bracket
+        if (fabsl(fc) < fabsl(fb)) a = b, b = c, c = a, fa = fb, fb = fc, fc = fa;  // b is the best estimate
+        ld tol1 = 2 * eps * fabsl(b) + tol / 2, xm = (c - b) / 2;
+        if (fabsl(xm) <= tol1 || fb == 0) return b;
+        if (fabsl(e) >= tol1 && fabsl(fa) > fabsl(fb)) {
+            ld s = fb / fa, p, q;
+            if (a == c) {  // secant
+                p = 2 * xm * s, q = 1 - s;
+            } else {  // inverse quadratic interpolation
+                ld t = fa / fc, r = fb / fc;
+                p = s * (2 * xm * t * (t - r) - (b - a) * (r - 1));
+                q = (t - 1) * (r - 1) * (s - 1);
+            }
+            if (p > 0) q = -q;
+            p = fabsl(p);
+            if (2 * p < min(3 * xm * q - fabsl(tol1 * q), fabsl(e * q))) e = d, d = p / q;
+            else d = xm, e = d;
+        } else {
+            d = xm, e = d;
+        }
+        a = b, fa = fb;
+        b += fabsl(d) > tol1 ? d : (xm > 0 ? tol1 : -tol1);
+        fb = f(b);
+    }
+    return b;
 }
