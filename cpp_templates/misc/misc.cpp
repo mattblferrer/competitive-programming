@@ -13,6 +13,7 @@
 //   mex                  mex of a list of non-negative integers, O(k)
 //   grundy               Sprague-Grundy values of every position of a finite acyclic game, O(V + E)
 //   grundy_line          Grundy values g[0..n] of a game on integers whose moves go down, from the options' values
+//   Expr                 expression parser (recursive descent): + - * / % ^, unary minus and parentheses, O(|s|)
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -195,3 +196,69 @@ vector<int> grundy_line(int n, F opts) {
     for (int x = 0; x <= n; x++) g[x] = mex(opts(x, g));
     return g;
 }
+
+// expression parser (recursive descent): evaluates integers with + - * / % ^, unary minus and parentheses, spaces
+// ignored; one function per precedence level, each calling the next tighter one for its operands
+//   expr  = term (('+' | '-') term)*         left to right
+//   term  = unary (('*' | '/' | '%') unary)*  left to right, / and % truncate as in C++
+//   unary = '-' unary | power                so -2^2 = -4
+//   power = atom ('^' unary)?                right to left: 2^3^2 = 2^9; exponents must be >= 0
+//   atom  = number | '(' expr ')'
+// to adapt: change ll to the value type, add operators to their level (or a level of their own), and variables or
+// functions to atom; the input must be valid (add checks on s[i] where it may not be), O(|s|)
+//   Expr(s).parse()   value of the whole string s
+struct Expr {
+    string s;
+    size_t i = 0;
+
+    Expr(const string &t) { for (char c : t) if (!isspace(c)) s += c; }
+
+    char peek() const { return i < s.size() ? s[i] : 0; }
+
+    ll expr() {
+        ll x = term();
+        while (peek() == '+' || peek() == '-') x = s[i++] == '+' ? x + term() : x - term();
+        return x;
+    }
+
+    ll term() {
+        ll x = unary();
+        while (peek() == '*' || peek() == '/' || peek() == '%') {
+            char op = s[i++];
+            ll y = unary();
+            x = op == '*' ? x * y : op == '/' ? x / y : x % y;
+        }
+        return x;
+    }
+
+    ll unary() {
+        if (peek() == '-') return i++, -unary();
+        return power();
+    }
+
+    ll power() {
+        ll x = atom();
+        if (peek() != '^') return x;
+        i++;
+        ll e = unary(), r = 1;
+        for (; e > 0; e >>= 1) {
+            if (e & 1) r *= x;
+            if (e > 1) x *= x;
+        }
+        return r;
+    }
+
+    ll atom() {
+        if (peek() == '(') {
+            i++;
+            ll x = expr();
+            i++;  // ')'
+            return x;
+        }
+        ll x = 0;
+        while (isdigit(peek())) x = x * 10 + (s[i++] - '0');
+        return x;
+    }
+
+    ll parse() { return i = 0, expr(); }
+};

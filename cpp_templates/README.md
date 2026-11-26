@@ -679,3 +679,4 @@ crashes or times out, printing the transcript of the exchange.
 | `mex` | mex of a list of non-negative integers, O(k) |
 | `grundy` | Sprague-Grundy values of every position of a finite acyclic game, O(V + E) |
 | `grundy_line` | Grundy values g[0..n] of a game on integers whose moves go down, from the options' values |
+| `Expr` | expression parser (recursive descent): + - * / % ^, unary minus and parentheses on integers, O(\|s\|) |
