@@ -3,6 +3,7 @@
 //   mod_sqrt              a square root of a mod the prime p, -1 if none (copy of the Number Theory one)
 //   NTT                   number theoretic transform, each MOD and ROOT pair is its own type
 //   Poly                  polynomial operations mod MOD, using NTT above; a[i] is the coefficient of x^i
+//   poly_prod             product f[0] * f[1] * ... * f[k - 1] mod MOD, divide and conquer, O(N log N log k)
 //   poly_divide_real      long division of real polynomials: returns {quotient, remainder} of a / b
 //   berlekamp_massey      shortest linear recurrence of s mod a prime (Berlekamp-Massey), O(n^2)
 //   kth_term              k-th term (0-indexed) of the recurrence s[i] = c[0] * s[i - 1] + c[1] * s[i - 2] + ...
@@ -362,6 +363,19 @@ struct Poly {
         return ans;
     }
 };
+
+// product f[0] * f[1] * ... * f[k - 1] mod MOD ({1} if f is empty), using NTT above; divide and conquer so each
+// level multiplies polynomials of total length N = sum of f[i].size(), O(N log N log k)
+template <ll MOD, ll ROOT>
+vector<ll> poly_prod(const vector<vector<ll>> &f) {
+    auto go = [&](auto &self, int l, int r) -> vector<ll> {
+        if (r - l == 0) return {1};
+        if (r - l == 1) return f[l];
+        int m = (l + r) / 2;
+        return NTT<MOD, ROOT>::multiply(self(self, l, m), self(self, m, r));
+        };
+    return go(go, 0, f.size());
+}
 
 // long division of real polynomials: returns {quotient, remainder} of a / b; the leading coefficient of b must be nonzero, O(nm)
 pair<vector<ld>, vector<ld>> poly_divide_real(vector<ld> a, const vector<ld> &b) {

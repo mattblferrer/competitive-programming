@@ -431,6 +431,7 @@ Contest starting template: includes, type aliases, constants, `dbg` macro and a 
 | `mod_sqrt` | a square root of a mod the prime p, -1 if none (copy of the Number Theory one) |
 | `NTT` | number theoretic transform, each MOD and ROOT pair is its own type |
 | `Poly` | polynomial operations mod MOD, using NTT above; a[i] is the coefficient of x^i |
+| `poly_prod` | product f[0] * f[1] * ... * f[k - 1] mod MOD, divide and conquer, O(N log N log k) |
 | `poly_divide_real` | long division of real polynomials: returns {quotient, remainder} of a / b |
 | `berlekamp_massey` | shortest linear recurrence of s mod a prime (Berlekamp-Massey), O(n^2) |
 | `kth_term` | k-th term (0-indexed) of the recurrence s[i] = c[0] * s[i - 1] + c[1] * s[i - 2] + ..., mod a modulus below 2^31 |
