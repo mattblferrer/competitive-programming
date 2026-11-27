@@ -6,8 +6,8 @@
 | ---------------------- | ----------------------------------------------- | ----------- |
 | Atcoder                | <https://atcoder.jp/users/mattferrer>           | 332         |
 | Baekjoon Online Judge  | <https://www.acmicpc.net/user/mattferrer>       | 4           |
-| Codeforces             | <https://codeforces.com/profile/mattferrer>     | 1556        |
-| CSES                   | <https://cses.fi/user/283245>                   | 94          |
+| Codeforces             | <https://codeforces.com/profile/mattferrer>     | 1560        |
+| CSES                   | <https://cses.fi/user/283245>                   | 100         |
 | Hackerrank             | <https://www.hackerrank.com/profile/mattferrer> | 114         |
 | Kattis                 | <https://open.kattis.com/users/matt-ferrer>     | 40          |
 | Leetcode               | <https://leetcode.com/u/mattblferrer/>          | 961         |
@@ -16,9 +16,9 @@
 | TLX                    | <https://tlx.toki.id/>                          | 12          |
 | VNOI                   | <https://oj.vnoi.info/>                         | 6           |
 | Yosupo Library Checker | <https://judge.yosupo.jp/>                      | 176         |
-| **Total**              |                                                 | 3521        |
+| **Total**              |                                                 | 3531        |
 
-Solve counts updated as of November 27, 2026
+Solve counts updated as of November 28, 2026
 
 ## Team Notebook
 
