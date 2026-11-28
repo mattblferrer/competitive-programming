@@ -4,9 +4,9 @@
 
 | Online Judge           | Link                                            | Solve Count |
 | ---------------------- | ----------------------------------------------- | ----------- |
-| Atcoder                | <https://atcoder.jp/users/mattferrer>           | 332         |
+| Atcoder                | <https://atcoder.jp/users/mattferrer>           | 337         |
 | Baekjoon Online Judge  | <https://www.acmicpc.net/user/mattferrer>       | 4           |
-| Codeforces             | <https://codeforces.com/profile/mattferrer>     | 1560        |
+| Codeforces             | <https://codeforces.com/profile/mattferrer>     | 1565        |
 | CSES                   | <https://cses.fi/user/283245>                   | 100         |
 | Hackerrank             | <https://www.hackerrank.com/profile/mattferrer> | 114         |
 | Kattis                 | <https://open.kattis.com/users/matt-ferrer>     | 40          |
@@ -16,7 +16,7 @@
 | TLX                    | <https://tlx.toki.id/>                          | 12          |
 | VNOI                   | <https://oj.vnoi.info/>                         | 6           |
 | Yosupo Library Checker | <https://judge.yosupo.jp/>                      | 176         |
-| **Total**              |                                                 | 3531        |
+| **Total**              |                                                 | 3541        |
 
 Solve counts updated as of November 28, 2026
 
@@ -35,5 +35,5 @@ Solve counts updated as of November 28, 2026
 
 ## Project Euler
 
-- My solutions to the problems of Project Euler (Python)
+- My solutions to the problems of Project Euler (Python and C++)
 - Link to problems: <https://projecteuler.net/>
